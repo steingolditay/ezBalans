@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1038888337792",
+    "project_id": "ezbalans-87bc5",
+    "storage_bucket": "ezbalans-87bc5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038888337792:android:eb955aef7a7b644e840165",
+        "android_client_info": {
+          "package_name": "com.ezbalans.app.ezbalans"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038888337792-ue5h3g7geco51vkg59kv25hmerlhtf92.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ezbalans.app.ezbalans",
+            "certificate_hash": "c9fc5167c5a56a7105cc813bb17161567bb497a3"
+          }
+        },
+        {
+          "client_id": "1038888337792-1lmlvfv1bf67k0se8mo5aemaf9cmqhtk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT14y63gf9WMV1rKXYhsJBZau2vASTY9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038888337792-1lmlvfv1bf67k0se8mo5aemaf9cmqhtk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

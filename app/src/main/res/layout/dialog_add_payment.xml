@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:layout_gravity="bottom">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:id="@+id/icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:src="@drawable/budget"
+            app:tint="@color/colorGreen"
+            android:layout_margin="10dp"
+            />
+
+        <View
+            android:id="@+id/divider"
+            app:layout_constraintTop_toBottomOf="@id/icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/colorGreen"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="5dp"
+            />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/add_payment"
+            android:textAllCaps="true"
+            android:layout_margin="30dp"
+            android:textColor="@color/colorGreen"
+            />
+
+
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="20dp"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/day"
+            android:hint="@string/amount"
+            android:inputType="number"
+            android:textColor="@color/colorGreen"
+
+            />
+
+        <EditText
+            android:id="@+id/day"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="20dp"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/amount"
+            android:hint="@string/day_in_month"
+            android:inputType="number"
+            android:textColor="@color/colorGreen"
+
+
+            />
+
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="10dp"
+            app:layout_constraintTop_toBottomOf="@id/day"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="@string/description"
+
+
+            />
+
+        <com.skydoves.powerspinner.PowerSpinnerView
+            android:id="@+id/payment_type"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="10dp"
+            android:hint="@string/payment_type"
+            android:gravity="center"
+            android:background="@drawable/button_framed_budget"
+            android:padding="10dp"
+            android:textColorHint="@color/colorGreen"
+            android:textStyle="bold"
+            app:spinner_arrow_gravity="end"
+            app:spinner_arrow_padding="8dp"
+            app:spinner_divider_color="@color/colorGreen"
+            app:spinner_divider_show="true"
+            app:spinner_divider_size="0.4dp"
+            app:spinner_popup_animation="dropdown"
+            app:spinner_popup_background="@color/colorBackground"
+            app:spinner_popup_elevation="14dp"
+            app:spinner_arrow_show="true"
+            app:spinner_arrow_animate="true"
+            app:spinner_arrow_tint="@color/colorGreen"
+            android:textColor="@color/colorGreen"
+            />
+
+        <Button
+            android:id="@+id/add_payment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/payment_type"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/add_caps"
+            android:textColor="@color/colorBackground"
+            android:backgroundTint="@color/colorGreen"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="30dp"
+
+
+            />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

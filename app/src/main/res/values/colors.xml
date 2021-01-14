@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#DB5461</color>
+    <color name="colorPrimaryDark">#2F2F2F</color>
+    <color name="colorBlue">#6C91BF</color>
+    <color name="colorGreen">#6FB857</color>
+    <color name="colorYellow">#EDAE60</color>
+    <color name="colorBackground">#fbfbfb</color>
+    <color name="colorAbsoluteWhite">#FFFFFF</color>
+    <color name="colorHint">#808080</color>
+    <color name="colorText">@color/common_google_signin_btn_text_light</color>
+    <color name="transparentBackground">#D0ffffff</color>
+
+</resources>

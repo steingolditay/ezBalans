@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/title_background"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/bg_rooms"
+        />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/title_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardBackgroundColor="@color/transparentBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_background"
+        app:layout_constraintBottom_toBottomOf="@id/title_background"
+        app:cardElevation="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:layout_margin="10dp"
+                android:textStyle="bold"
+                android:text="@string/my_rooms"
+                android:textAllCaps="true"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+    
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_card"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"/>
+
+    <TextView
+        android:id="@+id/empty_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center"
+        android:layout_margin="10dp"
+        android:visibility="gone"
+        android:text="@string/empty_room_list"
+        />
+
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/add_plus"
+        app:menu_colorNormal="@color/colorBlue"
+        app:menu_colorRipple="@color/colorPrimary"
+        app:menu_labels_colorNormal="@color/colorBlue"
+        android:layout_margin="10dp"
+
+        >
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/create_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/room"
+            app:fab_size="normal"
+            app:fab_label="@string/create"
+            app:fab_colorNormal="@color/colorBlue"
+
+            />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/join_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/join"
+            app:fab_size="normal"
+            app:fab_label="@string/join"
+            app:fab_colorNormal="@color/colorBlue"
+            />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab_heb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/add_plus"
+        app:menu_colorNormal="@color/colorBlue"
+        app:menu_colorRipple="@color/colorPrimary"
+        app:menu_labels_colorNormal="@color/colorBlue"
+        app:menu_labels_position="right"
+        android:visibility="gone"
+        android:layout_margin="10dp"
+
+
+        >
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/create_room_heb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/room"
+            app:fab_size="normal"
+            app:fab_label="@string/create"
+            app:fab_colorNormal="@color/colorBlue"
+
+            />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/join_room_heb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/join"
+            app:fab_size="normal"
+            app:fab_label="@string/join"
+            app:fab_colorNormal="@color/colorBlue"
+            />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

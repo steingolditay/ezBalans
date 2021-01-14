@@ -1,0 +1,260 @@
+<resources>
+    <string name="app_name">ezBalans</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="signup">Sign Up</string>
+    <string name="register">Register</string>
+    <string name="email_hint">email</string>
+    <string name="password_hint">password</string>
+    <string name="username_hint">username</string>
+    <string name="password_verification_hint">password again</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="home">Home</string>
+    <string name="rooms">Rooms</string>
+    <string name="wallet">Wallet</string>
+    <string name="create_room">Create a Room</string>
+    <string name="room_name">Room Name</string>
+    <string name="room_type">Room Type</string>
+    <string name="create">Create</string>
+    <string name="invite_to_room">Invite other Roomies</string>
+    <string name="identity_key">Identity key</string>
+    <string name="first_name_hint">first name</string>
+    <string name="last_name_hint">last name</string>
+    <string name="room_description">Room Description</string>
+    <string name="status">Status</string>
+    <string name="details">Details</string>
+    <string name="history">History</string>
+    <string name="edit">Edit</string>
+    <string name="leave">Leave</string>
+    <string name="info">Info</string>
+    <string name="amount">Amount</string>
+    <string name="day_in_month">Day in month</string>
+    <string name="description">Description</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="add_resident">Add Resident</string>
+    <string name="delete_payment">Delete Payment</string>
+    <string name="no_payments_to_show">There are no payments to show yet</string>
+    <string name="residents">Residents</string>
+    <string name="admins">Admins</string>
+    <string name="user_collision">There was problem connecting to this user</string>
+    <string name="apply">Apply</string>
+    <string name="date">Date</string>
+    <string name="category">Category</string>
+    <string name="user">User</string>
+    <string name="empty_room_list">Your are currently not a resident in any Room.</string>
+    <string name="room_budget">Room Budget</string>
+    <string name="add_caps">ADD</string>
+    <string name="pass_size_error">Password must be at least 6 characters long</string>
+    <string name="pass_digit_error">Password must contain at least one number</string>
+    <string name="pass_uppercase_error">Password must contain at least one uppercase letter</string>
+    <string name="pass_lowercase_error">Password must contain at least one lowercase letter</string>
+    <string name="pass_special_char_error">Password must contain at least one special sign</string>
+    <string name="add_item">ADD ITEM</string>
+    <string name="add_payment_title">ADD A NEW PAYMENT</string>
+    <string name="add_resident_title">ADD A NEW RESIDENT</string>
+    <string name="payment_type">PAYMENT TYPE</string>
+    <string name="enter_password">ENTER PASSWORD</string>
+    <string name="reauthenticate">This action is sensitive and requires you to re-authenticate.</string>
+    <string name="settle">Settle</string>
+    <string name="settled">Settled</string>
+    <string name="settle_body">States that you paid back the amount you owe</string>
+    <string name="approve">Approve</string>
+    <string name="close_room_body">This will close the room for all of its residents</string>
+    <string name="close">Close</string>
+    <string name="change_email">Change Email</string>
+    <string name="rename_item">Rename Item</string>
+    <string name="message_of_the_day">Message of The Day</string>
+    <string name="write_to_your_roommates">Write something to your roommates</string>
+    <string name="edit_password">Edit Password</string>
+    <string name="enter_password_twice">Please enter your password twice</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="edit_room_info">Edit Room Info</string>
+    <string name="total_budget">Total Budget</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="forgot_password_body">Please enter your email address and a password reset link will be sent to you</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="join_room">Join Room</string>
+    <string name="send_request">Send Request</string>
+    <string name="leave_room">Leave Room</string>
+    <string name="leave_room_body">You will not be able to rejoin unless invited</string>
+    <string name="logout_body">Are you sure you want to log out?</string>
+    <string name="decline">Decline</string>
+    <string name="payment_info">Payment Info</string>
+    <string name="validate">Validate</string>
+    <string name="promote_resident">Promote User</string>
+    <string name="Promote_resident_body">This will give the user admin permissions</string>
+    <string name="promote">Promote</string>
+    <string name="remove_user">Remove User</string>
+    <string name="remove_user_body">You will still be able to see the users activity</string>
+    <string name="remove_from_admins">Remove From Admins</string>
+    <string name="remove_from_room">Remove From Room</string>
+    <string name="remove">Remove</string>
+    <string name="remove_item">Remove Item</string>
+    <string name="remove_from_shopping_list">Remove From Shopping List</string>
+    <string name="your_rooms">Your Rooms</string>
+    <string name="email_verification">Email Verification</string>
+    <string name="email_not_verified">Email not verified</string>
+    <string name="email_verification_body"> While your email is not verified, you will not be able to create rooms. If you missed the verification email that was sent to you, you can get another one.</string>
+    <string name="send_email_again">Send Email Again</string>
+    <string name="my_home">My Home</string>
+    <string name="no_notifications">No notifications to show yet</string>
+    <string name="no_room_details">No details to show yet</string>
+    <string name="no_history">No history to show yet</string>
+    <string name="balance">Balance</string>
+    <string name="my_rooms">My Rooms</string>
+    <string name="my_wallet">My Wallet</string>
+    <string name="year">Year</string>
+    <string name="three_months">3 Months</string>
+    <string name="all_time">All Time</string>
+    <string name="currency">Currency</string>
+    <string name="type">Type</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="click_here">Click Here</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="hebrew">Hebrew</string>
+    <string name="restart_changes">Changes will be applied after restarting the app.</string>
+    <string name="change_password">Change Password</string>
+    <string name="close_room">Close This Room</string>
+    <string name="shopping_list">Shopping List</string>
+    <string name="welcome">Welcome</string>
+    <string name="checked_in">Have you checked in yet?</string>
+    <string name="new_resident">New resident?</string>
+    <string name="you_joined_room">You have joined the room</string>
+    <string name="joined_the_room">%1$s joined the room</string>
+    <string name="left_the_room">%1$s left the room</string>
+    <string name="you_left_the_room">You left the room</string>
+    <string name="removed_from_room">%1$s was removed from the room by %2$s</string>
+    <string name="request_to_join_room">%1$s requests to join the room</string>
+    <string name="changed_the_room_info">%1$s made changes to the room info</string>
+    <string name="invalid_payment_submitted">%1$s submitted a payment that need to approved</string>
+    <string name="your_invalid_payment_approved">%1$s approved your payment</string>
+    <string name="invalid_payment_approved">%1$s approved payment submitted by %2$s</string>
+    <string name="your_invalid_payment_declined">%1$s declined your payment</string>
+    <string name="invalid_payment_declined">%1$s declined a payment submitted by %2$s</string>
+    <string name="closed_the_room">%1$s closed the room</string>
+    <string name="no_longer_admin">%1$s is no longer an admin</string>
+    <string name="is_admin">%1$s is now an admin</string>
+    <string name="new_motd">%1$s shared a new Message of The Day</string>
+    <string name="youre_added_to_room">%1$s has added you to %2$s. You can find it on your rooms list.</string>
+    <string name="added_to_room">%1$s has added %2$s to the room.</string>
+    <string name="resident_left">Resident Left</string>
+    <string name="resident_left_body">%1$s decided to leave %2$s.</string>
+    <string name="you_removed_from_room">You were removed from the room</string>
+    <string name="resident_removed">Resident Removed</string>
+    <string name="resident_removed_body">%1$s decided to remove you from %2$s</string>
+    <string name="resident_removed_body_2">%1$s decided to remove %2$s from the room. Remember, admins can always re-invite %3$s back.</string>
+    <string name="room_info_changed">Room Info Changed</string>
+    <string name="payment_validation">Payment Validation</string>
+    <string name="payment_declined">Payment Declined</string>
+    <string name="room_closed">Room Closed</string>
+    <string name="you_closed_room">You closed %1$s. The room is no longer available.</string>
+    <string name="room_closed_by">%1$s decided to close %2$s. The room is no longer available.</string>
+    <string name="admin_demoted">Admin Demoted</string>
+    <string name="you_demoted_admin">At your decision, %1$s is no longer an admin in %2$s.</string>
+    <string name="admin_demoted_admin">%1$s demoted %2$s from admin position in %3$s.</string>
+    <string name="resident_promoted">Resident Promoted</string>
+    <string name="payment_validation_body">A payment submitted by a roommate needs to be validated by an admin.</string>
+    <string name="you_promoted_resident">At your decision, %1$s is now an admin in %2$s.</string>
+    <string name="admin_promoted_resident">%1$s Promoted %2$s to admin position.</string>
+    <string name="new_room_motd">New Message of The Day</string>
+    <string name="new_motd_plus">%1$s shared a new message: %2$s.</string>
+    <string name="join_request">Join Request</string>
+    <string name="your_owe">You owe %1$s %2$s%3$s</string>
+    <string name="owes_you"> %1$s owes yoy %2$s%3$s</string>
+    <string name="identity_key_copied">Identity Key copied to clipboard</string>
+    <string name="email_updated">Email address successfully updated</string>
+    <string name="email_in_use">Email address already in use</string>
+    <string name="password_updated">Password successfully updated</string>
+    <string name="verification_email_sent">Verification email sent</string>
+    <string name="action_already_taken">An action was already taken</string>
+    <string name="request_approved">Request approved</string>
+    <string name="already_resident">You are already a resident in this room</string>
+    <string name="request_sent">Request sent</string>
+    <string name="cant_send_request">You cannot send a request right now</string>
+    <string name="cant_join_room">You cannot join this room right now</string>
+    <string name="room_budget_updated">Room budget successfully updated</string>
+    <string name="user_already_added">User is already added</string>
+    <string name="user_not_found">User not found</string>
+    <string name="payment_deleted">Payment deleted successfully</string>
+    <string name="room_closed_toast">Room closed successfully</string>
+    <string name="no_more_residents">There are no more residents in this room.</string>
+    <string name="image_uploaded">Image uploaded successfully</string>
+    <string name="item_exists">Item already exists</string>
+    <string name="email_sent">Email sent to %1$s</string>
+    <string name="resident_added">Resident added</string>
+    <string name="created_on">Created on %1$s</string>
+    <string name="monthly_budget">Monthly Budget</string>
+    <string name="email_required">Email is required</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="password_required">Password is required</string>
+    <string name="password_doesnt_match">Password verification does not match</string>
+    <string name="room_name_required">Room name is required</string>
+    <string name="room_budget_required">Room monthly budget is required</string>
+    <string name="room_type_not_selected">Room type was not selected</string>
+    <string name="currency_not_selected">Room currency was not selected</string>
+    <string name="amount_required">Amount is required</string>
+    <string name="amount_zero">Amount cannot be 0</string>
+    <string name="day_of_month_required">Day of month is required</string>
+    <string name="invalid_day_of_month">Invalid day of month</string>
+    <string name="payment_type_not_selected">No payment type was selected</string>
+    <string name="username_required">Username is required</string>
+    <string name="username_length">Username must be at least 4 characters long</string>
+    <string name="first_name_length">First name must be at least 2 characters long</string>
+    <string name="last_name_length">Last name must be at least 2 characters long</string>
+    <string name="username">username</string>
+    <string name="name">name</string>
+    <string name="budget">budget</string>
+    <string name="share">Share</string>
+    <string name="add">Add</string>
+    <string name="join">Join</string>
+    <string name="default_motd">Welcome to our new room!</string>
+    <string name="example_item">Example Item</string>
+
+
+
+    <string-array name="room_types">
+        <item>Family</item>
+        <item>Roommates</item>
+        <item>Couple</item>
+        <item>Vacation</item>
+    </string-array>
+
+    <string-array name="room_currencies">
+        <item>USD</item>
+        <item>NIS</item>
+    </string-array>
+
+    <string-array name="room_categories">
+        <item>Rent</item>
+        <item>Bills</item>
+        <item>Repairs</item>
+        <item>Groceries</item>
+        <item>Clothing</item>
+        <item>Medical and Healthcare</item>
+        <item>Gifts</item>
+        <item>Entertainment</item>
+        <item>Alcohol</item>
+        <item>Tobacco and Smoking</item>
+        <item>Gas</item>
+        <item>Car Maintenance</item>
+        <item>Parking</item>
+        <item>Pet Food</item>
+        <item>Phone</item>
+        <item>Internet</item>
+        <item>TV and Streaming</item>
+        <item>Insurance</item>
+        <item>Gym</item>
+        <item>Haircut and Salon</item>
+        <item>Babysitter</item>
+        <item>Loans</item>
+        <item>Education</item>
+        <item>School</item>
+        <item>Vacations</item>
+        <item>Other</item>
+    </string-array>
+
+
+
+</resources>
