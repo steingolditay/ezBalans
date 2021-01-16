@@ -134,6 +134,13 @@ class RoomActivity: AppCompatActivity(){
             showOptions(it)
         }
 
+        binding.image.setOnClickListener{
+            val intent = Intent(this, RoomInfo::class.java)
+            intent.putExtra(Constants.room_uid, roomUID)
+            intent.putExtra(Constants.admin, admin)
+            startActivity(intent)
+        }
+
         binding.bottomBar.onItemSelected = {
             when (it){
                 0 -> {
@@ -215,12 +222,6 @@ class RoomActivity: AppCompatActivity(){
 
         optionsPopup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.info -> {
-                    val intent = Intent(this, RoomInfo::class.java)
-                    intent.putExtra(Constants.room_uid, roomUID)
-                    intent.putExtra(Constants.admin, admin)
-                    startActivity(intent)
-                }
                 R.id.share -> {
                     shareRoom()
                 }

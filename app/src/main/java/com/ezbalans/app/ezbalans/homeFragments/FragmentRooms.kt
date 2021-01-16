@@ -23,6 +23,8 @@ import com.ezbalans.app.ezbalans.rooms.CreateRoom
 import com.ezbalans.app.ezbalans.rooms.RoomActivity
 import com.ezbalans.app.ezbalans.rooms.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
+import com.ezbalans.app.ezbalans.eventBus.RoomsEvent
+import com.ezbalans.app.ezbalans.eventBus.UsersEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -32,6 +34,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
+import org.greenrobot.eventbus.Subscribe
 import kotlin.math.log
 
 
@@ -105,23 +108,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                 }
             }
         }
-
-//
-//        binding.joinRoom.setOnClickListener{
-//            joinRoomDialog()
-//        }
-
-//        binding.createRoom.setOnClickListener{
-//            // user can not create a room before email verification
-//            if (firebaseUser.isEmailVerified){
-//                val intent = Intent(context, CreateRoom::class.java)
-//                startActivity(intent)
-//                binding.fab.close(true)
-//            }
-//            else {
-//                openNotVerifiedDialog()
-//            }
-//        }
     }
 
     private fun openNotVerifiedDialog(){
@@ -177,6 +163,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                         CreateNotification().create(room, Constants.notify_user_requested, firebaseUser.uid, room.uid, "")
                         dialog.dismiss()
                         Toast.makeText(requireContext(),getString(R.string.request_sent), Toast.LENGTH_SHORT).show()
+
                     }
 
 
@@ -191,39 +178,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             Toast.makeText(requireContext(),getString(R.string.cant_join_room), Toast.LENGTH_SHORT).show()
         }
 
+    }
 
 
-//        databaseReference.child(Constants.rooms).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (entry in snapshot.children) {
-//                    val room = entry.getValue<Room>()!!
-//                    if (room.identity_key == identityKey){
-//                        val status = room.residents[firebaseUser.uid]
-//                        if (!room.residents.containsKey(firebaseUser.uid) || !(status == Constants.requested || status == Constants.added || status == Constants.declined)){
-//                            databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.requested).addOnSuccessListener {
-//                                CreateNotification().create(room, Constants.notify_user_requested, firebaseUser.uid, room.uid, "")
-//                                dialog.dismiss()
-//                                Toast.makeText(requireContext(),getString(R.string.request_sent), Toast.LENGTH_SHORT).show()
-//                            }
-//
-//
-//                        }
-//                        else {
-//                                Toast.makeText(requireContext(),getString(R.string.cant_send_request), Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
-//                if (dialog.isShowing){
-//                    dialog.dismiss()
-//                    Toast.makeText(requireContext(),getString(R.string.cant_join_room), Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
-
+    @Subscribe
+    fun onRoomsUpdate(event: RoomsEvent) {
+        getMyRooms()
     }
 
     private fun getMyRooms(){
@@ -252,35 +212,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             binding.list.visibility = View.GONE
             binding.emptyItem.visibility = View.VISIBLE
         }
-
-
-//        databaseReference.child(Constants.rooms).addListenerForSingleValueEvent(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (rooms in snapshot.children){
-//                    val room = rooms.getValue<Room>()!!
-//                    if (room.residents.containsKey(firebaseUser.uid)){
-//                        if (room.residents[firebaseUser.uid] == Constants.added){
-//                            myRooms.add(room)
-//                            myRoomsKeys.add(room.identity_key)
-//                        }
-//                    }
-//                }
-//
-//                if (myRooms.isNotEmpty()){
-//                    if (isAdded)
-//                        updateRooms()
-//                }
-//                else{
-//                    binding.list.visibility = View.GONE
-//                    binding.emptyItem.visibility = View.VISIBLE
-//                }
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
     }
 
     private fun updateRooms(){

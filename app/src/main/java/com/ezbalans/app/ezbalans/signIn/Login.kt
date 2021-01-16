@@ -12,6 +12,7 @@ import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.HomeActivity
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewLoginBinding
+import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -55,14 +56,19 @@ class  Login : AppCompatActivity(){
     }
 
     private fun userLogin(email: String, password: String){
+        val loadingDialog = GetLoadingDialog(this, getString(R.string.logging_in)).create()
+        loadingDialog.show()
+
         val auth = Firebase.auth;
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful){
+                loadingDialog.dismiss()
                 val intent = Intent(this, HomeActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
             else{
+                loadingDialog.dismiss()
                 Toast.makeText(this, resources.getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
             }
         }

@@ -211,6 +211,12 @@
     <string name="join">Join</string>
     <string name="default_motd">Welcome to our new room!</string>
     <string name="example_item">Example Item</string>
+    <string name="uploading_image">Uploading image</string>
+    <string name="Updating_info">Updating info</string>
+    <string name="logging_out">Logging out</string>
+    <string name="registering">Registering new user</string>
+    <string name="logging_in">Logging in</string>
+
 
 
 

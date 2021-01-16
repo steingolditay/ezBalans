@@ -1,5 +1,6 @@
 package com.ezbalans.app.ezbalans.signIn
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,7 @@ import com.ezbalans.app.ezbalans.HomeActivity
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewSignupBinding
+import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
@@ -74,13 +76,17 @@ class Signup : AppCompatActivity() {
     }
 
     private fun registerUser(email: String, password: String, username: String) {
+        val loadingDialog = GetLoadingDialog(this, getString(R.string.registering)).create()
+        loadingDialog.show()
+
         val auth = Firebase.auth
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             when {
                 task.isSuccessful -> {
-                    createUser(email, username)
+                    createUser(email, username, loadingDialog)
                 }
                 task.exception is FirebaseAuthUserCollisionException -> {
+                    loadingDialog.dismiss()
                     Toast.makeText(this, getText(R.string.user_collision), Toast.LENGTH_SHORT).show()
                 }
                 else -> {
@@ -91,7 +97,7 @@ class Signup : AppCompatActivity() {
         }
     }
 
-    private fun createUser(email: String, username: String) {
+    private fun createUser(email: String, username: String, loadingDialog: Dialog) {
         val getIdentityKey = GetIdentityKey()
         val firebaseUser = Firebase.auth.currentUser!!
         val profileUpdates = UserProfileChangeRequest.Builder()
@@ -113,6 +119,7 @@ class Signup : AppCompatActivity() {
 
                     Firebase.database.reference.child(Constants.users).child(firebaseUser.uid).setValue(user).addOnSuccessListener{
                         Firebase.database.reference.child(Constants.budgets).child(firebaseUser.uid).child(firebaseUser.uid).setValue(0).addOnSuccessListener {
+                            loadingDialog.dismiss()
                             val intent = Intent(this, HomeActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)

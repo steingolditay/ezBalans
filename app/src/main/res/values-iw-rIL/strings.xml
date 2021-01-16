@@ -212,4 +212,9 @@
     <string name="join">הצטרף</string>
     <string name="default_motd">ברוך הבא לחדר החדש שלנו!</string>
     <string name="example_item">פריט לדוגמה</string>
+    <string name="uploading_image">מעלה תמונה</string>
+    <string name="Updating_info">מעדכן מידע</string>
+    <string name="logging_out">מתנתק</string>
+    <string name="registering">רושם משתמש חדש</string>
+    <string name="logging_in">מתחבר</string>
 </resources>

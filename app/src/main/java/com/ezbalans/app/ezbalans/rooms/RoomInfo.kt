@@ -107,48 +107,6 @@ class RoomInfo : AppCompatActivity() {
         loadRoomDetails()
         loadResidents()
 
-//        databaseReference.child(Constants.rooms).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                room = snapshot.getValue<Room>()!!
-//                for (uid in room.residents.keys) {
-//                    if (room.admins.containsKey(uid)) {
-////                        admin = true
-//                        if (room.admins[uid] == true) {
-//                            admins.add(uid)
-//
-//                        } else {
-//                            residents.add(uid)
-//                        }
-//                    } else {
-//                        residents.add(uid)
-//                    }
-//                }
-//                loadRoomDetails()
-//                getResidents()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
-    }
-
-    private fun getResidents() {
-//        databaseReference.child(Constants.users).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (user_snapshot in snapshot.children) {
-//                    val user = user_snapshot.getValue<User>()!!
-//                    if (room.residents.containsKey(user.uid)) {
-//                        users[user.uid] = user
-//                    }
-//                }
-//                loadResidents()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
     }
 
     private fun loadResidents() {
@@ -329,11 +287,15 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun uploadImage(imageUri: Uri) {
+        val loadingDialog = GetLoadingDialog(this, getString(R.string.uploading_image)).create()
+        loadingDialog.show()
+
         storageReference.child(Constants.room).child(room.uid).child(Constants.image).putFile(imageUri).addOnSuccessListener {
             storageReference.child(Constants.room).child(room.uid).child(Constants.image).downloadUrl.addOnSuccessListener { result ->
                 val stringUri = result.toString()
                 databaseReference.child(Constants.rooms).child(room.uid).child(Constants.image).setValue(stringUri).addOnSuccessListener {
-                    Toast.makeText(this, getString(R.string.image_uploaded), Toast.LENGTH_SHORT).show()
+                    loadingDialog.dismiss()
+//                    Toast.makeText(this, getString(R.string.image_uploaded), Toast.LENGTH_SHORT).show()
                 }
             }
 
