@@ -134,7 +134,6 @@
                 app:layout_constraintTop_toBottomOf="@id/separator"
                 android:layout_marginHorizontal="4dp"
                 android:layout_marginVertical="8dp"
-                android:textAlignment="center"
                 android:textStyle="bold"
                 />
 

@@ -12,18 +12,14 @@ import android.util.Patterns
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.ezbalans.app.ezbalans.Helpers.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.Helpers.GetCustomDialog
-import com.ezbalans.app.ezbalans.Models.User
-import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.databinding.DialogEditProfileBinding
-import com.ezbalans.app.ezbalans.databinding.DialogSendEmailVerificationBinding
+import com.ezbalans.app.ezbalans.helpers.CheckPasswordStrength
+import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
-import com.ezbalans.app.ezbalans.databinding.ViewWelcomeBinding
+import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
@@ -37,7 +33,6 @@ import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import de.hdodenhof.circleimageview.CircleImageView
 
 class Profile: AppCompatActivity() {
     private lateinit var binding: ViewProfileBinding
@@ -268,22 +263,32 @@ class Profile: AppCompatActivity() {
     }
 
     private fun loadMyData(){
-        databaseReference.child(Constants.users).child(firebaseUser.uid).addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                user = snapshot.getValue<User>()!!
-                binding.name.text = "${user.first_name} ${user.last_name}"
-                binding.username.text = user.username
-                binding.signupDate.text = user.signup_date
-                binding.email.text = user.email
-                binding.identityKey.text = user.identity_key
+        val usersPref = GetPrefs().getAllUsers()
+        user = usersPref[firebaseUser.uid]!!
+
+        binding.name.text = "${user.first_name} ${user.last_name}"
+        binding.username.text = user.username
+        binding.signupDate.text = user.signup_date
+        binding.email.text = user.email
+        binding.identityKey.text = user.identity_key
 
 
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })
+//        databaseReference.child(Constants.users).child(firebaseUser.uid).addListenerForSingleValueEvent(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                user = snapshot.getValue<User>()!!
+//                binding.name.text = "${user.first_name} ${user.last_name}"
+//                binding.username.text = user.username
+//                binding.signupDate.text = user.signup_date
+//                binding.email.text = user.email
+//                binding.identityKey.text = user.identity_key
+//
+//
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//            }
+//
+//        })
     }
 
     private fun loadImageCropper(){
@@ -299,9 +304,10 @@ class Profile: AppCompatActivity() {
             storageReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).downloadUrl.addOnSuccessListener {
                 val imageUri = it.toString()
                 databaseReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).setValue(imageUri).addOnSuccessListener {
-                    val profileUpdates = UserProfileChangeRequest.Builder().setPhotoUri(uri).build()
+                    val profileUpdates = userProfileChangeRequest { photoUri = uri }
                     firebaseUser.updateProfile(profileUpdates).addOnSuccessListener {
                         Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
+
                     }
                 }
             }
@@ -393,8 +399,6 @@ class Profile: AppCompatActivity() {
                 dialog.dismiss()
             }
         }
-
-
         dialog.show()
     }
 
@@ -405,14 +409,12 @@ class Profile: AppCompatActivity() {
         logout.setOnClickListener {
             Firebase.auth.signOut()
             dialog.dismiss()
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, WelcomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
-
-
         dialog.show()
-
     }
+
 }

@@ -13,10 +13,11 @@ object Constants {
     const val language_english = "english"
     const val language_hebrew = "hebrew"
     const val motd = "motd"
-    const val default_motd = "Welcome to our new room!"
     const val base_join_url = "http://ezbalans.com/join/"
     const val email = "email"
     const val password = "password"
+    const val my_rooms = "my_rooms"
+    const val my_payments = "my_payments"
 
 
     // db

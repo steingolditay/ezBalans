@@ -20,14 +20,15 @@
 
 
         <activity android:name=".Profile"/>
-        <activity android:name=".Rooms.CreateRoom"/>
-        <activity android:name=".Rooms.ShoppingList"/>
-        <activity android:name=".Rooms.RoomInfo"/>
-        <activity android:name=".Rooms.RoomActivity"/>
-        <activity android:name=".SignIn.Login"/>
-        <activity android:name=".SignIn.Signup"/>
+        <activity android:name=".rooms.CreateRoom"/>
+        <activity android:name=".rooms.ShoppingList"/>
+        <activity android:name=".rooms.RoomInfo"/>
+        <activity android:name=".rooms.RoomActivity"/>
+        <activity android:name=".signIn.Login"/>
+        <activity android:name=".signIn.Signup"/>
+        <activity android:name=".WelcomeActivity"/>
 
-        <activity android:name=".Mainframe">
+        <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
