@@ -12,45 +12,45 @@ class GetPrefs {
 
     fun getAllUsers(): HashMap<String, User>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, User::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.users,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.users,mapStructure)!!
     }
 
 
     fun getNotifications(): HashMap<String, Notification>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, Notification::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.notifications,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.notifications,mapStructure)!!
     }
 
     fun getAllRooms(): HashMap<String, Room>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, Room::class.java)
 
-        return PowerPreference.getDefaultFile().getMap(Constants.rooms,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.rooms, mapStructure)!!
     }
 
     fun getMyRooms(): HashMap<String, Room>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, Room::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.my_rooms,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.my_rooms,mapStructure)!!
     }
 
     fun getAllPayments(): HashMap<String, Payment>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, Payment::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.payments,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.payments,mapStructure)!!
     }
 
 
     fun getMyPayments(): HashMap<String, Payment>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, Payment::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.my_payments,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.my_payments,mapStructure)!!
     }
 
 
     fun getAllShoppingLists(): HashMap<String, HashMap<String, Boolean>>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, HashMap::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.my_payments,mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.my_payments,mapStructure)!!
     }
 
     fun getMyBudgets(): HashMap<String, String> {
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, String::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.budgets, mapStructure)
+        return PowerPreference.getDefaultFile().getMap(Constants.budgets, mapStructure)!!
     }
 }

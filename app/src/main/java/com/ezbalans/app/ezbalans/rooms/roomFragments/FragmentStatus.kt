@@ -3,6 +3,7 @@ package com.ezbalans.app.ezbalans.rooms.roomFragments
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,9 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomStatusBinding
+import com.ezbalans.app.ezbalans.eventBus.BudgetsEvent
+import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
+import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -32,6 +36,8 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
 import com.skydoves.powerspinner.PowerSpinnerView
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -54,7 +60,16 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     lateinit var adapter: RoomPaymentsAdapter
 
+    override fun onStart() {
+        super.onStart()
 
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -79,7 +94,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         loadRoom(roomUid)
 
 
-
     }
 
     private fun loadRoom(roomUid: String){
@@ -93,23 +107,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         }
         loadRoomUsers()
 
-//
-//        databaseReference.child(Constants.rooms).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                room = snapshot.getValue<Room>()!!
-//
-//                for (entry in room.categories){
-//                    when (entry.value){
-//                       true -> roomCategories.add(entry.key)
-//                    }
-//                }
-//                loadRoomUsers()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
     }
 
     private fun loadRoomUsers(){
@@ -124,21 +121,12 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         }
 
         loadPayments()
+    }
 
-//        databaseReference.child(Constants.users).addListenerForSingleValueEvent(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (room_user_uid in room.residents.keys){
-//                    val user = snapshot.child(room_user_uid).getValue<User>()!!
-//                    users.add(user)
-//                    userList[user.uid] = user
-//                }
-//                loadPayments()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
+    @Subscribe
+    fun onPaymentsUpdate(event: PaymentsEvent){
+        Log.d("TAG", "onPaymentsUpdate: fragment status" )
+        loadPayments()
     }
 
     private fun loadPayments(){
@@ -146,6 +134,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         totalAmount = 0
 
         val paymentPref = GetPrefs().getAllPayments()
+        Log.d("TAG", "loadPayments: ${paymentPref.size}")
         for (p in paymentPref.values){
             if (p.to == room.uid && p.status == Constants.payment_valid && paymentFromThisMonth(p)){
                 payments.add(p)
@@ -165,40 +154,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         }
 
         updateBudget()
-
-//        databaseReference.child(Constants.payments).child(room.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (payment in snapshot.children) {
-//                    val p = payment.getValue<Payment>()!!
-//                    if (p.status == Constants.payment_valid && paymentFromThisMonth(p)) {
-//                        payments.add(p)
-//                        totalAmount += p.amount.toInt()
-//                    }
-//                }
-//
-//                // prevent crash if moving to another fragment
-//                // while still loading data
-//                if (isAdded) {
-//                    if (payments.isEmpty()) {
-//                        binding.list.visibility = View.GONE
-//                        binding.emptyItem.visibility = View.VISIBLE
-//                    } else {
-//                        binding.list.visibility = View.VISIBLE
-//                        binding.emptyItem.visibility = View.GONE
-//
-//                        // sort list by timestamps
-//                        payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-//                        updatePayments()
-//                    }
-//                    updateBudget()
-//
-//                }
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
     }
 
     private fun  addPaymentDialog(){
@@ -214,7 +169,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val description = dialog.findViewById<EditText>(R.id.description)
 
 
-//        roomCategories.sort()
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
         if (lang == Constants.language_hebrew){
             val items = arrayListOf<String>()
@@ -263,7 +217,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
                     databaseReference.child(Constants.payments).child(room.uid).child(paymentUid).setValue(payment).addOnSuccessListener {
                         dialog.dismiss()
-                        loadPayments()
 
                     }
                 }
@@ -274,7 +227,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         val thisMonth = calendar.get(Calendar.MONTH) + 1
         val thisYear = calendar.get(Calendar.YEAR)
         calendar.timeInMillis = payment.timestamp.toLong()
@@ -304,17 +257,16 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         adapter = RoomPaymentsAdapter(requireContext(), payments, users, room.currency, this)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(context)
-        binding.list.setHasFixedSize(true)
     }
 
     private fun getMaximumDays() : Int{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
     private fun getTimeStamp(day: Int) : String{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.set(Calendar.DAY_OF_MONTH, day)
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH))
         calendar.set(Calendar.HOUR_OF_DAY, 0)
@@ -349,6 +301,10 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             deletePayment.visibility = View.VISIBLE
             deletePayment.setOnClickListener {
                 databaseReference.child(Constants.payments).child(room.uid).child(payment.payment_uid).removeValue().addOnSuccessListener {
+//                    payments.removeAt(position);
+//                    adapter.notifyItemRemoved(position);
+//                    adapter.notifyItemRangeChanged(position, payments.size)
+
                     dialog.dismiss()
                     Toast.makeText(context, getString(R.string.payment_deleted), Toast.LENGTH_SHORT).show()
 

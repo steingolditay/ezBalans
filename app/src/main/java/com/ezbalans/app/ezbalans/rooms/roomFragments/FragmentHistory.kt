@@ -105,7 +105,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         payments.clear()
         pastPayments.clear()
         keys.clear()
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
 
         val paymentsPref = GetPrefs().getAllPayments()
         for (payment in paymentsPref.values){
@@ -137,52 +137,12 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         }
 
 
-//        databaseReference.child(Constants.payments).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (payment in snapshot.children) {
-//                    val p = payment.getValue<Payment>()!!
-//                    if (p.status == Constants.payment_valid && isPaymentFromPastMonth(p)) {
-//
-//                        calendar.timeInMillis = p.timestamp.toLong()
-//                        calendar.set(Calendar.DAY_OF_MONTH, 1)
-//                        calendar.set(Calendar.HOUR_OF_DAY, 0)
-//                        calendar.set(Calendar.MINUTE, 0)
-//                        calendar.set(Calendar.SECOND, 0)
-//                        calendar.set(Calendar.MILLISECOND, 0)
-//
-//                        val timestamp = calendar.time.time
-//
-//                        payments.add(p)
-//                        pastPayments[timestamp] = 0
-//                        Log.d("TAG", "loadData: $pastPayments //")
-//
-//                    }
-//                }
-//
-//                if (isAdded) {
-//                    if (payments.isEmpty()) {
-//                        binding.historyList.visibility = View.GONE
-//                        binding.emptyItem.visibility = View.VISIBLE
-//                    } else {
-//                        binding.historyList.visibility = View.VISIBLE
-//                        binding.emptyItem.visibility = View.GONE
-//
-//                        // sort list by timestamps
-//                        payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-//
-//                        getPaymentsPerMonth()
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
+
     }
 
     private fun getPaymentsPerMonth(){
-        val paymentCalendar = Calendar.getInstance()
-        val timestampCalendar = Calendar.getInstance()
+        val paymentCalendar = Calendar.getInstance(TimeZone.getDefault())
+        val timestampCalendar = Calendar.getInstance(TimeZone.getDefault())
 
         // list the actual payments in relation
         // to the found month/year timestamps
@@ -207,7 +167,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
     }
 
     private fun isPaymentFromPastMonth(payment: Payment) : Boolean{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         val thisMonth = calendar.get(Calendar.MONTH) + 1
         val thisYear = calendar.get(Calendar.YEAR)
 

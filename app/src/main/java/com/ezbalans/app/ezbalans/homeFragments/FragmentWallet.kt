@@ -11,6 +11,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.ezbalans.app.ezbalans.Constants
+import com.ezbalans.app.ezbalans.HomeActivity
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
@@ -18,6 +19,8 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.rooms.roomFragments.FragmentDetails
 import com.ezbalans.app.ezbalans.databinding.FragmentWalletBinding
+import com.ezbalans.app.ezbalans.eventBus.BudgetsEvent
+import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -25,14 +28,13 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -52,6 +54,17 @@ class FragmentWallet : Fragment() {
     var roomBudgets = HashMap<String, Int>()
     var selectedFilter = GraphFilter.ThreeMonths
 
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+
+    }
 
 
     override fun onAttach(context: Context) {
@@ -110,8 +123,9 @@ class FragmentWallet : Fragment() {
                 graphFilterPeriod()
             }
         }
-
         getMyBudgets()
+
+
     }
 
 
@@ -127,26 +141,17 @@ class FragmentWallet : Fragment() {
         }
         getMyRooms()
 
-//
-//        databaseReference.child(Constants.budgets).child(firebaseUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    if (snapshot.exists()) {
-//                        for (budget in snapshot.children) {
-//                            if (budget.key == firebaseUser.uid) {
-//                                totalBudget = budget.getValue<Int>()!!
-//                            } else {
-//                                roomBudgets[budget.key!!] = budget.getValue<Int>()!!
-//                            }
-//                        }
-//                    }
-//                    getMyRooms()
-//                }
-//
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                }
-//
-//            })
+    }
+
+
+    @Subscribe
+    fun onBudgetsUpdate(event: BudgetsEvent){
+//        getMyBudgets()
+    }
+
+    @Subscribe
+    fun onPaymentsUpdate(event: PaymentsEvent){
+//        getMyPayments()
     }
 
     private fun getMyRooms() {
@@ -160,24 +165,6 @@ class FragmentWallet : Fragment() {
         }
         getMyPayments()
 
-//        databaseReference.child(Constants.rooms)
-//            .addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    for (rooms in snapshot.children) {
-//                        val room = rooms.getValue<Room>()!!
-//                        if (room.residents.containsKey(firebaseUser.uid)) {
-//                            if (room.residents[firebaseUser.uid] == Constants.added) {
-//                                myRooms[room.uid] = room
-//                            }
-//                        }
-//                    }
-//                    getMyPayments()
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                }
-//
-//            })
     }
 
     private fun getMyPayments() {
@@ -203,34 +190,6 @@ class FragmentWallet : Fragment() {
 
 
 
-//        databaseReference.child(Constants.payments)
-//            .addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    for (room in snapshot.children) {
-//                        if (myRooms.containsKey(room.key)) {
-//                            val key = room.key!!
-//                            for (payment in room.children) {
-//                                val p = payment.getValue<Payment>()!!
-//                                if (p.from == firebaseUser.uid) {
-//                                    val hash = HashMap<String, Payment>()
-//                                    hash[p.payment_uid] = p
-//                                    roomPayments[key] = hash
-//                                    payments.add(p)
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if (isAdded) {
-//                        graphFilterPeriod()
-//                    }
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                }
-//
-//            })
-
-
     }
 
     private fun graphFilterPeriod() {
@@ -239,7 +198,7 @@ class FragmentWallet : Fragment() {
         val currentYear = GetCurrentDate().year().toInt()
         var pastTime: Long = 0
 
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.set(Calendar.HOUR, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
@@ -293,9 +252,6 @@ class FragmentWallet : Fragment() {
             binding.categoryChartCard.visibility = View.VISIBLE
             binding.totalChartCard.visibility = View.VISIBLE
             binding.timeChartCard.visibility = View.VISIBLE
-
-//            totalRoomsChart.visibility = View.VISIBLE
-//            categoryChart.visibility = View.VISIBLE
 
             createCategoryChart(filteredPayments)
             createTotalRoomsChart(filteredPayments)
@@ -372,17 +328,18 @@ class FragmentWallet : Fragment() {
             }
         }
 
+        val amountsByRoomName = HashMap<String, Float>()
+
         // replace keys with names for the chart
         for (entry in amountsByRoom) {
             val roomKey = entry.key
             val roomValue = entry.value
             val roomName = myRooms[roomKey]!!.name
-            amountsByRoom.remove(roomKey)
-            amountsByRoom[roomName] = roomValue
+            amountsByRoomName[roomName] = roomValue
         }
 
-        val sortedCategories = amountsByRoom.toSortedMap()
-        val categories = ArrayList(amountsByRoom.keys)
+        val sortedCategories = amountsByRoomName.toSortedMap()
+        val categories = ArrayList(amountsByRoomName.keys)
 
         var i = 0
         val barEntries = arrayListOf<BarEntry>()
@@ -425,7 +382,7 @@ class FragmentWallet : Fragment() {
 
         for (payment in payments) {
             val timestamp = payment.timestamp.toLong()
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance(TimeZone.getDefault())
             calendar.timeInMillis = timestamp
             val day = calendar.get(Calendar.DAY_OF_MONTH)
             var period = ""

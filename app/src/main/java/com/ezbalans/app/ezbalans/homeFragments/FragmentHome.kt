@@ -3,6 +3,7 @@ package com.ezbalans.app.ezbalans.homeFragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.Constants
+import com.ezbalans.app.ezbalans.HomeActivity
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
@@ -69,14 +71,17 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
 
         binding.image.setOnClickListener {
             val intent = Intent(context, Profile::class.java)
             startActivity(intent)
         }
 
+
         getPrefs()
+
+
+
 
     }
 
@@ -84,6 +89,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     fun onNotificationUpdate(event: NotificationsEvent){
         getPrefs()
     }
+
 
     private fun getPrefs() {
         users.clear()
@@ -98,6 +104,9 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
         }
 
         users = GetPrefs().getAllUsers()
+        val myUser = users[firebaseUser.uid]!!
+        Picasso.get().load(myUser.image).into(binding.image)
+
 
         val getNotifications = GetPrefs().getNotifications()
         for (notification in getNotifications.values){

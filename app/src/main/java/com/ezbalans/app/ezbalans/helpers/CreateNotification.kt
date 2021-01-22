@@ -8,7 +8,7 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class CreateNotification {
-    private val calendar = Calendar.getInstance()
+    private val calendar = Calendar.getInstance(TimeZone.getDefault())
     private val databaseReference = Firebase.database.reference
 
     fun create(room: Room, type: String, source: String, target: String, extra: String){

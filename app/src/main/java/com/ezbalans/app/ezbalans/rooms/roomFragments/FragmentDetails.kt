@@ -14,6 +14,7 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomDetailsBinding
+import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -30,10 +31,15 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.lang.StringBuilder
+import java.math.RoundingMode
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 class FragmentDetails: Fragment(){
@@ -60,6 +66,17 @@ class FragmentDetails: Fragment(){
     var currencySymbol = ""
     var room = Room()
     var totalAmount = 0
+
+    override fun onStart() {
+        super.onStart()
+
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -90,18 +107,6 @@ class FragmentDetails: Fragment(){
         currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
         loadRoomUsers()
 
-//        databaseReference.child(Constants.rooms).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                room = snapshot.getValue<Room>()!!
-//                currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
-//
-//                loadRoomUsers()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
     }
 
     private fun loadRoomUsers(){
@@ -114,21 +119,11 @@ class FragmentDetails: Fragment(){
             usersList[user.uid]= user
         }
         loadPayments()
+    }
 
-//        databaseReference.child(Constants.users).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (room_user_uid in room.residents.keys) {
-//                    val user = snapshot.child(room_user_uid).getValue<User>()!!
-//                    users.add(user)
-//                    usersList[user.uid] = user
-//                }
-//                loadPayments()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
+    @Subscribe
+    fun onPaymentsUpdate(event: PaymentsEvent){
+        loadPayments()
     }
 
     private fun loadPayments(){
@@ -153,41 +148,10 @@ class FragmentDetails: Fragment(){
         else {
             binding.emptyItem.visibility = View.VISIBLE
         }
-
-//        databaseReference.child(Constants.payments).child(room.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (payment in snapshot.children) {
-//                    val p = payment.getValue<Payment>()!!
-//                    if (p.status == Constants.payment_valid && paymentFromThisMonth(p)) {
-//                        payments.add(p)
-//                        totalAmount += p.amount.toInt()
-//                    }
-//                }
-//
-//                // prevent crash if moving to another fragment
-//                // while still loading data
-//                if (isAdded) {
-//                    if (payments.isNotEmpty()){
-//                        payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-//                        createTotalExpensesChart()
-//                        createCategoryChart()
-//                        createBalanceChart()
-//                    }
-//                    else {
-//                        binding.emptyItem.visibility = View.VISIBLE
-//                    }
-//
-//                }
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
     }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         val thisMonth = calendar.get(Calendar.MONTH) + 1
         val thisYear = calendar.get(Calendar.YEAR)
         calendar.timeInMillis = payment.timestamp.toLong()
@@ -202,7 +166,7 @@ class FragmentDetails: Fragment(){
     private fun createTotalExpensesChart(){
         val paymentsData = HashMap<Float, Float>()
         var totalAmount = 0f
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         val maxDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH).toFloat()
 
         binding.totalTitle.text = (binding.totalTitle.text.toString() + " ($currencySymbol)")
@@ -334,7 +298,7 @@ class FragmentDetails: Fragment(){
         val users = arrayListOf<String>()
         val usersExpenses = HashMap<String, Float>()
 
-        binding.balanceTitle.text = (binding.balanceTitle.text.toString() + "($currencySymbol)")
+        binding.balanceTitle.text = (binding.balanceTitle.text.toString() + " ($currencySymbol)")
 
 
         // collect payments per type
@@ -398,58 +362,87 @@ class FragmentDetails: Fragment(){
         val currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
         val topPayers = arrayListOf<String>()
-        var maxAmount = 0f
         var myAmount = 0f
         if (userExpenses.containsKey(firebaseUser.uid)){
             myAmount = userExpenses[firebaseUser.uid]!!
         }
+
+        // calculate number of payers
+        var numberOfPayers = 0
+        for (resident in room.residents){
+            if (resident.value == Constants.added){
+                numberOfPayers +=1
+            }
+        }
+
+
         // check who are the top payers
-        // and what is the highest amount payed
+        // who paid more than the total equal split
+        val splitAmount = (totalAmount/numberOfPayers).toFloat()
         for (payer in userExpenses){
             val uid = payer.key
             val amount = payer.value
-
-            if (maxAmount == 0f || amount > maxAmount){
-                maxAmount = amount
-                topPayers.clear()
-                topPayers.add(uid)
-
-            }
-            else if (amount == maxAmount) {
+            if (amount > splitAmount){
                 topPayers.add(uid)
             }
         }
 
         // check if someone owes me
         if (topPayers.contains(firebaseUser.uid)){
-            val stringBuilder = StringBuilder()
-            for (resident in usersList.values){
-                if (!topPayers.contains(resident.uid)){
-                    val residentName = resident.username
-                    val residentExpenses = if (userExpenses.containsKey(resident.uid)) userExpenses[resident.uid]!! else 0f
-                    val payerDebt = ((totalAmount/room.residents.size)-(residentExpenses))/topPayers.size
+                val stringBuilder = StringBuilder()
 
-                    val string = String.format(getString(R.string.owes_you), residentName, payerDebt, currencySymbol)
-                    stringBuilder.append(string)
+                var totalExtra = 0f
+                val myExtra = userExpenses[firebaseUser.uid]!! - splitAmount
+                totalExtra += myExtra
+                for (topPayer in topPayers){
+                    if (topPayer != firebaseUser.uid){
+                         totalExtra += userExpenses[topPayer]!! - splitAmount
+                    }
                 }
-            }
+                val myPercentage = (myExtra/totalExtra).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                for (payer in userExpenses.keys){
+                    if (userExpenses[payer]!! < splitAmount){
+                        val payerName = usersList[payer]!!.username
+                        val payerDebt = (splitAmount - userExpenses[payer]!!).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                        val payerDebtRelative = (payerDebt * myPercentage).setScale(0, RoundingMode.HALF_EVEN)
+                        Log.d("TAG", "getSettled: $payerName // $payerDebt // $payerDebtRelative //$splitAmount")
 
-            debt.text = stringBuilder
+                        val string = String.format(getString(R.string.owes_you), payerName, payerDebtRelative, currencySymbol+"\n")
+                        stringBuilder.append(string)
+
+                    }
+
+                }
+                debt.text = stringBuilder
+
         }
         // check who i owe to
         else {
-
-            val averageAmount = totalAmount/(room.residents.size)
-            val myDebt = averageAmount - myAmount
+            val myDebt = (splitAmount - myAmount).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
             if (topPayers.size == 1){
                 val topPayerName = usersList[topPayers[0]]!!.username
                 debt.text = String.format(getString(R.string.your_owe), topPayerName, myDebt, currencySymbol)
             }
             else {
-                val debtSplit = myDebt/topPayers.size
+                var totalExtra = 0f
+                val topPayersExtra = hashMapOf<String, Float>()
                 val stringBuilder = StringBuilder()
+
                 for (topPayer in topPayers){
-                    stringBuilder.append(String.format(getString(R.string.your_owe), topPayer, debtSplit, currencySymbol))
+                    val extraAmount = (userExpenses[topPayer]!!-splitAmount)
+                    totalExtra += extraAmount
+                    topPayersExtra[topPayer] = extraAmount
+                }
+
+                for (topPayer in topPayersExtra.keys){
+                    val payerName = usersList[topPayer]!!.username
+                    val percentage = ((topPayersExtra[topPayer]!!) / totalExtra).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                    val myDebtToPayer = (myDebt * percentage).setScale(0, RoundingMode.HALF_EVEN)
+
+                    stringBuilder.append(String.format(getString(R.string.your_owe), payerName, myDebtToPayer, currencySymbol+"\n"))
+
+                    Log.d("TAG", "getSettled: $payerName // $percentage //")
+
                 }
                 debt.text = stringBuilder
             }

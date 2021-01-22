@@ -4,6 +4,7 @@ package com.ezbalans.app.ezbalans
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ezbalans.app.ezbalans.homeFragments.*
@@ -13,7 +14,6 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewMainframeBinding
 import com.ezbalans.app.ezbalans.eventBus.*
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -109,10 +109,10 @@ class HomeActivity : AppCompatActivity() {
                 finish()
             }
 
-        } else {
+        }
+        else {
             setFragment(fragmentHome, Constants.home_tag)
         }
-
 
         binding.bottomBar.onItemSelected = {
             when (it) {
@@ -131,13 +131,6 @@ class HomeActivity : AppCompatActivity() {
 
             }
         }
-
-        Firebase.auth.addAuthStateListener(object : FirebaseAuth.AuthStateListener {
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
-
-            }
-
-        })
 
     }
 
@@ -173,7 +166,10 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    private fun setFragment(fragment: Fragment, tag: String) {
+
+
+
+    fun setFragment(fragment: Fragment, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.mainframe, fragment, tag);
         fragmentTransaction.commit();
@@ -204,12 +200,13 @@ class HomeActivity : AppCompatActivity() {
         // GET ALL USERS
         databaseReference.child(Constants.users).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                users.clear()
                 for (entry in snapshot.children) {
                     val user = entry.getValue<User>()!!
                     users[user.uid] = user
 
                 }
-                PowerPreference.getDefaultFile().putObject(Constants.users, users)
+                PowerPreference.getDefaultFile().setObject(Constants.users, users)
                 EventBus.getDefault().post(UsersEvent())
             }
 
@@ -220,15 +217,14 @@ class HomeActivity : AppCompatActivity() {
 
 
         // GET MY NOTIFICATIONS
-        databaseReference.child(Constants.notifications).child(firebaseUser.uid)
-            .addValueEventListener(object : ValueEventListener {
+        databaseReference.child(Constants.notifications).child(firebaseUser.uid).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    notifications.clear()
                     for (entry in snapshot.children) {
                         val notification = entry.getValue<Notification>()!!
                         notifications[notification.uid] = notification
                     }
-                    PowerPreference.getDefaultFile()
-                        .putObject(Constants.notifications, notifications)
+                    PowerPreference.getDefaultFile().setObject(Constants.notifications, notifications)
                     EventBus.getDefault().post(NotificationsEvent())
                 }
 
@@ -240,6 +236,8 @@ class HomeActivity : AppCompatActivity() {
         // GET ALL ROOMS,  MY ROOMS & SHOPPING LISTS
         databaseReference.child(Constants.rooms).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                rooms.clear()
+                myRooms.clear()
                 for (entry in snapshot.children) {
                     val room = entry.getValue<Room>()!!
                     rooms[room.uid] = room
@@ -247,8 +245,8 @@ class HomeActivity : AppCompatActivity() {
                         myRooms[room.uid] = room
                     }
                 }
-                PowerPreference.getDefaultFile().putObject(Constants.rooms, rooms)
-                PowerPreference.getDefaultFile().putObject(Constants.my_rooms, rooms)
+                PowerPreference.getDefaultFile().setObject(Constants.rooms, rooms)
+                PowerPreference.getDefaultFile().setObject(Constants.my_rooms, myRooms)
                 EventBus.getDefault().post(RoomsEvent())
             }
 
@@ -259,11 +257,11 @@ class HomeActivity : AppCompatActivity() {
 
 
         // GET ROOMS PAYMENTS & MY PAYMENTS
-        databaseReference.child(Constants.payments).addValueEventListener(object :
-            ValueEventListener {
+        databaseReference.child(Constants.payments).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                payments.clear()
+                myPayments.clear()
                 for (entry in snapshot.children) {
-
 //                        val roomUid = entry.key
                     entry.children.forEach {
                         val payment = it.getValue<Payment>()!!
@@ -273,8 +271,8 @@ class HomeActivity : AppCompatActivity() {
                         }
                     }
                 }
-                PowerPreference.getDefaultFile().putObject(Constants.payments, payments)
-                PowerPreference.getDefaultFile().putObject(Constants.my_payments, myPayments)
+                PowerPreference.getDefaultFile().setObject(Constants.payments, payments)
+                PowerPreference.getDefaultFile().setObject(Constants.my_payments, myPayments)
                 EventBus.getDefault().post(PaymentsEvent())
             }
 
@@ -288,10 +286,11 @@ class HomeActivity : AppCompatActivity() {
             databaseReference.child(Constants.budgets).child(firebaseUser.uid)
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        myBudgets.clear()
                         for (data in snapshot.children) {
                             myBudgets[data.key!!] = data.getValue<Int>()!!
                         }
-                        PowerPreference.getDefaultFile().putObject(Constants.budgets, myBudgets)
+                        PowerPreference.getDefaultFile().setObject(Constants.budgets, myBudgets)
                         EventBus.getDefault().post(BudgetsEvent())
                     }
 
@@ -304,14 +303,14 @@ class HomeActivity : AppCompatActivity() {
         databaseReference.child(Constants.shopping_lists)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    shoppingLists.clear()
                     for (data in snapshot.children) {
                         val key = data.key!!
                         val value = data.getValue<HashMap<String, Boolean>>()!!
                         shoppingLists[key] = value
 
                     }
-                    PowerPreference.getDefaultFile()
-                        .putObject(Constants.shopping_lists, shoppingLists)
+                    PowerPreference.getDefaultFile().setObject(Constants.shopping_lists, shoppingLists)
                     EventBus.getDefault().post(ShoppingListsEvent())
 
                 }

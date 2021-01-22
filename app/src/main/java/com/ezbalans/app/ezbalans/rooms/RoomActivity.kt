@@ -84,7 +84,6 @@ class RoomActivity: AppCompatActivity(){
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ViewRoomBinding.inflate(layoutInflater)
@@ -162,18 +161,7 @@ class RoomActivity: AppCompatActivity(){
         for (user in usersPref.values){
             userList.add(user)
         }
-//
-//        databaseReference.child(Constants.users).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (users in snapshot.children) {
-//                    val user = users.getValue(User::class.java)!!
-//                    if (user.uid != firebaseUser.uid) {
-//                        userList.add(user)
-//                    }
-//                }
-//            }
-//            override fun onCancelled(error: DatabaseError) {}
-//        })
+
     }
 
     private fun getRoom(){
@@ -185,21 +173,6 @@ class RoomActivity: AppCompatActivity(){
 
         loadRoom()
 
-//        databaseReference.child(Constants.rooms).child(roomUID.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                room = snapshot.getValue<Room>()!!
-//                loadRoom()
-//
-//                if (room.admins[firebaseUser.uid] == true){
-//                    admin = true
-//                }
-//
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
     }
 
     private fun loadRoom(){

@@ -2,7 +2,6 @@ package com.ezbalans.app.ezbalans
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build.VERSION_CODES.N
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -190,25 +189,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun moveToApp(firebaseUser: FirebaseUser?) {
-        Log.d("TAG", "moveToApp: $counter")
         if (counter == numberOfMethods){
             PowerPreference.getDefaultFile().setInt(Constants.main_activity_count, 0)
             PowerPreference.getDefaultFile().setInt(Constants.room_activity_count, 0)
+            when {
+                PowerPreference.getDefaultFile().getBoolean(Constants.first_time, true) -> {
+                    val intent = Intent(this, AppIntro::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
 
-            // go to home activity
-            if (firebaseUser != null){
-                val intent = Intent(this, HomeActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
+                // go to home activity
+                firebaseUser != null -> {
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
 
-            // go to signin activity
-            else {
-                val intent = Intent(this, WelcomeActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
+                // go to signin activity
+                else -> {
+                    val intent = Intent(this, WelcomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
     }

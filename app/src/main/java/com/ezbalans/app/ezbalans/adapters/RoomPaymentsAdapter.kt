@@ -58,8 +58,6 @@ class RoomPaymentsAdapter (private val context: Context,
         val payment = payments[position]
         val user = getUser(payment.from)
         val currencySymbol = if (currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
-        Log.d("TAG", "onBindViewHolder: $currencySymbol")
-
 
         if (user.image.isNotEmpty()){
             Picasso.get().load(user.image).into(holder.image)
@@ -96,7 +94,7 @@ class RoomPaymentsAdapter (private val context: Context,
 
     private fun getPaymentDate(timestamp: String): String{
         val timeStamp = timestamp.toLong()
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.timeInMillis = timeStamp
 
         return (calendar.get(Calendar.DAY_OF_MONTH)).toString()

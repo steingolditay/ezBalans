@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
 import com.ezbalans.app.ezbalans.Constants
+import com.ezbalans.app.ezbalans.HomeActivity
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
@@ -23,8 +24,8 @@ import com.ezbalans.app.ezbalans.rooms.CreateRoom
 import com.ezbalans.app.ezbalans.rooms.RoomActivity
 import com.ezbalans.app.ezbalans.rooms.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
+import com.ezbalans.app.ezbalans.eventBus.BudgetsEvent
 import com.ezbalans.app.ezbalans.eventBus.RoomsEvent
-import com.ezbalans.app.ezbalans.eventBus.UsersEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -34,8 +35,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import kotlin.math.log
 
 
 class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
@@ -48,6 +49,17 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     val myRoomsKeys = arrayListOf<String>()
 
     private lateinit var adapter: MyRoomsAdapter
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)
@@ -63,9 +75,11 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             jointFromDeepLink(roomUid)
         }
         else {
-            // regular loading
             getMyRooms()
+
         }
+
+
 
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
         if (lang == Constants.language_hebrew){
@@ -131,7 +145,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun joinRoomDialog(){
-
         val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_join_room).create()
         val identityKey = dialog.findViewById<TextView>(R.id.identity)
         val sendRequest = dialog.findViewById<Button>(R.id.send_request)
@@ -183,6 +196,11 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     @Subscribe
     fun onRoomsUpdate(event: RoomsEvent) {
+        getMyRooms()
+    }
+
+    @Subscribe
+    fun onBudgetsUpdate(event: BudgetsEvent){
         getMyRooms()
     }
 

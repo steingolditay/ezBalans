@@ -146,7 +146,7 @@
     <string name="resident_removed_body">%1$s decided to remove you from %2$s</string>
     <string name="resident_removed_body_2">%1$s decided to remove %2$s from the room. Remember, admins can always re-invite %3$s back.</string>
     <string name="room_info_changed">Room Info Changed</string>
-    <string name="payment_validation">Payment Validation</string>
+    <string name="payment_validation">Validate Payment</string>
     <string name="payment_declined">Payment Declined</string>
     <string name="room_closed">Room Closed</string>
     <string name="you_closed_room">You closed %1$s. The room is no longer available.</string>
@@ -162,7 +162,7 @@
     <string name="new_motd_plus">%1$s shared a new message: %2$s.</string>
     <string name="join_request">Join Request</string>
     <string name="your_owe">You owe %1$s %2$s%3$s</string>
-    <string name="owes_you"> %1$s owes yoy %2$s%3$s</string>
+    <string name="owes_you"> %1$s owes you %2$s%3$s</string>
     <string name="identity_key_copied">Identity Key copied to clipboard</string>
     <string name="email_updated">Email address successfully updated</string>
     <string name="email_in_use">Email address already in use</string>
@@ -217,8 +217,18 @@
     <string name="registering">Registering new user</string>
     <string name="logging_in">Logging in</string>
 
-
-
+    <string name="intro_welcome">Welcome to ezBalans</string>
+    <string name="intro_welcome_body">This is just a quick intro to get you started.</string>
+    <string name="intro_home">First, There is the home screen</string>
+    <string name="intro_home_body">Here you can access your profile area and stay updated with notifications.</string>
+    <string name="intro_rooms">Then, There is the rooms space</string>
+    <string name="intro_rooms_body">Here you will view, create and join your rooms.</string>
+    <string name="intro_room">A room represent one shared space</string>
+    <string name="intro_room_body">Rooms lets you keep track of every resident expenses with ease.</string>
+    <string name="intro_budgets">And of course, you can see some data analysis</string>
+    <string name="intro_budgets_body">That way you can make informative decisions with your money and know your habits.</string>
+    <string name="intro_goodbye">You can do a lot of other things</string>
+    <string name="intro_goodbye_body">Like managing a shopping list, view your expenses history, get insights, settle debts and many more…Enjoy!</string>
 
     <string-array name="room_types">
         <item>Family</item>

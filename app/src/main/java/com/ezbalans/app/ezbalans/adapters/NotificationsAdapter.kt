@@ -112,6 +112,8 @@ class NotificationsAdapter(private val context: Context,
 
             Constants.notify_room_info_changed -> {
                 val admin = users[notification.source_uid]!!
+//                val name = if (admin.uid == firebaseUser.uid) "You" else admin.username
+
                 Picasso.get().load(room.image).into(holder.image)
                 holder.title.text = room.name
                 holder.message.text = String.format(context.getString(R.string.changed_the_room_info), admin.username)

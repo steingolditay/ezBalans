@@ -16,6 +16,7 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewCreateRoomBinding
 import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
+import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.DataSnapshot
@@ -24,6 +25,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickListener {
     private lateinit var binding: ViewShoppingListBinding
@@ -36,6 +39,16 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
     var items = arrayListOf<String>()
     lateinit var adapter: ShoppingListItemsAdapter
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,17 +79,12 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
         val roomPref = GetPrefs().getAllRooms()
         room = roomPref[roomUid]!!
         binding.name.text = room.name
-//
-//        databaseReference.child(Constants.rooms).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                room = snapshot.getValue<Room>()!!
-//                val roomName = findViewById<TextView>(R.id.name)
-//                roomName.text = room.name
-//
-//            }
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
+
+    }
+
+    @Subscribe
+    fun onPaymentsUpdate(event: PaymentsEvent){
+        getShoppingList()
     }
 
     private fun getShoppingList(){
@@ -92,23 +100,6 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
         }
 
         initAdapter()
-
-//        databaseReference.child(Constants.shopping_lists).child(shoppingListUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (item in snapshot.children) {
-//                    val key = item.key.toString()
-//                    val value = item.getValue<Boolean>()!!
-//                    val itemMap = HashMap<String, Boolean>()
-//                    itemMap[key] = value
-//                    shoppingList.add(itemMap)
-//                    items.add(key)
-//                }
-//                initAdapter()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
     }
 
     private fun initAdapter(){

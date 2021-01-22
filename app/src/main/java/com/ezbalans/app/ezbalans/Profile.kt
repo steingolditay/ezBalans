@@ -52,7 +52,7 @@ class Profile: AppCompatActivity() {
         setContentView(view)
 
 
-        Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
+//        Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
 
         languageSelector()
         loadMyData()
@@ -265,6 +265,9 @@ class Profile: AppCompatActivity() {
 
     private fun loadMyData(){
         val usersPref = GetPrefs().getAllUsers()
+        val myUser= usersPref[firebaseUser.uid]!!
+        Picasso.get().load(myUser.image).into(binding.image)
+
         user = usersPref[firebaseUser.uid]!!
 
         binding.name.text = "${user.first_name} ${user.last_name}"

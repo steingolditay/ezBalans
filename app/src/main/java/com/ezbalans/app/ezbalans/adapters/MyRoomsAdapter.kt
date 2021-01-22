@@ -183,7 +183,7 @@ class MyRoomsAdapter(private val context: Context, private val rooms: ArrayList<
     }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         val thisMonth = calendar.get(Calendar.MONTH) + 1
         val thisYear = calendar.get(Calendar.YEAR)
         calendar.timeInMillis = payment.timestamp.toLong()
