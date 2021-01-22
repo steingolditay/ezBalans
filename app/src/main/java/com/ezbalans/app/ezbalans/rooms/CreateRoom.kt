@@ -49,7 +49,6 @@ class CreateRoom: AppCompatActivity(){
 
         getUsers()
 
-//        val roomCurrencies = resources.getStringArray(R.array.room_currencies).toList()
         binding.roomCurrencySpinner.setItems(resources.getStringArray(R.array.room_currencies).toList())
         binding.roomCurrencySpinner.setOnSpinnerItemSelectedListener<String>(){position, _ ->
             roomCurrency = Constants.room_currencies[position]
@@ -108,17 +107,6 @@ class CreateRoom: AppCompatActivity(){
         }
 
 
-//            databaseReference.child(Constants.users).addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    for (users in snapshot.children) {
-//                        val user = users.getValue(User::class.java)!!
-//                        if (user.uid != firebaseUser?.uid) {
-//                            userList.add(user)
-//                        }
-//                    }
-//                }
-//                override fun onCancelled(error: DatabaseError) {}
-//            })
     }
 
     private fun findUser(){

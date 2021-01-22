@@ -22,9 +22,6 @@ class CreateNotification {
         when (type){
             //DONE
             Constants.notify_user_joined -> {
-                // source:  the admin which added or approved the user;
-                // target:  the user which is added or approved
-                // extra:   ""
                 val posts = hashMapOf<String, Any>()
                 posts["$target/$uid"] = notification
 

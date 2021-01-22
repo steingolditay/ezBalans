@@ -140,46 +140,6 @@ class MyRoomsAdapter(private val context: Context, private val rooms: ArrayList<
                 holder.budget.setTextColor(context.resources.getColor(R.color.colorPrimary, context.resources.newTheme()))
             }
         }
-
-
-
-//        databaseReference.child(Constants.payments).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (payment in snapshot.children) {
-//                    val p = payment.getValue<Payment>()!!
-//                    if (p.status == Constants.payment_valid && paymentFromThisMonth(p)) {
-//                        totalAmount += p.amount.toInt()
-//                    }
-//                }
-//
-//                databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(roomUid).addListenerForSingleValueEvent(object : ValueEventListener{
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//                        if (snapshot.exists()){
-//                            budget = snapshot.getValue<Int>()!!
-//                        }
-//
-//                        holder.budget.text = "$totalAmount/$budget$currency"
-//
-//                        when {
-//                            budget == 0 || totalAmount < budget -> {
-//                                holder.budget.setTextColor(context.resources.getColor(R.color.colorGreen, context.resources.newTheme()))
-//                            }
-//                            else -> {
-//                                holder.budget.setTextColor(context.resources.getColor(R.color.colorPrimary, context.resources.newTheme()))
-//                            }
-//                        }
-//                    }
-//
-//                    override fun onCancelled(error: DatabaseError) {
-//                    }
-//
-//                })
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//
-//            }
-//        })
     }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{

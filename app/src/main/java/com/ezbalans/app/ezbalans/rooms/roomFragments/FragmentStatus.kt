@@ -125,7 +125,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     @Subscribe
     fun onPaymentsUpdate(event: PaymentsEvent){
-        Log.d("TAG", "onPaymentsUpdate: fragment status" )
         loadPayments()
     }
 
@@ -134,7 +133,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         totalAmount = 0
 
         val paymentPref = GetPrefs().getAllPayments()
-        Log.d("TAG", "loadPayments: ${paymentPref.size}")
         for (p in paymentPref.values){
             if (p.to == room.uid && p.status == Constants.payment_valid && paymentFromThisMonth(p)){
                 payments.add(p)
@@ -301,9 +299,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             deletePayment.visibility = View.VISIBLE
             deletePayment.setOnClickListener {
                 databaseReference.child(Constants.payments).child(room.uid).child(payment.payment_uid).removeValue().addOnSuccessListener {
-//                    payments.removeAt(position);
-//                    adapter.notifyItemRemoved(position);
-//                    adapter.notifyItemRangeChanged(position, payments.size)
+
 
                     dialog.dismiss()
                     Toast.makeText(context, getString(R.string.payment_deleted), Toast.LENGTH_SHORT).show()

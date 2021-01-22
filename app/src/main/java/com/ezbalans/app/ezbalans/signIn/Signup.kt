@@ -91,7 +91,6 @@ class Signup : AppCompatActivity() {
                 }
                 else -> {
                     Toast.makeText(this, getText(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
-                    Log.d("TAG", "registerUser: ${task.result}")
                 }
             }
         }

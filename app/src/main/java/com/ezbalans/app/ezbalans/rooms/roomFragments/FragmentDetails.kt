@@ -350,8 +350,6 @@ class FragmentDetails: Fragment(){
         }
 
         if (room.residents.size > 1 && usersExpenses.isNotEmpty()){
-            Log.d("TAG", "createBalanceChart: get settled")
-
             getSettled(usersExpenses)
 
         }
@@ -405,7 +403,6 @@ class FragmentDetails: Fragment(){
                         val payerName = usersList[payer]!!.username
                         val payerDebt = (splitAmount - userExpenses[payer]!!).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
                         val payerDebtRelative = (payerDebt * myPercentage).setScale(0, RoundingMode.HALF_EVEN)
-                        Log.d("TAG", "getSettled: $payerName // $payerDebt // $payerDebtRelative //$splitAmount")
 
                         val string = String.format(getString(R.string.owes_you), payerName, payerDebtRelative, currencySymbol+"\n")
                         stringBuilder.append(string)
@@ -441,7 +438,6 @@ class FragmentDetails: Fragment(){
 
                     stringBuilder.append(String.format(getString(R.string.your_owe), payerName, myDebtToPayer, currencySymbol+"\n"))
 
-                    Log.d("TAG", "getSettled: $payerName // $percentage //")
 
                 }
                 debt.text = stringBuilder
