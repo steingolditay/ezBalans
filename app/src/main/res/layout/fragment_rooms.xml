@@ -6,6 +6,35 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notification"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/notification"
+        android:layout_margin="10dp"
+        android:padding="4dp"
+        app:civ_border_color="@color/colorBackground"
+        app:civ_border_width="2dp"
+        android:elevation="2dp"
+        />
+
+    <TextView
+        android:id="@+id/badge"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintEnd_toEndOf="@id/notification"
+        app:layout_constraintTop_toTopOf="@id/notification"
+        android:background="@drawable/badge"
+        android:elevation="4dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="@color/colorBackground"
+        android:textStyle="bold"
+        />
+
+
     <View
         android:id="@+id/title_background"
         android:layout_width="wrap_content"
@@ -14,6 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/bg_rooms"
+        android:elevation="0dp"
         />
 
     <androidx.cardview.widget.CardView

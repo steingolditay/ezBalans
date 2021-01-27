@@ -44,9 +44,9 @@ class GetPrefs {
     }
 
 
-    fun getAllShoppingLists(): HashMap<String, HashMap<String, Boolean>>{
+    fun getMyShoppingList(): HashMap<String, HashMap<String, Boolean>>{
         val mapStructure = MapStructure.create(HashMap::class.java, String::class.java, HashMap::class.java)
-        return PowerPreference.getDefaultFile().getMap(Constants.my_payments,mapStructure)!!
+        return PowerPreference.getDefaultFile().getMap(Constants.shopping_lists,mapStructure)!!
     }
 
     fun getMyBudgets(): HashMap<String, String> {

@@ -270,7 +270,7 @@
         <item>Vacations</item>
         <item>Other</item>
     </string-array>
-
+    <string name="notifications">Notifications</string>
 
 
 </resources>

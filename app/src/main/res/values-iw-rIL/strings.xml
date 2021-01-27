@@ -228,4 +228,5 @@
     <string name="intro_goodbye">אפשר לעשות עוד הרבה דברים...</string>
     <string name="intro_goodbye_body">כמו לנהל רשימת קניות, לצפות בניסטוריית ההוצאות, לקבל תובנות, ליישב חובות ועוד. אז יאללה!</string>
     <string name="new_motd_plus">%2$s: מסר יומי חדש</string>
+    <string name="notifications">התראות</string>
 </resources>

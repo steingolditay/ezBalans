@@ -1,20 +1,17 @@
-package com.ezbalans.app.ezbalans.homeFragments
+package com.ezbalans.app.ezbalans
 
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
-import com.ezbalans.app.ezbalans.Constants
-import com.ezbalans.app.ezbalans.HomeActivity
+import com.ezbalans.app.ezbalans.databinding.ViewMainframeBinding
+import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
+import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
@@ -23,10 +20,6 @@ import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.Profile
-import com.ezbalans.app.ezbalans.databinding.FragmentHomeBinding
-import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -34,15 +27,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import kotlin.collections.HashMap
 
-
-class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
+    private lateinit var binding: ViewNotificationsBinding
 
     private val databaseReference = Firebase.database.reference
     private val firebaseUser = Firebase.auth.currentUser!!
@@ -52,41 +41,29 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
 
     lateinit var adapter: NotificationsAdapter
 
-    override fun onStart() {
-        super.onStart()
-
-        EventBus.getDefault().register(this)
-    }
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-        binding.image.setOnClickListener {
-            val intent = Intent(context, Profile::class.java)
-            startActivity(intent)
-        }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ViewNotificationsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         getPrefs()
 
+    }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
 
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
 
     }
 
     @Subscribe
-    fun onNotificationUpdate(event: NotificationsEvent){
+    fun onNotificationsUpdate(event: NotificationsEvent) {
         getPrefs()
     }
 
@@ -103,11 +80,6 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
                 rooms[room.uid] = room
         }
 
-        users = GetPrefs().getAllUsers()
-        val myUser = users[firebaseUser.uid]!!
-        Picasso.get().load(myUser.image).into(binding.image)
-
-
         val getNotifications = GetPrefs().getNotifications()
         for (notification in getNotifications.values){
             notifications.add(notification)
@@ -122,11 +94,10 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
         }
     }
 
-
     private fun loadNotifications() {
-        adapter = NotificationsAdapter(requireContext(), notifications, users, rooms, this)
+        adapter = NotificationsAdapter(this, notifications, users, rooms, this)
         binding.list.adapter = adapter
-        binding.list.layoutManager = LinearLayoutManager(context)
+        binding.list.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onItemClick(position: Int) {
@@ -195,7 +166,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showUserJoinedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -218,7 +189,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showUserQuitDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -232,7 +203,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showUserRemovedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -252,7 +223,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showRoomInfoChangedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -266,7 +237,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showPaymentInvalidDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -284,7 +255,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
         val paymentUid = notification.target_uid
 
 
-        databaseReference.child(Constants.payments).child(room.uid).child(paymentUid).addListenerForSingleValueEvent(object : ValueEventListener{
+        databaseReference.child(Constants.payments).child(room.uid).child(paymentUid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val payment = snapshot.getValue<Payment>()!!
                 title.text = getString(R.string.payment_validation)
@@ -305,7 +276,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
                         }
                     }
                     else {
-                        Toast.makeText(requireContext(), getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@Notifications, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
 
 
@@ -319,7 +290,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
                         }
                     }
                     else {
-                        Toast.makeText(requireContext(), getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@Notifications, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -336,7 +307,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showPaymentValidatedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -355,7 +326,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showPaymentDeclinedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -375,7 +346,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showRoomClosedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -396,7 +367,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showAdminDemotedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -416,7 +387,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showAdminPromotedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -436,7 +407,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showMOTDChangedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -450,7 +421,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
     }
 
     private fun showUserRequestedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_notification_actionable).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val positive = dialog.findViewById<Button>(R.id.positive)
@@ -469,7 +440,7 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
                 databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.requested).addOnSuccessListener {
                     CreateNotification().create(room, Constants.notify_user_joined, firebaseUser.uid, user.uid, "")
                     dialog.dismiss()
-                    Toast.makeText(requireContext(),getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -478,4 +449,6 @@ class FragmentHome : Fragment(), NotificationsAdapter.OnItemClickListener {
         dialog.show()
     }
 }
+
+
 

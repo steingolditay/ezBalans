@@ -87,7 +87,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         binding.monthTitle.text = String.format("%s %s", GetCurrentDate().monthName(), GetCurrentDate().year())
 
         binding.fab.setOnClickListener{
-            addPaymentDialog()
+                addPaymentDialog()
         }
 
         val roomUid = arguments?.getString(Constants.room_uid)!!
@@ -201,7 +201,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 dayInput.isEmpty() -> {
                     day.error = getString(R.string.day_of_month_required)
                 }
-                (dayInput.toInt()) > maximumDays -> {
+                ((dayInput.toInt()) > maximumDays) || dayInput.toInt() == 0 -> {
                     day.error = getString(R.string.invalid_day_of_month)
                 }
                 paymentType.isEmpty() -> {

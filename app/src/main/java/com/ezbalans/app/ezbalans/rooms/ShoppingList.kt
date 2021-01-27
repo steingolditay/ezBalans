@@ -8,22 +8,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ezbalans.app.ezbalans.adapters.ShoppingListItemsAdapter
 import com.ezbalans.app.ezbalans.Constants
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.databinding.ViewCreateRoomBinding
 import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
 import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -90,7 +84,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
     private fun getShoppingList(){
         shoppingList.clear()
 
-        val slPrefs = GetPrefs().getAllShoppingLists()
+        val slPrefs = GetPrefs().getMyShoppingList()
         val sl = slPrefs[shoppingListUid]!!
         for (item in sl){
             val itemMap = HashMap<String, Boolean>()

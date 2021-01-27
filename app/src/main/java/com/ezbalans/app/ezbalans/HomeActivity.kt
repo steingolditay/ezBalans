@@ -29,9 +29,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ViewMainframeBinding
 
     private lateinit var currentFragment: Fragment
-    private lateinit var fragmentHome: FragmentHome
+    private lateinit var fragmentProfile: FragmentProfile
     private lateinit var fragmentRooms: FragmentRooms
     private lateinit var fragmentBudgets: FragmentWallet
+    var fragmentCount = 0
 
     override fun onStart() {
         super.onStart()
@@ -56,8 +57,8 @@ class HomeActivity : AppCompatActivity() {
 
         if (newCount > 1) {
             when (currentFragment) {
-                fragmentHome -> {
-                    updateFragment(fragmentHome)
+                fragmentProfile -> {
+                    updateFragment(fragmentProfile)
                 }
                 fragmentRooms -> {
                     updateFragment(fragmentRooms)
@@ -84,7 +85,7 @@ class HomeActivity : AppCompatActivity() {
         // so it wont interfere with trying deep-link
         if (Firebase.auth.currentUser != null) {
             currentFragment = Fragment()
-            fragmentHome = FragmentHome()
+            fragmentProfile = FragmentProfile()
             fragmentRooms = FragmentRooms()
             fragmentBudgets = FragmentWallet()
         }
@@ -111,22 +112,21 @@ class HomeActivity : AppCompatActivity() {
 
         }
         else {
-            setFragment(fragmentHome, Constants.home_tag)
         }
 
         binding.bottomBar.onItemSelected = {
             when (it) {
                 0 -> {
-                    setFragment(fragmentHome, Constants.home_tag)
-                    currentFragment = fragmentHome
-                }
-                1 -> {
-                    setFragment(fragmentRooms, Constants.rooms_tag);
+                    setFragment(fragmentRooms, Constants.rooms_tag)
                     currentFragment = fragmentRooms
                 }
-                2 -> {
-                    setFragment(fragmentBudgets, Constants.budgets_tag)
+                1 -> {
+                    setFragment(fragmentBudgets, Constants.budgets_tag);
                     currentFragment = fragmentBudgets
+                }
+                2 -> {
+                    setFragment(fragmentProfile, Constants.profile_tag)
+                    currentFragment = fragmentProfile
                 }
 
             }
@@ -167,9 +167,16 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
+    private fun setMainFragment(){
+        if (fragmentCount == 6){
+            setFragment(fragmentRooms, Constants.rooms_tag)
+
+        }
+
+    }
 
 
-    fun setFragment(fragment: Fragment, tag: String) {
+    private fun setFragment(fragment: Fragment, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.mainframe, fragment, tag);
         fragmentTransaction.commit();
@@ -207,6 +214,8 @@ class HomeActivity : AppCompatActivity() {
 
                 }
                 PowerPreference.getDefaultFile().setObject(Constants.users, users)
+                fragmentCount += 1
+                setMainFragment()
                 EventBus.getDefault().post(UsersEvent())
             }
 
@@ -225,6 +234,9 @@ class HomeActivity : AppCompatActivity() {
                         notifications[notification.uid] = notification
                     }
                     PowerPreference.getDefaultFile().setObject(Constants.notifications, notifications)
+                    fragmentCount += 1
+                    setMainFragment()
+
                     EventBus.getDefault().post(NotificationsEvent())
                 }
 
@@ -247,6 +259,9 @@ class HomeActivity : AppCompatActivity() {
                 }
                 PowerPreference.getDefaultFile().setObject(Constants.rooms, rooms)
                 PowerPreference.getDefaultFile().setObject(Constants.my_rooms, myRooms)
+                fragmentCount += 1
+                setMainFragment()
+
                 EventBus.getDefault().post(RoomsEvent())
             }
 
@@ -273,6 +288,9 @@ class HomeActivity : AppCompatActivity() {
                 }
                 PowerPreference.getDefaultFile().setObject(Constants.payments, payments)
                 PowerPreference.getDefaultFile().setObject(Constants.my_payments, myPayments)
+                fragmentCount += 1
+                setMainFragment()
+
                 EventBus.getDefault().post(PaymentsEvent())
             }
 
@@ -291,6 +309,9 @@ class HomeActivity : AppCompatActivity() {
                             myBudgets[data.key!!] = data.getValue<Int>()!!
                         }
                         PowerPreference.getDefaultFile().setObject(Constants.budgets, myBudgets)
+                        fragmentCount += 1
+                        setMainFragment()
+
                         EventBus.getDefault().post(BudgetsEvent())
                     }
 
@@ -311,6 +332,9 @@ class HomeActivity : AppCompatActivity() {
 
                     }
                     PowerPreference.getDefaultFile().setObject(Constants.shopping_lists, shoppingLists)
+                    fragmentCount += 1
+                    setMainFragment()
+
                     EventBus.getDefault().post(ShoppingListsEvent())
 
                 }
@@ -321,8 +345,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (!fragmentHome.isVisible) {
-            setFragment(fragmentHome, Constants.home_tag)
+        if (!fragmentRooms.isVisible) {
+            setFragment(fragmentRooms, Constants.rooms_tag)
             binding.bottomBar.itemActiveIndex = 0
         } else {
             super.onBackPressed()

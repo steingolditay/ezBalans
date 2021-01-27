@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
 import com.ezbalans.app.ezbalans.Constants
 import com.ezbalans.app.ezbalans.HomeActivity
+import com.ezbalans.app.ezbalans.Notifications
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
@@ -27,6 +28,7 @@ import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
 import com.ezbalans.app.ezbalans.eventBus.BudgetsEvent
 import com.ezbalans.app.ezbalans.eventBus.RoomsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
+import com.ezbalans.app.ezbalans.models.Notification
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -76,9 +78,17 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         }
         else {
             getMyRooms()
+            getMyNotifications()
 
         }
-
+        binding.notification.setOnClickListener{
+            val intent = Intent(requireContext(), Notifications::class.java)
+            startActivity(intent)
+        }
+        binding.badge.setOnClickListener{
+            val intent = Intent(requireContext(), Notifications::class.java)
+            startActivity(intent)
+        }
 
 
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
@@ -204,6 +214,25 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         getMyRooms()
     }
 
+    private fun getMyNotifications(){
+        var counter = 0
+        val getNotifications = GetPrefs().getNotifications()
+        for (notification in getNotifications.values){
+            if (!notification.seen){
+                counter +=1
+            }
+        }
+        if (counter > 0){
+            binding.badge.visibility = View.VISIBLE
+            binding.badge.text = counter.toString()
+        }
+        else {
+            binding.badge.visibility = View.GONE
+            binding.badge.text = ""
+        }
+
+    }
+
     private fun getMyRooms(){
         myRooms.clear()
         myRoomsKeys.clear()
@@ -283,18 +312,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
         }
 
-
-
-//        databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).addListenerForSingleValueEvent(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                if (snapshot.exists()){
-//                    currentBudget = snapshot.getValue<Int>()!!
-//                }
-//                budget.setText(currentBudget.toString())
-//            }
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//        })
 
         button.setOnClickListener {
             val newBudget = budget.text.toString().toInt()

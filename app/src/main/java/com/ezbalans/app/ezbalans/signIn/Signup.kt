@@ -118,6 +118,7 @@ class Signup : AppCompatActivity() {
 
                     Firebase.database.reference.child(Constants.users).child(firebaseUser.uid).setValue(user).addOnSuccessListener{
                         Firebase.database.reference.child(Constants.budgets).child(firebaseUser.uid).child(firebaseUser.uid).setValue(0).addOnSuccessListener {
+                            firebaseUser.sendEmailVerification()
                             loadingDialog.dismiss()
                             val intent = Intent(this, HomeActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

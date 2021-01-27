@@ -270,6 +270,7 @@
     <string name="resident_removed_body_2">מנהל החליט להסיר אותך מהחדר. הוא יוכל לצרף אותך מחדש במידה ויחליט.</string>
     <string name="you_demoted_admin">הורדת דייר מתפקיד מנהל</string>
     <string name="new_motd_plus">%2$s: מסר יומי חדש</string>
+    <string name="notifications">התראות</string>
 
 
 </resources>

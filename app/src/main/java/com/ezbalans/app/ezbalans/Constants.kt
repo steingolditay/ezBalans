@@ -83,7 +83,7 @@ object Constants {
 
     // fragment tags
     const val fragmentSelector = "FRAGMENT_SELECTOR"
-    const val home_tag = "HOME_TAG"
+    const val profile_tag = "PROFILE_TAG"
     const val rooms_tag = "ROOMS_TAG"
     const val budgets_tag = "BUDGETS_TAG"
     const val past_tag = "PAST_TAG"

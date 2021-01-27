@@ -19,7 +19,6 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".Profile"/>
         <activity android:name=".rooms.CreateRoom"/>
         <activity android:name=".rooms.ShoppingList"/>
         <activity android:name=".rooms.RoomInfo"/>
@@ -27,6 +26,7 @@
         <activity android:name=".signIn.Login"/>
         <activity android:name=".signIn.Signup"/>
         <activity android:name=".WelcomeActivity"/>
+        <activity android:name=".Notifications"/>
 
         <activity android:name=".HomeActivity">
             <intent-filter>

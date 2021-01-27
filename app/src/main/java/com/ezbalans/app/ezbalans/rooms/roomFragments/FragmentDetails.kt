@@ -218,12 +218,14 @@ class FragmentDetails: Fragment(){
             totalChart.xAxis.axisMaximum = maxDays
             totalChart.axisLeft.setDrawZeroLine(true)
             totalChart.axisLeft.zeroLineColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+            totalChart.xAxis.granularity = 1f
 
             totalChart.description.isEnabled = false
             totalChart.setScaleEnabled(true)
             totalChart.setNoDataText("No expenses to show yet")
             totalChart.setDrawBorders(true)
             totalChart.animateY(1000)
+
 
             totalChart.data = lineData
             totalChart.invalidate()
@@ -286,7 +288,8 @@ class FragmentDetails: Fragment(){
             categoryChart.xAxis.valueFormatter = MyXAxisFormatter(categories)
             categoryChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
             categoryChart.xAxis.setDrawGridLines(false)
-
+            categoryChart.xAxis.granularity = 1f
+            categoryChart.xAxis.labelRotationAngle = 45f
 
             categoryChart.data = barData
 
@@ -360,10 +363,12 @@ class FragmentDetails: Fragment(){
         val currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
         val topPayers = arrayListOf<String>()
-        var myAmount = 0f
-        if (userExpenses.containsKey(firebaseUser.uid)){
-            myAmount = userExpenses[firebaseUser.uid]!!
+        for (resident in room.residents.keys){
+            if (room.residents[resident] == Constants.added && !userExpenses.containsKey(resident))
+                userExpenses[resident] = 0f
         }
+        val myAmount = userExpenses[firebaseUser.uid]!!
+
 
         // calculate number of payers
         var numberOfPayers = 0
@@ -397,11 +402,11 @@ class FragmentDetails: Fragment(){
                          totalExtra += userExpenses[topPayer]!! - splitAmount
                     }
                 }
-                val myPercentage = (myExtra/totalExtra).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                val myPercentage = (myExtra/totalExtra).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
                 for (payer in userExpenses.keys){
                     if (userExpenses[payer]!! < splitAmount){
                         val payerName = usersList[payer]!!.username
-                        val payerDebt = (splitAmount - userExpenses[payer]!!).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                        val payerDebt = (splitAmount - userExpenses[payer]!!).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
                         val payerDebtRelative = (payerDebt * myPercentage).setScale(0, RoundingMode.HALF_EVEN)
 
                         val string = String.format(getString(R.string.owes_you), payerName, payerDebtRelative, currencySymbol+"\n")
@@ -415,7 +420,7 @@ class FragmentDetails: Fragment(){
         }
         // check who i owe to
         else {
-            val myDebt = (splitAmount - myAmount).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+            val myDebt = (splitAmount - myAmount).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
             if (topPayers.size == 1){
                 val topPayerName = usersList[topPayers[0]]!!.username
                 debt.text = String.format(getString(R.string.your_owe), topPayerName, myDebt, currencySymbol)
@@ -433,7 +438,7 @@ class FragmentDetails: Fragment(){
 
                 for (topPayer in topPayersExtra.keys){
                     val payerName = usersList[topPayer]!!.username
-                    val percentage = ((topPayersExtra[topPayer]!!) / totalExtra).toBigDecimal().setScale(4, RoundingMode.HALF_EVEN)
+                    val percentage = ((topPayersExtra[topPayer]!!) / totalExtra).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
                     val myDebtToPayer = (myDebt * percentage).setScale(0, RoundingMode.HALF_EVEN)
 
                     stringBuilder.append(String.format(getString(R.string.your_owe), payerName, myDebtToPayer, currencySymbol+"\n"))
