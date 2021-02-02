@@ -143,6 +143,7 @@
                     android:layout_marginHorizontal="30dp"
                     android:layout_marginTop="10dp"
                     android:textColor="@color/colorPrimary"
+                    android:visibility="gone"
                     />
 
                 <TextView
@@ -274,7 +275,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginHorizontal="30dp"
                     android:layout_marginTop="10dp"
-                    android:text="@string/login"
+                    android:text="@string/login_information"
                     android:textStyle="bold"
                     />
 

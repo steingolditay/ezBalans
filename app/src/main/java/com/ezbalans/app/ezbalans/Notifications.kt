@@ -2,6 +2,7 @@ package com.ezbalans.app.ezbalans
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -12,6 +13,7 @@ import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewMainframeBinding
 import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
 import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
+import com.ezbalans.app.ezbalans.eventBus.UsersEvent
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
@@ -74,6 +76,8 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         rooms.clear()
 
 
+        users = GetPrefs().getAllUsers()
+
         val getRooms = GetPrefs().getAllRooms()
         for (room in getRooms.values){
             if (room.status == Constants.room_active)
@@ -104,12 +108,18 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val notification = notifications[position]
         databaseReference.child(Constants.notifications).child(firebaseUser.uid).child(notification.uid).child(Constants.seen).setValue(true).addOnSuccessListener {
             notification.seen = true
+            EventBus.getDefault().post(NotificationsEvent())
+
             adapter.notifyDataSetChanged()
         }
 
         when (notification.type) {
             Constants.notify_user_joined -> {
                 showUserJoinedDialog(notification)
+            }
+
+            Constants.notify_user_declined -> {
+                showUserDeclinedDialog(notification)
             }
 
             Constants.notify_user_quit -> {
@@ -169,22 +179,54 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
 
         val admin = users[notification.source_uid]!!.username
         val user = users[notification.target_uid]!!.username
         val room = rooms[notification.room_uid]!!.name
+
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
 
 
         if (notification.target_uid == firebaseUser.uid) {
             title.text = getString(R.string.welcome)
             body.text = String.format(getString(R.string.youre_added_to_room), admin, room)
 
+            from.text = String.format(getString(R.string.action_by), admin)
+            to.visibility = View.GONE
+
         }
 
         else {
-            title.text = getString(R.string.new_resident)
+            title.text = getString(R.string.new_resident_in_room)
             body.text = String.format(getString(R.string.added_to_room), admin, user)
+
+            from.text = String.format(getString(R.string.action_by), admin)
+            to.text = String.format(getString(R.string.action_to), user)
         }
+        dialog.show()
+    }
+
+    private fun showUserDeclinedDialog(notification: Notification){
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val title = dialog.findViewById<TextView>(R.id.title)
+        val body = dialog.findViewById<TextView>(R.id.body)
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+
+        val admin = users[notification.source_uid]!!.username
+        val user = users[notification.target_uid]!!.username
+        val room = rooms[notification.room_uid]!!.name
+
+
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
+
+        title.text = getString(R.string.request_declined)
+        body.text = getString(R.string.request_declined_body)
+
         dialog.show()
     }
 
@@ -211,13 +253,15 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.target_uid]!!.username
         val room = rooms[notification.room_uid]!!.name
 
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
+
+
         title.text = getString(R.string.resident_removed)
-        if (notification.target_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.resident_removed_body), admin, room)
-        }
-        else {
-            body.text = String.format(getString(R.string.resident_removed_body_2), admin, user, user)
-        }
+        body.text = getString(R.string.resident_removed_body)
+
 
         dialog.show()
     }
@@ -230,14 +274,19 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val admin = users[notification.source_uid]!!.username
 
         title.text = getString(R.string.room_info_changed)
-        body.text = String.format(getString(R.string.changed_the_room_info), admin)
+        body.text = getString(R.string.change_to_room_info)
+
+        val from = dialog.findViewById<TextView>(R.id.from)
+        from.text = String.format(getString(R.string.action_by), admin)
+
+
 
 
         dialog.show()
     }
 
     private fun showPaymentInvalidDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -315,13 +364,14 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.target_uid]!!.username
 
         title.text = getString(R.string.payment_validation)
-        if (notification.target_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.your_invalid_payment_approved), admin)
-        }
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
 
-        else {
-            body.text = String.format(getString(R.string.invalid_payment_approved), admin, user)
-        }
+
+        body.text = getString(R.string.invalid_payment_approved)
+
         dialog.show()
     }
 
@@ -334,14 +384,13 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.target_uid]!!.username
 
         title.text = getString(R.string.payment_declined)
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
 
-        if (notification.target_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.your_invalid_payment_declined), admin)
-        }
+        body.text = getString(R.string.invalid_payment_declined)
 
-        else {
-            body.text = String.format(getString(R.string.invalid_payment_declined), admin, user)
-        }
         dialog.show()
     }
 
@@ -355,14 +404,11 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
 
         title.text = getString(R.string.room_closed)
 
-        if (notification.room_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.you_closed_room), room.name)
-        }
+        val from = dialog.findViewById<TextView>(R.id.from)
+        from.text = String.format(getString(R.string.action_by), admin)
+        body.text = getString(R.string.room_closed_body)
 
-        else {
-            body.text = String.format(getString(R.string.room_closed_by), admin, room.name)
 
-        }
         dialog.show()
     }
 
@@ -375,14 +421,15 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.target_uid]!!.username
         val room = rooms[notification.room_uid]!!
 
-        title.text = getString(R.string.admin_demoted)
-        if (notification.source_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.you_demoted_admin), user, room.name)
-        }
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
 
-        else {
-            body.text = String.format(getString(R.string.admin_demoted_admin), admin, user, room.name)
-        }
+
+        title.text = getString(R.string.admin_demoted)
+        body.text = getString(R.string.demoted_resident)
+
         dialog.show()
     }
 
@@ -395,14 +442,15 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.target_uid]!!.username
         val room = rooms[notification.room_uid]!!
 
-        title.text = getString(R.string.resident_promoted)
-        if (notification.source_uid == firebaseUser.uid) {
-            body.text = String.format(getString(R.string.you_promoted_resident), user, room.name)
-        }
+        val from = dialog.findViewById<TextView>(R.id.from)
+        val to = dialog.findViewById<TextView>(R.id.to)
+        from.text = String.format(getString(R.string.action_by), admin)
+        to.text = String.format(getString(R.string.action_to), user)
 
-        else {
-            body.text = String.format(getString(R.string.admin_promoted_resident), admin, user)
-        }
+
+        title.text = getString(R.string.resident_promoted)
+        body.text = getString(R.string.promoted_resident)
+
         dialog.show()
     }
 
@@ -414,8 +462,12 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val user = users[notification.source_uid]!!.username
         val message = notification.extra
 
+        val from = dialog.findViewById<TextView>(R.id.from)
+        from.text = String.format(getString(R.string.action_by), user)
+
+
         title.text = getString(R.string.new_room_motd)
-        body.text = String.format(getString(R.string.new_motd_plus), user, message)
+        body.text = message
 
         dialog.show()
     }
@@ -432,19 +484,41 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val room = rooms[notification.room_uid]!!
 
 
+
         title.text = getString(R.string.join_request)
-        body.text = String.format(getString(R.string.request_to_join_room), user)
+        body.text = String.format(getString(R.string.request_to_join_room))
 
-        positive.setOnClickListener {
-            if (room.residents[user.uid] != Constants.added){
-                databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.requested).addOnSuccessListener {
-                    CreateNotification().create(room, Constants.notify_user_joined, firebaseUser.uid, user.uid, "")
-                    dialog.dismiss()
-                    Toast.makeText(this, getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
-                }
+
+        val from = dialog.findViewById<TextView>(R.id.from)
+        from.text = String.format(getString(R.string.action_by), user.username)
+
+
+        if (room.residents[user.uid] == Constants.requested){
+            positive.setOnClickListener {
+                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(user.uid).setValue(Constants.added).addOnSuccessListener {
+                        CreateNotification().create(room, Constants.notify_user_joined, firebaseUser.uid, user.uid, "")
+                        dialog.dismiss()
+                        Toast.makeText(this, getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
+                    }
             }
+            negative.setOnClickListener {
+                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(user.uid).setValue(Constants.declined).addOnSuccessListener {
+                        CreateNotification().create(room, Constants.notify_user_declined, firebaseUser.uid, user.uid, "")
+                        dialog.dismiss()
+                        Toast.makeText(this, getString(R.string.request_declined), Toast.LENGTH_SHORT).show()
+                    }
 
+            }
         }
+        else{
+            positive.alpha = 0.5f
+            negative.alpha = 0.5f
+            positive.isClickable = false
+            negative.isClickable = false
+        }
+
+
+
 
         dialog.show()
     }

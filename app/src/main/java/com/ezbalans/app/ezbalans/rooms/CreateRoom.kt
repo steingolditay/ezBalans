@@ -50,13 +50,13 @@ class CreateRoom: AppCompatActivity(){
         getUsers()
 
         binding.roomCurrencySpinner.setItems(resources.getStringArray(R.array.room_currencies).toList())
-        binding.roomCurrencySpinner.setOnSpinnerItemSelectedListener<String>(){position, _ ->
+        binding.roomCurrencySpinner.setOnSpinnerItemSelectedListener<String>{position, _ ->
             roomCurrency = Constants.room_currencies[position]
         }
 
         val roomTypes = resources.getStringArray(R.array.room_types).toList()
         binding.roomTypeSpinner.setItems(resources.getStringArray(R.array.room_types).toList())
-        binding.roomTypeSpinner.setOnSpinnerItemSelectedListener<String> { position, item ->
+        binding.roomTypeSpinner.setOnSpinnerItemSelectedListener<String>{ position, item ->
             roomType = Constants.room_types[position]
             var categories = arrayListOf<String>()
             when (item){

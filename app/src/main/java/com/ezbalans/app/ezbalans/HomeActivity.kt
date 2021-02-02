@@ -141,7 +141,7 @@ class HomeActivity : AppCompatActivity() {
 
     @Subscribe
     fun onNotificationsUpdate(event: NotificationsEvent) {
-//        Log.d("TAG", "onNotificationsUpdate: HomeActivity")
+        Log.d("TAG", "onNotificationsUpdate: HomeActivity")
     }
 
     @Subscribe

@@ -20,7 +20,6 @@ class CreateNotification {
 
         val notification = Notification(uid, roomUid, type, timestamp, seen, source, target, extra)
         when (type){
-            //DONE
             Constants.notify_user_joined -> {
                 val posts = hashMapOf<String, Any>()
                 posts["$target/$uid"] = notification
@@ -34,7 +33,19 @@ class CreateNotification {
                 databaseReference.child(Constants.notifications).updateChildren(posts)
             }
 
-            //DONE
+            Constants.notify_user_declined -> {
+                val posts = hashMapOf<String, Any>()
+                posts["$target/$uid"] = notification
+
+                for (resident in room.residents){
+                    if (resident.value == Constants.added){
+                        posts["${resident.key}/$uid"] = notification
+                    }
+                }
+
+                databaseReference.child(Constants.notifications).updateChildren(posts)
+            }
+
             Constants.notify_user_quit -> {
                 // source:  the user which quit
                 // target:  ""

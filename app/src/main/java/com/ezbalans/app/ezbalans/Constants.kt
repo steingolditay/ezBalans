@@ -48,6 +48,7 @@ object Constants {
 
     // notifications
     const val notify_user_joined = "user_joined"
+    const val notify_user_declined = "user_declined"
     const val notify_user_removed = "user_removed"
     const val notify_user_quit = "user_quit"
     const val notify_user_requested = "user_requested"

@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
@@ -26,6 +27,7 @@ import com.ezbalans.app.ezbalans.rooms.RoomActivity
 import com.ezbalans.app.ezbalans.rooms.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
 import com.ezbalans.app.ezbalans.eventBus.BudgetsEvent
+import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
 import com.ezbalans.app.ezbalans.eventBus.RoomsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.models.Notification
@@ -95,21 +97,37 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         if (lang == Constants.language_hebrew){
             binding.fabHeb.visibility = View.VISIBLE
             binding.fab.visibility = View.GONE
+            binding.arrow.setImageResource(R.drawable.arrow_heb)
 
             binding.joinRoomHeb.setOnClickListener{
                 joinRoomDialog()
             }
 
             binding.createRoomHeb.setOnClickListener{
-                // user can not create a room before email verification
-                if (firebaseUser.isEmailVerified){
+                if (!firebaseUser.isEmailVerified){
+                    firebaseUser.getIdToken(true).addOnSuccessListener {
+                        firebaseUser.reload().addOnSuccessListener {
+                            if (firebaseUser.isEmailVerified){
+                                val intent = Intent(context, CreateRoom::class.java)
+                                startActivity(intent)
+                                binding.fab.close(true)
+                            }
+                            else {
+                                openNotVerifiedDialog()
+                            }
+                        }
+
+                    }
+                }
+                else {
                     val intent = Intent(context, CreateRoom::class.java)
                     startActivity(intent)
                     binding.fab.close(true)
                 }
-                else {
-                    openNotVerifiedDialog()
-                }
+
+
+                // user can not create a room before email verification
+
             }
         }
         else {
@@ -121,14 +139,18 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             }
 
             binding.createRoom.setOnClickListener{
-                // user can not create a room before email verification
-                if (firebaseUser.isEmailVerified){
-                    val intent = Intent(context, CreateRoom::class.java)
-                    startActivity(intent)
-                    binding.fab.close(true)
-                }
-                else {
-                    openNotVerifiedDialog()
+                firebaseUser.getIdToken(true).addOnSuccessListener {
+                    firebaseUser.reload().addOnSuccessListener {
+                        if (firebaseUser.isEmailVerified){
+                            val intent = Intent(context, CreateRoom::class.java)
+                            startActivity(intent)
+                            binding.fab.close(true)
+                        }
+                        else {
+                            openNotVerifiedDialog()
+                        }
+                    }
+
                 }
             }
         }
@@ -214,6 +236,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         getMyRooms()
     }
 
+    @Subscribe
+    fun onNotificationsUpdate(event: NotificationsEvent){
+        Log.d("TAG", "onNotificationsUpdate: 1")
+        getMyNotifications()
+    }
+
     private fun getMyNotifications(){
         var counter = 0
         val getNotifications = GetPrefs().getNotifications()
@@ -254,10 +282,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
         if (myRooms.isNotEmpty()){
             updateRooms()
+            binding.emptyContainer.visibility = View.GONE
+            binding.list.visibility = View.VISIBLE
         }
         else {
             binding.list.visibility = View.GONE
-            binding.emptyItem.visibility = View.VISIBLE
+            binding.emptyContainer.visibility = View.VISIBLE
         }
     }
 

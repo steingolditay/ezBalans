@@ -42,7 +42,8 @@
     <string name="date">Date</string>
     <string name="category">Category</string>
     <string name="user">User</string>
-    <string name="empty_room_list">Your are currently not a resident in any Room.</string>
+    <string name="empty_room_list">You are currently not a resident in any Room.</string>
+    <string name="join_create_room">Start by joining or creating a room.</string>
     <string name="room_budget">Room Budget</string>
     <string name="add_caps">ADD</string>
     <string name="pass_size_error">Password must be at least 6 characters long</string>
@@ -121,45 +122,42 @@
     <string name="welcome">Welcome</string>
     <string name="checked_in">Have you checked in yet?</string>
     <string name="new_resident">New resident?</string>
+    <string name="new_resident_in_room">New resident</string>
     <string name="you_joined_room">You have joined the room</string>
     <string name="joined_the_room">%1$s joined the room</string>
     <string name="left_the_room">%1$s left the room</string>
     <string name="you_left_the_room">You left the room</string>
     <string name="removed_from_room">%1$s was removed from the room by %2$s</string>
-    <string name="request_to_join_room">%1$s requests to join the room</string>
-    <string name="changed_the_room_info">%1$s made changes to the room info</string>
+    <string name="request_to_join_room">A request to join the room was received</string>
+    <string name="change_to_room_info">Room info changed by an admin</string>
     <string name="invalid_payment_submitted">%1$s submitted a payment that need to approved</string>
-    <string name="your_invalid_payment_approved">%1$s approved your payment</string>
-    <string name="invalid_payment_approved">%1$s approved payment submitted by %2$s</string>
-    <string name="your_invalid_payment_declined">%1$s declined your payment</string>
-    <string name="invalid_payment_declined">%1$s declined a payment submitted by %2$s</string>
+    <string name="invalid_payment_approved">A submitted payment was approved</string>
+    <string name="invalid_payment_declined">A submitted payment was declined</string>
     <string name="closed_the_room">%1$s closed the room</string>
     <string name="no_longer_admin">%1$s is no longer an admin</string>
     <string name="is_admin">%1$s is now an admin</string>
     <string name="new_motd">%1$s shared a new Message of The Day</string>
-    <string name="youre_added_to_room">%1$s has added you to %2$s. You can find it on your rooms list.</string>
+    <string name="youre_added_to_room">You are now a resident in a new room. You can find it on your rooms list.</string>
     <string name="added_to_room">%1$s has added %2$s to the room.</string>
     <string name="resident_left">Resident Left</string>
     <string name="resident_left_body">%1$s decided to leave %2$s.</string>
     <string name="you_removed_from_room">You were removed from the room</string>
     <string name="resident_removed">Resident Removed</string>
-    <string name="resident_removed_body">%1$s decided to remove you from %2$s</string>
-    <string name="resident_removed_body_2">%1$s decided to remove %2$s from the room. Remember, admins can always re-invite %3$s back.</string>
+    <string name="resident_removed_body">An admin has removed a resident from the room</string>
     <string name="room_info_changed">Room Info Changed</string>
     <string name="payment_validation">Validate Payment</string>
     <string name="payment_declined">Payment Declined</string>
     <string name="room_closed">Room Closed</string>
-    <string name="you_closed_room">You closed %1$s. The room is no longer available.</string>
-    <string name="room_closed_by">%1$s decided to close %2$s. The room is no longer available.</string>
+    <string name="room_closed_body">The room is no longer available.</string>
     <string name="admin_demoted">Admin Demoted</string>
     <string name="you_demoted_admin">At your decision, %1$s is no longer an admin in %2$s.</string>
     <string name="admin_demoted_admin">%1$s demoted %2$s from admin position in %3$s.</string>
     <string name="resident_promoted">Resident Promoted</string>
     <string name="payment_validation_body">A payment submitted by a roommate needs to be validated by an admin.</string>
-    <string name="you_promoted_resident">At your decision, %1$s is now an admin in %2$s.</string>
-    <string name="admin_promoted_resident">%1$s Promoted %2$s to admin position.</string>
+    <string name="promoted_resident">A resident was promoted to Admin.</string>
+    <string name="demoted_resident">A resident is no longer an Admin.</string>
+
     <string name="new_room_motd">New Message of The Day</string>
-    <string name="new_motd_plus">%1$s shared a new message: %2$s.</string>
     <string name="join_request">Join Request</string>
     <string name="your_owe">You owe %1$s %2$s%3$s</string>
     <string name="owes_you"> %1$s owes you %2$s%3$s</string>
@@ -170,6 +168,9 @@
     <string name="verification_email_sent">Verification email sent</string>
     <string name="action_already_taken">An action was already taken</string>
     <string name="request_approved">Request approved</string>
+    <string name="request_declined">Request declined</string>
+    <string name="request_declined_body">A request to join the room was declined</string>
+
     <string name="already_resident">You are already a resident in this room</string>
     <string name="request_sent">Request sent</string>
     <string name="cant_send_request">You cannot send a request right now</string>
@@ -229,6 +230,9 @@
     <string name="intro_budgets_body">That way you can make informative decisions with your money and know your habits.</string>
     <string name="intro_goodbye">You can do a lot of other things</string>
     <string name="intro_goodbye_body">Like managing a shopping list, view your expenses history, get insights, settle debts and many more…Enjoy!</string>
+    <string name="notifications">Notifications</string>
+    <string name="login_information">Login Information</string>
+    <string name="action_by">From: %1$s</string>
 
     <string-array name="room_types">
         <item>Family</item>
@@ -270,7 +274,7 @@
         <item>Vacations</item>
         <item>Other</item>
     </string-array>
-    <string name="notifications">Notifications</string>
+    <string name="action_to">To: %1$s</string>
 
 
 </resources>

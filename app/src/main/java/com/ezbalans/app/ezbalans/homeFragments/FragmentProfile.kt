@@ -22,8 +22,6 @@ import com.ezbalans.app.ezbalans.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.WelcomeActivity
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
-import com.ezbalans.app.ezbalans.models.Notification
-import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
 import com.ezbalans.app.ezbalans.helpers.CheckPasswordStrength
@@ -42,7 +40,6 @@ import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import org.greenrobot.eventbus.EventBus
 import kotlin.collections.HashMap
 
 
@@ -89,13 +86,23 @@ class FragmentProfile : Fragment() {
             openLogoutDialog()
         }
 
-        if (firebaseUser.isEmailVerified){
-            binding.emailVerification.visibility = View.GONE
-        }
-        else {
-            binding.emailVerification.text = getString(R.string.email_not_verified)
-            binding.emailVerification.setOnClickListener {
-                openNotVerifiedDialog()
+        if (!firebaseUser.isEmailVerified){
+            firebaseUser.getIdToken(true).addOnSuccessListener {
+                firebaseUser.reload().addOnSuccessListener {
+                    if (firebaseUser.isEmailVerified){
+                        binding.emailVerification.visibility = View.GONE
+
+
+                    }
+                    else {
+                        binding.emailVerification.visibility = View.VISIBLE
+                        binding.emailVerification.text = getString(R.string.email_not_verified)
+                        binding.emailVerification.setOnClickListener {
+                            openNotVerifiedDialog()
+                        }
+                    }
+                }
+
             }
         }
 

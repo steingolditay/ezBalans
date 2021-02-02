@@ -115,7 +115,7 @@ class NotificationsAdapter(private val context: Context,
 
                 Picasso.get().load(room.image).into(holder.image)
                 holder.title.text = room.name
-                holder.message.text = String.format(context.getString(R.string.changed_the_room_info), admin.username)
+                holder.message.text = String.format(context.getString(R.string.room_info_changed), admin.username)
             }
 
             Constants.notify_payment_invalid -> {
@@ -131,7 +131,7 @@ class NotificationsAdapter(private val context: Context,
                 if (user.uid == firebaseUser.uid){
                     Picasso.get().load(room.image).into(holder.image)
                     holder.title.text = room.name
-                    holder.message.text = String.format(context.getString(R.string.your_invalid_payment_approved), admin.username)
+                    holder.message.text = String.format(context.getString(R.string.invalid_payment_approved), admin.username)
                 }
                 else {
                     Picasso.get().load(room.image).into(holder.image)
@@ -146,7 +146,7 @@ class NotificationsAdapter(private val context: Context,
                 if (user.uid == firebaseUser.uid){
                     Picasso.get().load(admin.image).into(holder.image)
                     holder.title.text = room.name
-                    holder.message.text = String.format(context.getString(R.string.your_invalid_payment_declined), admin.username)
+                    holder.message.text = String.format(context.getString(R.string.invalid_payment_declined), admin.username)
                 }
                 else {
                     Picasso.get().load(room.image).into(holder.image)

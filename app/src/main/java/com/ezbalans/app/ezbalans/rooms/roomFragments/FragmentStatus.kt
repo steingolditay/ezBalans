@@ -62,7 +62,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     override fun onStart() {
         super.onStart()
-
         EventBus.getDefault().register(this)
     }
 

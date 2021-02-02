@@ -54,6 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center"
+        android:textDirection="ltr"
         android:layout_marginHorizontal="10dp"
         android:textColor="@color/colorGreen"
         />

@@ -127,10 +127,9 @@
     <string name="left_the_room">%1$s עזב את החדר</string>
     <string name="you_left_the_room">עזבת את החדר</string>
     <string name="removed_from_room">דייר הוסר מהחדר</string>
-    <string name="changed_the_room_info">שינוי בפרטי החדר</string>
+    <string name="change_to_room_info">בוצע שינוי בפרטי החדר על ידי מנהל</string>
     <string name="invalid_payment_submitted">בקשה לאישור תשלום</string>
-    <string name="your_invalid_payment_declined">מנהל סירב לתשלום שלך</string>
-    <string name="invalid_payment_declined">מנהל סירב לתשלום של דייר</string>
+    <string name="invalid_payment_declined">תשלום שהוגש נדחה</string>
     <string name="closed_the_room">החדר נסגר</string>
     <string name="is_admin">מנהל חדש בחדר</string>
     <string name="new_motd">מסר יומי חדש</string>
@@ -144,14 +143,11 @@
     <string name="payment_validation">תיקוף תשלום</string>
     <string name="payment_declined">תשלום נדחה</string>
     <string name="room_closed">חדר נסגר</string>
-    <string name="you_closed_room">סגרת את %1$s. החדר לא זמין יותר.</string>
-    <string name="room_closed_by">החדר נסגר ולא זמין עוד.</string>
+    <string name="room_closed_body">החדר נסגר ולא זמין עוד.</string>
     <string name="admin_demoted">מנהל הודח</string>
     <string name="admin_demoted_admin">מנהל הורד מתפקידו</string>
     <string name="resident_promoted">דייר קו</string>
     <string name="payment_validation_body">תשלום שהוגש על ידי דייר דורש אישור מנהל</string>
-    <string name="you_promoted_resident">קידמת דייר למנהל</string>
-    <string name="admin_promoted_resident">דייר קודם לתפקיד מנהל</string>
     <string name="new_room_motd">מסר יומי חדש</string>
     <string name="join_request">בקשת הצטרפות</string>
     <string name="owes_you">%1$s חייב לך %2$s%3$s</string>
@@ -259,18 +255,25 @@
     <string name="intro_room_body">חדרים מאפשרים לעקוב אחר הוצאות אישיות כמו גם הוצאות של כלל הדיירים ובקלות</string>
     <string name="intro_budgets">וכמובן, אפשר לצפות בנתונים וניתוחים שונים</string>
     <string name="intro_budgets_body">"באמצעותם תוכל לעשות החלטות כלכליות מחושבות ולהכיר את הרגלי הצריכה שלך טוב יותר "</string>
-    <string name="intro_goodbye">אפשר לעשות עוד הרבה דברים...</string>
+    <string name="intro_goodbye">אפשר לעשות עוד הרבה דברים…</string>
     <string name="intro_goodbye_body">כמו לנהל רשימת קניות, לצפות בניסטוריית ההוצאות, לקבל תובנות, ליישב חובות ועוד. אז יאללה!</string>
     <string name="your_owe">%3$s%2$s %1$s-אתה חייב ל</string>
-    <string name="request_to_join_room">בקשת הצטרפות לחדר</string>
-    <string name="your_invalid_payment_approved">תשלום שלך אושר</string>
+    <string name="request_to_join_room">התקבלה בקשת הצטרפות לחדר</string>
     <string name="invalid_payment_approved">אושר תשלום חדש</string>
     <string name="no_longer_admin">דייר ירד מניהול החדר</string>
-    <string name="resident_removed_body">הוסרת מהחדר</string>
-    <string name="resident_removed_body_2">מנהל החליט להסיר אותך מהחדר. הוא יוכל לצרף אותך מחדש במידה ויחליט.</string>
+    <string name="resident_removed_body">מנהל הסיר דייר מהחדר</string>
     <string name="you_demoted_admin">הורדת דייר מתפקיד מנהל</string>
-    <string name="new_motd_plus">%2$s: מסר יומי חדש</string>
     <string name="notifications">התראות</string>
+    <string name="login_information">פרטי הזדהות</string>
+    <string name="join_create_room">התחל על ידי יצירה של חדר או הצטרף לאחד קיים!</string>
+    <string name="request_declined">בקשה נדחתה</string>
+    <string name="request_declined_body">בקשה להצטרף לחדר נדחתה</string>
+    <string name="action_by">"מבצע: %1$s "</string>
+    <string name="action_to">עבור: %1$s</string>
+    <string name="promoted_resident">דייר קודם לתפקיד מנהל בחדר</string>
+    <string name="demoted_resident">דייר ירד מתפקיד מנהל בחדר</string>
+    <string name="new_resident_in_room">New resident</string>
+
 
 
 </resources>
