@@ -13,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
 import com.ezbalans.app.ezbalans.Constants
@@ -31,6 +33,7 @@ import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
 import com.ezbalans.app.ezbalans.eventBus.RoomsEvent
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.models.Notification
+import com.ezbalans.app.ezbalans.viewmodels.RoomsFragmentViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -49,8 +52,9 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     private val databaseReference = Firebase.database.reference
     val firebaseUser = Firebase.auth.currentUser!!
-    val myRooms = arrayListOf<Room>()
-    val myRoomsKeys = arrayListOf<String>()
+    lateinit var myRooms: ArrayList<Room>
+    private val myRoomsKeys = arrayListOf<String>()
+    lateinit var viewModel: RoomsFragmentViewModel
 
     private lateinit var adapter: MyRoomsAdapter
 
@@ -67,6 +71,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(requireActivity()).get(RoomsFragmentViewModel::class.java)
+        viewModel.getRooms().observe(requireActivity(), {
+//            myRooms = it
+        })
+
         return binding.root
     }
 
@@ -79,7 +89,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             jointFromDeepLink(roomUid)
         }
         else {
-            getMyRooms()
+//            getMyRooms()
             getMyNotifications()
 
         }
@@ -228,15 +238,15 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     @Subscribe
     fun onRoomsUpdate(event: RoomsEvent) {
-        getMyRooms()
+//        getMyRooms()
     }
 
     @Subscribe
     fun onBudgetsUpdate(event: BudgetsEvent){
-        getMyRooms()
+//        getMyRooms()
     }
 
-    @Subscribe
+    @Subscribe(sticky = true)
     fun onNotificationsUpdate(event: NotificationsEvent){
         Log.d("TAG", "onNotificationsUpdate: 1")
         getMyNotifications()
@@ -261,41 +271,40 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     }
 
-    private fun getMyRooms(){
-        myRooms.clear()
-        myRoomsKeys.clear()
-
-        val budgets = GetPrefs().getMyBudgets()
-        val rooms = GetPrefs().getAllRooms()
-        for (room in rooms.values){
-            if (room.residents.containsKey(firebaseUser.uid)){
-                if (room.residents[firebaseUser.uid] == Constants.added){
-                    myRooms.add(room)
-                    myRoomsKeys.add(room.identity_key)
-                    if (!budgets.containsKey(room.uid)){
-                        databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(0)
-
-                    }
-                }
-            }
-        }
-
-        if (myRooms.isNotEmpty()){
-            updateRooms()
-            binding.emptyContainer.visibility = View.GONE
-            binding.list.visibility = View.VISIBLE
-        }
-        else {
-            binding.list.visibility = View.GONE
-            binding.emptyContainer.visibility = View.VISIBLE
-        }
-    }
+//    private fun getMyRooms(){
+//        myRooms.clear()
+//        myRoomsKeys.clear()
+//
+//        val budgets = GetPrefs().getMyBudgets()
+//        val rooms = GetPrefs().getAllRooms()
+//        for (room in rooms.values){
+//            if (room.residents.containsKey(firebaseUser.uid)){
+//                if (room.residents[firebaseUser.uid] == Constants.added){
+//                    myRooms.add(room)
+//                    myRoomsKeys.add(room.identity_key)
+//                    if (!budgets.containsKey(room.uid)){
+//                        databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(0)
+//
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (myRooms.isNotEmpty()){
+//            updateRooms()
+//            binding.emptyContainer.visibility = View.GONE
+//            binding.list.visibility = View.VISIBLE
+//        }
+//        else {
+//            binding.list.visibility = View.GONE
+//            binding.emptyContainer.visibility = View.VISIBLE
+//        }
+//    }
 
     private fun updateRooms(){
         adapter = MyRoomsAdapter(requireContext(), myRooms, this)
-        binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(context)
-
+        binding.list.adapter = adapter
     }
 
     override fun onItemClick(position: Int) {
@@ -347,7 +356,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             val newBudget = budget.text.toString().toInt()
             if (newBudget != currentBudget){
                 databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(newBudget).addOnSuccessListener {
-                    getMyRooms()
+//                    getMyRooms()
                     dialog.dismiss()
                 }
             }
@@ -365,25 +374,25 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                 if (room.residents.containsKey(firebaseUser.uid)){
                     if (room.residents[firebaseUser.uid] == Constants.removed || room.residents[firebaseUser.uid] == Constants.declined){
                         Toast.makeText(requireContext(),getString(R.string.cant_join_room), Toast.LENGTH_SHORT).show()
-                        getMyRooms()
+//                        getMyRooms()
                     }
 
                     else if (room.residents[firebaseUser.uid] == Constants.added){
                         Toast.makeText(requireContext(),getString(R.string.already_resident), Toast.LENGTH_SHORT).show()
-                        getMyRooms()
+//                        getMyRooms()
 
                     }
                     else {
                         databaseReference.child(Constants.rooms).child(roomUid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.added).addOnSuccessListener {
                             Toast.makeText(requireContext(),getString(R.string.you_joined_room), Toast.LENGTH_SHORT).show()
-                            getMyRooms()
+//                            getMyRooms()
                         }
                     }
                 }
                 else {
                     databaseReference.child(Constants.rooms).child(roomUid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.added).addOnSuccessListener {
                         Toast.makeText(requireContext(),getString(R.string.you_joined_room), Toast.LENGTH_SHORT).show()
-                        getMyRooms()
+//                        getMyRooms()
                     }
                 }
 

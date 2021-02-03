@@ -108,7 +108,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val notification = notifications[position]
         databaseReference.child(Constants.notifications).child(firebaseUser.uid).child(notification.uid).child(Constants.seen).setValue(true).addOnSuccessListener {
             notification.seen = true
-            EventBus.getDefault().post(NotificationsEvent())
+            EventBus.getDefault().postSticky(NotificationsEvent())
 
             adapter.notifyDataSetChanged()
         }
