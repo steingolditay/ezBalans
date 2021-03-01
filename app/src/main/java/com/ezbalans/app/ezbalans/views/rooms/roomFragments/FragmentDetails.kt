@@ -14,8 +14,6 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomDetailsBinding
-import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.viewmodels.roomFragments.DetailsFragmentViewModel
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -28,7 +26,6 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import org.greenrobot.eventbus.Subscribe
 import java.lang.StringBuilder
 import java.math.RoundingMode
 import java.util.*
@@ -41,7 +38,6 @@ class FragmentDetails: Fragment(){
     private val binding get() = _binding!!
 
     private val firebaseUser = Firebase.auth.currentUser!!
-    private val databaseReference = Firebase.database.reference
 
     val payments = arrayListOf<Payment>()
     private val roomUsers = arrayListOf<User>()

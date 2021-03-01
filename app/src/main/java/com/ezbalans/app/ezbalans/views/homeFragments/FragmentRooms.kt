@@ -35,7 +35,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
-import org.greenrobot.eventbus.EventBus
 
 
 class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
@@ -50,16 +49,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     private lateinit var adapter: MyRoomsAdapter
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)

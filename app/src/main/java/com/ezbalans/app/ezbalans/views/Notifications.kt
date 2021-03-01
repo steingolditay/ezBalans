@@ -12,7 +12,6 @@ import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
-import com.ezbalans.app.ezbalans.eventBus.NotificationsEvent
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
@@ -28,7 +27,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import org.greenrobot.eventbus.EventBus
 
 class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
     private lateinit var binding: ViewNotificationsBinding
@@ -89,7 +87,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
             Constants.seen
         ).setValue(true).addOnSuccessListener {
             notification.seen = true
-            EventBus.getDefault().postSticky(NotificationsEvent())
 
             adapter.notifyDataSetChanged()
         }

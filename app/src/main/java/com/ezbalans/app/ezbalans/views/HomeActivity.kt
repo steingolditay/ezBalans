@@ -4,7 +4,6 @@ package com.ezbalans.app.ezbalans.views
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ezbalans.app.ezbalans.helpers.Constants
@@ -13,12 +12,9 @@ import com.ezbalans.app.ezbalans.MainActivity
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.homeFragments.*
 import com.ezbalans.app.ezbalans.databinding.ViewMainframeBinding
-import com.ezbalans.app.ezbalans.eventBus.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ViewMainframeBinding
@@ -28,16 +24,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var fragmentRooms: FragmentRooms
     private lateinit var fragmentBudgets: FragmentWallet
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
 
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-
-    }
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(LocaleManager.setLocale(newBase!!))

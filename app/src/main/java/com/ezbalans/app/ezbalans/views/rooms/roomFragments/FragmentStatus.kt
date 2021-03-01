@@ -23,15 +23,12 @@ import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomStatusBinding
-import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.viewmodels.roomFragments.StatusFragmentViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
 import com.skydoves.powerspinner.PowerSpinnerView
-import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import kotlin.collections.HashMap
 

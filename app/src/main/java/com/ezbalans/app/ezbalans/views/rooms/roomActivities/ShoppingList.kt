@@ -11,18 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.ShoppingListItemsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
-import com.ezbalans.app.ezbalans.eventBus.PaymentsEvent
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.models.Room
-import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomInfoActivityViewModel
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.ShoppingListActivityViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 
 class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickListener {
     private lateinit var binding: ViewShoppingListBinding
