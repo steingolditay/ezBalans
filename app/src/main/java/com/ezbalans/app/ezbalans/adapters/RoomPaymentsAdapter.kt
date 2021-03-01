@@ -1,13 +1,12 @@
 package com.ezbalans.app.ezbalans.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.Constants
+import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.helpers.TranslateToHebrew
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.User

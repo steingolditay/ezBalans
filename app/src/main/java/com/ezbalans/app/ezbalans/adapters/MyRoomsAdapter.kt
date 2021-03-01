@@ -7,24 +7,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.Constants
+import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
-import kotlin.collections.ArrayList
 
-class MyRoomsAdapter(private val context: Context, private val rooms: ArrayList<Room>, private val listener: MyRoomsAdapter.OnItemClickListener) :
+class MyRoomsAdapter(private val context: Context, private val rooms: List<Room>?, private val listener: MyRoomsAdapter.OnItemClickListener) :
         RecyclerView.Adapter<MyRoomsAdapter.ViewHolder>() {
 
     private val firebaseUser = Firebase.auth.currentUser!!
@@ -90,7 +85,7 @@ class MyRoomsAdapter(private val context: Context, private val rooms: ArrayList<
     }
 
     override fun onBindViewHolder(holder: MyRoomsAdapter.ViewHolder, position: Int) {
-        val room = rooms[position]
+        val room = rooms!![position]
 
         holder.name.text = room.name
         holder.identityKey.text = room.identity_key
@@ -107,7 +102,11 @@ class MyRoomsAdapter(private val context: Context, private val rooms: ArrayList<
     }
 
     override fun getItemCount(): Int {
-        return rooms.size
+        return if (rooms == null){
+            0
+        } else{
+            rooms.size
+        }
     }
 
     private fun loadBudget(roomUid: String, holder: MyRoomsAdapter.ViewHolder, roomCurrency: String){

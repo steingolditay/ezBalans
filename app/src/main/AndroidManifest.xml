@@ -19,16 +19,16 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".rooms.CreateRoom"/>
-        <activity android:name=".rooms.ShoppingList"/>
-        <activity android:name=".rooms.RoomInfo"/>
-        <activity android:name=".rooms.RoomActivity"/>
-        <activity android:name=".signIn.Login"/>
-        <activity android:name=".signIn.Signup"/>
-        <activity android:name=".WelcomeActivity"/>
-        <activity android:name=".Notifications"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.CreateRoom"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.ShoppingList"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomInfo"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomActivity"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Login"/>
+        <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Signup"/>
+        <activity android:name=".views.signIn.WelcomeActivity"/>
+        <activity android:name=".views.Notifications"/>
 
-        <activity android:name=".HomeActivity">
+        <activity android:name=".views.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -52,7 +52,7 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/>
 
-        <activity android:name=".AppIntro"
+        <activity android:name=".views.AppIntro"
             android:label="My Custom AppIntro" />
 
     </application>
