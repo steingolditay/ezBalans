@@ -1,6 +1,7 @@
 package com.ezbalans.app.ezbalans.views.rooms.roomFragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,6 +95,7 @@ class FragmentDetails: Fragment(){
         })
 
         viewModel.getMyRooms().observe(requireActivity(), {
+
             for (roomObject in it){
                if (roomObject.uid == roomUid){
                    room = roomObject
@@ -109,19 +111,18 @@ class FragmentDetails: Fragment(){
         })
 
         viewModel.getMyPayments().observe(requireActivity(), {
-            for (payment in it.values){
-                if (payment.to == room.uid && payment.status == Constants.payment_valid && paymentFromThisMonth(payment)){
+            for (payment in it.values) {
+                if (payment.to == room.uid && payment.status == Constants.payment_valid && paymentFromThisMonth(payment)) {
                     payments.add(payment)
                     totalAmount += payment.amount.toInt()
                 }
             }
-            if (payments.isNotEmpty()){
+            if (payments.isNotEmpty()) {
                 payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
                 createTotalExpensesChart()
                 createCategoryChart()
                 createBalanceChart()
-            }
-            else {
+            } else {
                 binding.emptyItem.visibility = View.VISIBLE
             }
         })

@@ -63,6 +63,10 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         viewModel.init()
 
 
+        viewModel.getAllUsers().observe(requireActivity(), { users ->
+            allUsers = users
+        })
+
         viewModel.getMyRooms().observe(requireActivity(), {
             for (roomObject in it){
                 if (roomObject.uid == roomUid){
@@ -77,10 +81,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
             }
         })
 
-        viewModel.getAllUsers().observe(requireActivity(), { users ->
-                allUsers = users
-            }
-        )
+
 
         viewModel.getMyPayments().observe(requireActivity(), { paymentsList ->
             payments.clear()
@@ -169,7 +170,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         details[Constants.room_uid] = roomUid
         details[Constants.uid] = firebaseUser.uid
 
-        val adapter = RoomHistoryAdapter(requireContext(), sortedMap, keys, room.currency, this)
+        val adapter = RoomHistoryAdapter(requireActivity(), sortedMap, keys, room.currency, this)
 
         binding.historyList.adapter = adapter
         binding.historyList.layoutManager = LinearLayoutManager(context)

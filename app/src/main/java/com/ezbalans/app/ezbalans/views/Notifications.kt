@@ -54,12 +54,14 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         })
 
         viewModel.getAllRooms().observe(this, {
+            rooms.clear()
             for (roomObject in it){
                 rooms[roomObject.uid] = roomObject
             }
         })
 
         viewModel.getMyNotifications().observe(this, {
+            notifications.clear()
             for (notification in it.values){
                 notifications.add(notification)
             }

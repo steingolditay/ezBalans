@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,8 +108,6 @@ class FragmentWallet : Fragment() {
             }
         }
 
-        graphFilterPeriod()
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -125,14 +124,19 @@ class FragmentWallet : Fragment() {
                     roomBudgets[entry.key] = entry.value
                 }
             }
+            graphFilterPeriod()
+
         })
 
         viewModel.getMyRooms().observe(requireActivity(), {
+
             myRooms.clear()
             for (room in it) {
                 if (room.residents.containsKey(firebaseUser.uid))
                     myRooms[room.uid] = room
             }
+            graphFilterPeriod()
+
         })
 
         viewModel.getMyPayments().observe(requireActivity(), {
@@ -147,6 +151,8 @@ class FragmentWallet : Fragment() {
                         payments.add(payment)
                 }
                 roomPayments[roomUid] = paymentMap
+                graphFilterPeriod()
+
             }
 
 

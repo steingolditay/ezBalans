@@ -67,7 +67,6 @@ class FragmentProfile : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         languageSelector()
-        loadMyData()
 
         binding.image.setOnClickListener {
             loadImageCropper()
@@ -414,7 +413,6 @@ class FragmentProfile : Fragment() {
                 val loadingDialog = GetLoadingDialog(requireContext(), getString(R.string.Updating_info)).create()
                 loadingDialog.show()
                 databaseReference.child(Constants.users).child(firebaseUser.uid).updateChildren(mapValues).addOnSuccessListener {
-                    loadMyData()
                     loadingDialog.dismiss()
                 }
             }

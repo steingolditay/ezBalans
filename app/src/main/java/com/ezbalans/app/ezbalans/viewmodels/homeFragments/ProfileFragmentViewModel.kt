@@ -16,17 +16,18 @@ class ProfileFragmentViewModel : ViewModel() {
     lateinit var myUser: MutableLiveData<User>
 
     fun init(){
-        if (this::myRooms.isInitialized){
+        if (this::repository.isInitialized && this::myUser.isInitialized){
             return
         }
         repository = DatabaseRepository
+        myUser = MutableLiveData<User>()
 
     }
 
 
     fun getMyUser(): LiveData<User> {
         val users = repository.getAllUsers().value!!
-        myUser.postValue(users[Firebase.auth.currentUser.toString()])
+        myUser.postValue(users[Firebase.auth.currentUser!!.uid])
         return myUser
     }
 

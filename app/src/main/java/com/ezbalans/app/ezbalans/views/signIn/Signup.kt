@@ -15,6 +15,8 @@ import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewSignupBinding
 import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
+import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
+import com.ezbalans.app.ezbalans.viewmodels.signinActivities.SignUpActivityViewModel
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
@@ -26,6 +28,7 @@ import java.util.*
 
 class Signup : AppCompatActivity() {
     private lateinit var binding: ViewSignupBinding
+    lateinit var existingKeyList: List<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +41,13 @@ class Signup : AppCompatActivity() {
         binding.signup.setOnClickListener {
             verifyDetails()
         }
+
+        val viewModel = SignUpActivityViewModel()
+        viewModel.init()
+
+        viewModel.getUserKeys().observe(this, {
+            existingKeyList = it
+        })
 
     }
 
@@ -109,7 +119,7 @@ class Signup : AppCompatActivity() {
                     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     val date = Date()
                     val signUpDate = formatter.format(date)
-                    val identityKey = getIdentityKey.create()
+                    val identityKey = getIdentityKey.create(existingKeyList)
                     val firstName = StringUtils.capitalize(binding.firstName.text.toString().toLowerCase(Locale.getDefault()).trim())
                     val lastName = StringUtils.capitalize(binding.lastName.text.toString().toLowerCase(Locale.getDefault()).trim())
 

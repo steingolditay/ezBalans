@@ -109,6 +109,10 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         viewModel = ViewModelProvider(requireActivity()).get(PastMonthFragmentViewModel::class.java)
         viewModel.init()
 
+        viewModel.getAllUsers().observe(requireActivity(), {
+            allUsers = it
+        })
+
         viewModel.getMyRooms().observe(requireActivity(), {
             for (roomObject in it) {
                 if (roomObject.uid == roomUid){
@@ -129,10 +133,6 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
                 }
             }
-        })
-
-        viewModel.getAllUsers().observe(requireActivity(), {
-            allUsers = it
         })
 
         viewModel.getAllPayments().observe(requireActivity(), {

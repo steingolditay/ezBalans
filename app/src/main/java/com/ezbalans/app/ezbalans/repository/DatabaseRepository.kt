@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.repository
 
 import androidx.lifecycle.MutableLiveData
-import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
@@ -22,6 +21,7 @@ object DatabaseRepository {
     private val roomsKeysArray = ArrayList<String>()
     private val myRoomsKeysArray = ArrayList<String>()
     private val usersMap = hashMapOf<String, User>()
+    private val userKeysArray = ArrayList<String>()
     val notificationsMap = hashMapOf<String, Notification>()
     val paymentsMap = hashMapOf<String, Payment>()
     val myPaymentsMap = hashMapOf<String, Payment>()
@@ -34,6 +34,7 @@ object DatabaseRepository {
     private var myRooms = MutableLiveData<List<Room>>()
     private var myRoomKeys = MutableLiveData<List<String>>()
     private var users = MutableLiveData<HashMap<String, User>>()
+    private var userKeys = MutableLiveData<List<String>>()
     private var notifications = MutableLiveData<HashMap<String, Notification>>()
     private var payments = MutableLiveData<HashMap<String, Payment>>()
     private var myPayments = MutableLiveData<HashMap<String, Payment>>()
@@ -63,8 +64,8 @@ object DatabaseRepository {
         return myRooms
     }
 
-    fun getMyRoomKeys(): MutableLiveData<List<String>> {
-        return myRoomKeys
+    fun getUserKeys(): MutableLiveData<List<String>> {
+        return userKeys
     }
 
     fun getAllUsers(): MutableLiveData<HashMap<String, User>>{
@@ -129,9 +130,11 @@ object DatabaseRepository {
                 for (entry in snapshot.children) {
                     val user = entry.getValue<User>()!!
                     usersMap[user.uid] = user
+                    userKeysArray.add(user.identity_key)
 
                 }
                 users.postValue(usersMap)
+                userKeys.postValue(userKeysArray)
             }
 
             override fun onCancelled(error: DatabaseError) {

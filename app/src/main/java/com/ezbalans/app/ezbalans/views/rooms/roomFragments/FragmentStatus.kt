@@ -3,6 +3,7 @@ package com.ezbalans.app.ezbalans.views.rooms.roomFragments
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +45,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
 
     val payments = arrayListOf<Payment>()
-    private val allUsers = HashMap<String, User>()
+    private var allUsers = HashMap<String, User>()
     private val roomUsers = arrayListOf<User>()
     private val roomUsersMap = HashMap<String, User>()
 
@@ -102,8 +103,13 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         viewModel.getAllUsers().observe(requireActivity(), {
             roomUsers.clear()
             roomUsersMap.clear()
-            for (uid in room.residents.keys){
+            allUsers = it
+
+            for (uid in room.residents.keys) {
+                Log.d("TAG", "onActivityCreated: $uid")
+                Log.d("TAG", "onActivityCreated: $allUsers")
                 val user = allUsers[uid]!!
+
                 roomUsers.add(user)
                 roomUsersMap[user.uid] = user
             }
