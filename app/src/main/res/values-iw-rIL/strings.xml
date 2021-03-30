@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Expenses</string>
     <string name="login">התנתק</string>
+    <string name="settings">הגדרות</string>
     <string name="logout">התנתק</string>
     <string name="profile">פרופיל</string>
     <string name="signup">הרשם</string>

@@ -9,12 +9,24 @@ import com.ezbalans.app.ezbalans.models.User
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object DatabaseRepository {
+@InstallIn(SingletonComponent::class)
+@Module
+class DatabaseRepository
+
+@Inject constructor(){
+
     private val databaseReference = Firebase.database.reference
     private val roomsArray = ArrayList<Room>()
     private val myRoomsArray = ArrayList<Room>()
@@ -51,46 +63,66 @@ object DatabaseRepository {
         getShoppingListsData()
     }
 
-
-    fun getAllRooms(): MutableLiveData<List<Room>> {
+    @Singleton
+    @Provides
+    fun provideAllRooms(): MutableLiveData<List<Room>> {
         return rooms
     }
 
-    fun getAllRoomKeys(): MutableLiveData<List<String>> {
+    @Singleton
+    @Provides
+    fun provideAllRoomKeys(): MutableLiveData<List<String>> {
         return roomKeys
     }
 
-    fun getMyRooms(): MutableLiveData<List<Room>> {
+    @Singleton
+    @Provides
+    fun provideMyRooms(): MutableLiveData<List<Room>> {
         return myRooms
     }
 
-    fun getUserKeys(): MutableLiveData<List<String>> {
+    @Singleton
+    @Provides
+    fun provideMyRoomKeys(): MutableLiveData<List<String>> {
         return userKeys
     }
 
-    fun getAllUsers(): MutableLiveData<HashMap<String, User>>{
+    @Singleton
+    @Provides
+    fun provideAllUsers(): MutableLiveData<HashMap<String, User>>{
         return users
     }
 
-    fun getMyNotifications(): MutableLiveData<HashMap<String, Notification>> {
+    @Singleton
+    @Provides
+    fun provideMyNotifications(): MutableLiveData<HashMap<String, Notification>> {
         return notifications
     }
 
-    fun getAllPayments(): MutableLiveData<HashMap<String, Payment>>{
+    @Singleton
+    @Provides
+    fun provideAllPayments(): MutableLiveData<HashMap<String, Payment>>{
         return payments
     }
 
-    fun getMyPayments(): MutableLiveData<HashMap<String, Payment>>{
+    @Singleton
+    @Provides
+    fun provideMyPayments(): MutableLiveData<HashMap<String, Payment>>{
         return myPayments
     }
 
-    fun getMyBudgets(): MutableLiveData<HashMap<String, Int>> {
+    @Singleton
+    @Provides
+    fun provideMyBudgets(): MutableLiveData<HashMap<String, Int>> {
         return myBudgets
     }
 
-    fun getMyShoppingLists(): MutableLiveData<HashMap<String, HashMap<String, Boolean>>>{
+    @Singleton
+    @Provides
+    fun provideMyShoppingLists(): MutableLiveData<HashMap<String, HashMap<String, Boolean>>>{
         return shoppingLists
     }
+
 
     private fun getRoomsData(){
         databaseReference.child(Constants.rooms).addValueEventListener(object : ValueEventListener {

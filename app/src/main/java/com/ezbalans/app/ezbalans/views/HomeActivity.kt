@@ -15,14 +15,16 @@ import com.ezbalans.app.ezbalans.databinding.ViewMainframeBinding
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ViewMainframeBinding
 
     private lateinit var currentFragment: Fragment
     private lateinit var fragmentProfile: FragmentProfile
     private lateinit var fragmentRooms: FragmentRooms
-    private lateinit var fragmentBudgets: FragmentWallet
+    private lateinit var fragmentWallet: FragmentWallet
 
 
 
@@ -37,17 +39,6 @@ class HomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        PowerPreference.init(this)
-
-//        loadMainListeners()
-        // don't load fragments if user is logged out
-        // so it wont interfere with trying deep-link
-        if (Firebase.auth.currentUser != null) {
-            currentFragment = Fragment()
-            fragmentProfile = FragmentProfile()
-            fragmentRooms = FragmentRooms()
-            fragmentBudgets = FragmentWallet()
-        }
 
         // check if deep linked to join room
         val uri = intent.data
@@ -72,6 +63,10 @@ class HomeActivity : AppCompatActivity() {
 
         }
         else {
+            fragmentRooms = FragmentRooms()
+            fragmentWallet = FragmentWallet()
+            fragmentProfile = FragmentProfile()
+
             setFragment(fragmentRooms, Constants.rooms_tag)
         }
 
@@ -79,15 +74,12 @@ class HomeActivity : AppCompatActivity() {
             when (it) {
                 0 -> {
                     setFragment(fragmentRooms, Constants.rooms_tag)
-                    currentFragment = fragmentRooms
                 }
                 1 -> {
-                    setFragment(fragmentBudgets, Constants.budgets_tag);
-                    currentFragment = fragmentBudgets
+                    setFragment(fragmentWallet, Constants.budgets_tag);
                 }
                 2 -> {
                     setFragment(fragmentProfile, Constants.profile_tag)
-                    currentFragment = fragmentProfile
                 }
 
             }
@@ -97,17 +89,12 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun setFragment(fragment: Fragment, tag: String) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.mainframe, fragment, tag);
-        fragmentTransaction.commit();
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.mainframe, fragment, tag)
+            .setReorderingAllowed(true)
+            .commit()
+        currentFragment = fragment
 
-    }
-
-    private fun updateFragment(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.detach(fragment)
-        fragmentTransaction.attach(fragment)
-        fragmentTransaction.commitNow()
     }
 
 

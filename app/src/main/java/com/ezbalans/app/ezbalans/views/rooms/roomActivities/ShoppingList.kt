@@ -14,11 +14,15 @@ import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.ShoppingListActivityViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickListener {
     private lateinit var binding: ViewShoppingListBinding
 
@@ -29,6 +33,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
     var shoppingList = arrayListOf<HashMap<String, Boolean>>()
     var items = arrayListOf<String>()
     lateinit var adapter: ShoppingListItemsAdapter
+    @Inject lateinit var repository: DatabaseRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +51,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
             }
         }
 
-        val viewModel = ShoppingListActivityViewModel()
-        viewModel.init()
+        val viewModel = ShoppingListActivityViewModel(repository)
 
         viewModel.getAllRooms().observe(this, {
             for (roomObject in it){

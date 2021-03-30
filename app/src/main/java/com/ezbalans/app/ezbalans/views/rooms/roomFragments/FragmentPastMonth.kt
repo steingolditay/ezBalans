@@ -107,7 +107,6 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(PastMonthFragmentViewModel::class.java)
-        viewModel.init()
 
         viewModel.getAllUsers().observe(requireActivity(), {
             allUsers = it
@@ -162,15 +161,6 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 updatePayments()
             }
         })
-
-    }
-
-
-
-
-    private fun loadPayments(){
-
-
 
     }
 
@@ -268,7 +258,6 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                             CreateNotification().create(room, Constants.notify_payment_invalid, firebaseUser.uid, paymentUid, "")
                         }
                         dialog.dismiss()
-                        loadPayments()
 
                     }
                 }

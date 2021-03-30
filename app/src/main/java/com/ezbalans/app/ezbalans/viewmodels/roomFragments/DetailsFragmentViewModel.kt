@@ -7,29 +7,23 @@ import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class DetailsFragmentViewModel : ViewModel() {
-
-    lateinit var repository: DatabaseRepository
-    lateinit var myRooms: MutableLiveData<List<Room>>
-
-    fun init(){
-        if (this::myRooms.isInitialized){
-            return
-        }
-        repository = DatabaseRepository
-    }
+@HiltViewModel
+class DetailsFragmentViewModel
+@Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
     fun getAllUsers(): LiveData<HashMap<String, User>> {
-        return repository.getAllUsers()
+        return repository.provideAllUsers()
     }
 
     fun getMyRooms(): LiveData<List<Room>> {
-        return repository.getMyRooms()
+        return repository.provideMyRooms()
     }
 
     fun getMyPayments(): LiveData<HashMap<String, Payment>> {
-       return repository.getMyPayments()
+       return repository.provideMyPayments()
     }
 
 }

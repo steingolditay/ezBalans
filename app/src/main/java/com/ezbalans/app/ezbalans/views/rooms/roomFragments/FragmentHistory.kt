@@ -52,15 +52,16 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(HistoryFragmentViewModel::class.java)
-        viewModel.init()
 
 
         viewModel.getAllUsers().observe(requireActivity(), { users ->
@@ -71,11 +72,13 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
             for (roomObject in it){
                 if (roomObject.uid == roomUid){
                     room = roomObject
-
                     roomUsers.clear()
                     for (resident in room.residents.keys){
-                        val user = allUsers[resident]!!
-                        roomUsers.add(user)
+                        if (allUsers.containsKey(resident)){
+                            val user = allUsers[resident]!!
+                            roomUsers.add(user)
+                        }
+
                     }
                 }
             }
@@ -92,21 +95,26 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
                     putPaymentsDates(payment)
                 }
             }
-            if (payments.isEmpty()) {
-                binding.historyList.visibility = View.GONE
-                binding.emptyItem.visibility = View.VISIBLE
-            } else {
-                binding.historyList.visibility = View.VISIBLE
-                binding.emptyItem.visibility = View.GONE
 
-                // sort list by timestamps
-                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-
-                getPaymentsPerMonth()
-            }
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if (payments.isEmpty()) {
+            binding.historyList.visibility = View.GONE
+            binding.emptyItem.visibility = View.VISIBLE
+        } else {
+            binding.historyList.visibility = View.VISIBLE
+            binding.emptyItem.visibility = View.GONE
+
+            // sort list by timestamps
+            payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
+
+            getPaymentsPerMonth()
+        }
+    }
 
     private fun putPaymentsDates(payment: Payment){
         val calendar = Calendar.getInstance(TimeZone.getDefault())

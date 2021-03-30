@@ -21,6 +21,7 @@ import com.ezbalans.app.ezbalans.databinding.ViewRoomInfoBinding
 import com.ezbalans.app.ezbalans.helpers.*
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomActivityViewModel
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomInfoActivityViewModel
 import com.google.android.material.textfield.TextInputLayout
@@ -33,9 +34,12 @@ import com.skydoves.powerspinner.PowerSpinnerView
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.HashMap
 
+@AndroidEntryPoint
 class RoomInfo : AppCompatActivity() {
     private lateinit var binding: ViewRoomInfoBinding
 
@@ -45,13 +49,14 @@ class RoomInfo : AppCompatActivity() {
     private val storageReference = Firebase.storage.reference
     val admins = arrayListOf<String>()
     val residents = arrayListOf<String>()
-    val users = HashMap<String, User>()
-    var room = Room()
+    var users = HashMap<String, User>()
+    lateinit var room: Room
     var admin = false
     private lateinit var roomUID: String
 
     private val roomTypes = Constants.room_types
     private val roomCategories = HashMap<String, Boolean>()
+    @Inject lateinit var repository: DatabaseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +71,6 @@ class RoomInfo : AppCompatActivity() {
             val admin = bundle.getBoolean(Constants.admin)
 
             this.admin = admin
-            getRoom(roomUID)
             when {
                 admin -> {
                     initAdmin()
@@ -88,11 +92,13 @@ class RoomInfo : AppCompatActivity() {
             openMOTDDialog()
         }
 
-        val viewModel = RoomInfoActivityViewModel()
-        viewModel.init()
+        val viewModel = RoomInfoActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
-
+            users = it
+            if (users.isNotEmpty() && this::room.isInitialized){
+                loadResidents()
+            }
         })
 
         viewModel.getAllRooms().observe(this, {
@@ -101,24 +107,22 @@ class RoomInfo : AppCompatActivity() {
                     room = roomObject
 
                     loadRoomDetails()
+
+                    if (users.isNotEmpty()){
+                        loadResidents()
+                    }
+                    break
                 }
             }
         })
 
     }
 
-    private fun getRoom(roomUid: String) {
-        val roomsPref = GetPrefs().getAllRooms()
-        room = roomsPref[roomUid]!!
 
-        loadResidents()
-
-    }
 
     private fun loadResidents() {
         binding.adminsContainer.removeAllViews()
         binding.residentsContainer.removeAllViews()
-
 
         for (residentUser in residents){
             val user = users[residentUser]!!
@@ -443,7 +447,7 @@ class RoomInfo : AppCompatActivity() {
             }
         }
 
-        currencySpinner.setOnSpinnerItemSelectedListener<String>{ position, item ->
+        currencySpinner.setOnSpinnerItemSelectedListener<String>{ position, _ ->
             roomCurrency = Constants.room_currencies[position]
         }
 
@@ -505,7 +509,6 @@ class RoomInfo : AppCompatActivity() {
             if (mapValues.isNotEmpty()) {
                 databaseReference.child(Constants.rooms).child(room.uid).updateChildren(mapValues).addOnSuccessListener {
                     CreateNotification().create(room, Constants.notify_room_info_changed, firebaseUser.uid, "", "")
-                    getRoom(room.uid)
                     dialog.dismiss()
                 }
             } else {
@@ -549,7 +552,6 @@ class RoomInfo : AppCompatActivity() {
             if (message != room.motd){
                 databaseReference.child(Constants.rooms).child(room.uid).child(Constants.motd).setValue(message).addOnSuccessListener {
                     CreateNotification().create(room, Constants.notify_motd_changed, firebaseUser.uid, "", message)
-                    getRoom(room.uid)
                     dialog.dismiss()
 
                 }

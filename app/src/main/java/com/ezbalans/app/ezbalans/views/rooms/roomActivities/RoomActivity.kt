@@ -16,10 +16,9 @@ import com.ezbalans.app.ezbalans.databinding.ViewRoomBinding
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.helpers.CreateNotification
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomActivityViewModel
 import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentDetails
 import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentHistory
@@ -27,18 +26,19 @@ import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentStatus
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RoomActivity: AppCompatActivity(){
     private lateinit var binding: ViewRoomBinding
 
     companion object{
-        val fragmentStatus = FragmentStatus()
         var currentFragment = ""
     }
 
@@ -49,11 +49,13 @@ class RoomActivity: AppCompatActivity(){
     private var roomUID: String? = ""
     var userList = arrayListOf<User>()
 
+    private val fragmentStatus = FragmentStatus()
     private val fragmentDetails = FragmentDetails()
     private val fragmentHistory = FragmentHistory()
     private val fragmentBundle = Bundle()
-    var fragmentSelector = ""
 
+    var fragmentSelector = ""
+    @Inject lateinit var repository: DatabaseRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,8 +79,7 @@ class RoomActivity: AppCompatActivity(){
 
         }
 
-        val viewModel = RoomActivityViewModel()
-        viewModel.init()
+        val viewModel = RoomActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             for (user in it.values){
@@ -123,12 +124,6 @@ class RoomActivity: AppCompatActivity(){
             showOptions(it)
         }
 
-        binding.image.setOnClickListener{
-            val intent = Intent(this, RoomInfo::class.java)
-            intent.putExtra(Constants.room_uid, roomUID)
-            intent.putExtra(Constants.admin, admin)
-            startActivity(intent)
-        }
 
         binding.bottomBar.onItemSelected = {
             when (it){
@@ -147,20 +142,18 @@ class RoomActivity: AppCompatActivity(){
     }
 
 
-
-
     private fun loadRoom(){
         Picasso.get().load(room.image).into(binding.image)
         binding.name.text = room.name
     }
 
     private fun setFragment(fragment: Fragment, tag: String){
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.mainframe, fragment, tag)
-        fragmentTransaction.commit()
+        supportFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .replace(R.id.mainframe, fragment, tag)
+            .commit()
         currentFragment = tag
     }
-
 
     private fun showOptions(view: View){
         val optionsPopup = PopupMenu(this, view)
@@ -169,6 +162,10 @@ class RoomActivity: AppCompatActivity(){
 
         optionsPopup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.settings -> {
+                    goToRoomSettings()
+                }
+
                 R.id.share -> {
                     shareRoom()
                 }
@@ -183,6 +180,13 @@ class RoomActivity: AppCompatActivity(){
             true
         })
         optionsPopup.show()
+    }
+
+    private fun goToRoomSettings(){
+        val intent = Intent(this, RoomInfo::class.java)
+        intent.putExtra(Constants.room_uid, roomUID)
+        intent.putExtra(Constants.admin, admin)
+        startActivity(intent)
     }
 
     private fun leaveRoom(){

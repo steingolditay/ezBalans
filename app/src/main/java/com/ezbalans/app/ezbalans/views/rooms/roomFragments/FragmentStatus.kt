@@ -82,7 +82,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(StatusFragmentViewModel::class.java)
-        viewModel.init()
 
         viewModel.getMyRooms().observe(requireActivity(), {
             for (roomObject in it){
@@ -106,8 +105,6 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             allUsers = it
 
             for (uid in room.residents.keys) {
-                Log.d("TAG", "onActivityCreated: $uid")
-                Log.d("TAG", "onActivityCreated: $allUsers")
                 val user = allUsers[uid]!!
 
                 roomUsers.add(user)
@@ -123,6 +120,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 if (payment.to == room.uid && payment.status == Constants.payment_valid && paymentFromThisMonth(payment)){
                     payments.add(payment)
                     totalAmount += payment.amount.toInt()
+                    updateBudget()
                 }
             }
             if (payments.isEmpty()) {
@@ -138,10 +136,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             }
 
         })
-
-
     }
-
 
     private fun  addPaymentDialog(){
         val maximumDays = getMaximumDays()
@@ -170,7 +165,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         else {
             paymentTypeSpinner.setItems(roomCategories)
         }
-        paymentTypeSpinner.setOnSpinnerItemSelectedListener<String> { position, item ->
+        paymentTypeSpinner.setOnSpinnerItemSelectedListener<String> { position, _ ->
 
             paymentType = roomCategories[position]
         }

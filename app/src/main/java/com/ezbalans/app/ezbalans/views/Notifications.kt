@@ -19,6 +19,7 @@ import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.NotificationsActivityViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -27,7 +28,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
     private lateinit var binding: ViewNotificationsBinding
 
@@ -36,6 +40,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
     private var rooms = hashMapOf<String, Room>()
     private var users =  HashMap<String, User>()
     private val notifications =  ArrayList<Notification>()
+    @Inject lateinit var repository: DatabaseRepository
 
     lateinit var adapter: NotificationsAdapter
 
@@ -46,8 +51,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         setContentView(view)
 
 
-        val viewModel = NotificationsActivityViewModel()
-        viewModel.init()
+        val viewModel = NotificationsActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             users = it
@@ -198,7 +202,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
 
         val admin = users[notification.source_uid]!!.username
         val user = users[notification.target_uid]!!.username
-        val room = rooms[notification.room_uid]!!.name
 
 
         from.text = String.format(getString(R.string.action_by), admin)
@@ -231,7 +234,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
 
         val admin = users[notification.source_uid]!!.username
         val user = users[notification.target_uid]!!.username
-        val room = rooms[notification.room_uid]!!.name
 
         val from = dialog.findViewById<TextView>(R.id.from)
         val to = dialog.findViewById<TextView>(R.id.to)
@@ -386,7 +388,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val body = dialog.findViewById<TextView>(R.id.body)
 
         val admin = users[notification.source_uid]!!.username
-        val room = rooms[notification.room_uid]!!
 
         title.text = getString(R.string.room_closed)
 
@@ -405,7 +406,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
 
         val admin = users[notification.source_uid]!!.username
         val user = users[notification.target_uid]!!.username
-        val room = rooms[notification.room_uid]!!
 
         val from = dialog.findViewById<TextView>(R.id.from)
         val to = dialog.findViewById<TextView>(R.id.to)
@@ -426,7 +426,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
 
         val admin = users[notification.source_uid]!!.username
         val user = users[notification.target_uid]!!.username
-        val room = rooms[notification.room_uid]!!
 
         val from = dialog.findViewById<TextView>(R.id.from)
         val to = dialog.findViewById<TextView>(R.id.to)

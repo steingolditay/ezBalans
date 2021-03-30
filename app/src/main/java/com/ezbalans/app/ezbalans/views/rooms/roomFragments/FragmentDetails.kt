@@ -58,8 +58,6 @@ class FragmentDetails: Fragment(){
 
     lateinit var viewModel: DetailsFragmentViewModel
 
-
-
     var currencySymbol = ""
     var room = Room()
     var totalAmount = 0
@@ -67,6 +65,11 @@ class FragmentDetails: Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomDetailsBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,7 +91,6 @@ class FragmentDetails: Fragment(){
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(DetailsFragmentViewModel::class.java)
-        viewModel.init()
 
         viewModel.getAllUsers().observe(requireActivity(), {
             allUsers = it
@@ -102,9 +104,11 @@ class FragmentDetails: Fragment(){
                    currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
                    for (resident in room.residents.keys){
-                       val user = allUsers[resident]!!
-                       roomUsers.add(user)
-                       roomUsersMap[user.uid] = user
+                       if (allUsers.containsKey(resident)){
+                           val user = allUsers[resident]!!
+                           roomUsers.add(user)
+                           roomUsersMap[user.uid] = user
+                       }
                    }
                }
             }
@@ -117,18 +121,22 @@ class FragmentDetails: Fragment(){
                     totalAmount += payment.amount.toInt()
                 }
             }
-            if (payments.isNotEmpty()) {
-                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-                createTotalExpensesChart()
-                createCategoryChart()
-                createBalanceChart()
-            } else {
-                binding.emptyItem.visibility = View.VISIBLE
-            }
+
         })
     }
 
+    override fun onStart() {
+        super.onStart()
 
+        if (payments.isNotEmpty()) {
+            payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
+            createTotalExpensesChart()
+            createCategoryChart()
+            createBalanceChart()
+        } else {
+            binding.emptyItem.visibility = View.VISIBLE
+        }
+    }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
         val calendar = Calendar.getInstance(TimeZone.getDefault())

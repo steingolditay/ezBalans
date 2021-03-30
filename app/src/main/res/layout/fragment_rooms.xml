@@ -6,62 +6,32 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/notification"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/notification"
-        android:layout_margin="10dp"
-        android:padding="4dp"
-        app:civ_border_color="@color/colorBackground"
-        app:civ_border_width="2dp"
-        android:elevation="2dp"
-        />
-
-    <TextView
-        android:id="@+id/badge"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:layout_constraintEnd_toEndOf="@id/notification"
-        app:layout_constraintTop_toTopOf="@id/notification"
-        android:background="@drawable/badge"
-        android:elevation="4dp"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textColor="@color/colorBackground"
-        android:textStyle="bold"
-        />
-
-
-    <View
-        android:id="@+id/title_background"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/bg_rooms"
-        android:elevation="0dp"
-        />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/title_card"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_margin="10dp"
         app:cardBackgroundColor="@color/transparentBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title_background"
-        app:layout_constraintBottom_toBottomOf="@id/title_background"
+        app:layout_constraintTop_toTopOf="parent"
         app:cardElevation="2dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="10dp">
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/title_background"
+                android:layout_width="wrap_content"
+                android:layout_height="350dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_rooms"
+                android:elevation="0dp"
+                />
 
             <TextView
                 android:id="@+id/title"
@@ -77,11 +47,41 @@
                 android:textStyle="bold"
                 android:text="@string/my_rooms"
                 android:textAllCaps="true"
+                android:textColor="@color/colorBackground"
                 />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notification"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        app:layout_constraintEnd_toEndOf="@id/title_card"
+        app:layout_constraintTop_toTopOf="@id/title_card"
+        android:src="@drawable/notification"
+        android:layout_margin="10dp"
+        app:civ_border_color="@color/colorBackground"
+        app:civ_border_width="1dp"
+        android:elevation="2dp"
+        />
+
+    <TextView
+        android:id="@+id/badge"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="@id/notification"
+        app:layout_constraintTop_toTopOf="@id/notification"
+        android:background="@drawable/badge"
+        android:elevation="4dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="@color/colorBackground"
+        android:textStyle="bold"
+        android:layout_marginBottom="-10dp"
+        android:visibility="gone"
+        />
 
 
     <androidx.recyclerview.widget.RecyclerView

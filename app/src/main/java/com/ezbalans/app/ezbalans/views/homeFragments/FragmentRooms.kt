@@ -35,8 +35,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     private var _binding: FragmentRoomsBinding? = null
     private val binding get() = _binding!!
@@ -45,14 +47,19 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     val firebaseUser = Firebase.auth.currentUser!!
     lateinit var myRooms: List<Room>
     private val myRoomsKeys = arrayListOf<String>()
-    lateinit var viewModel: RoomsFragmentViewModel
+     lateinit var viewModel: RoomsFragmentViewModel
 
     private lateinit var adapter: MyRoomsAdapter
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,18 +80,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             startActivity(intent)
         }
 
-
         loadLanguageUI()
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        viewModel.getMyRooms().removeObservers(this)
         viewModel = ViewModelProvider(requireActivity()).get(RoomsFragmentViewModel::class.java)
-        viewModel.init()
-
-
 
         viewModel.getMyRooms().observe(requireActivity(), {
             initRecyclerView()
@@ -109,8 +110,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                 binding.badge.text = ""
             }
         })
-
-
 
     }
 
@@ -146,10 +145,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                     startActivity(intent)
                     binding.fab.close(true)
                 }
-
-
-                // user can not create a room before email verification
-
             }
         }
         else {
@@ -172,7 +167,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                             openNotVerifiedDialog()
                         }
                     }
-
                 }
             }
         }

@@ -6,29 +6,24 @@ import androidx.lifecycle.ViewModel
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class WalletFragmentViewModel : ViewModel() {
+@HiltViewModel
+class WalletFragmentViewModel
+@Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
-    lateinit var repository: DatabaseRepository
-    lateinit var myRooms: MutableLiveData<List<Room>>
-
-    fun init(){
-        if (this::myRooms.isInitialized){
-            return
-        }
-        repository = DatabaseRepository
-    }
 
     fun getMyBudgets(): LiveData<HashMap<String, Int>> {
-        return repository.getMyBudgets()
+        return repository.provideMyBudgets()
     }
 
     fun getMyRooms(): LiveData<List<Room>> {
-        return repository.getMyRooms()
+        return repository.provideMyRooms()
     }
 
     fun getMyPayments(): LiveData<HashMap<String, Payment>> {
-       return repository.getMyPayments()
+       return repository.provideMyPayments()
     }
 
 }

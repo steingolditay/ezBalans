@@ -15,7 +15,7 @@ import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewSignupBinding
 import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
-import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.signinActivities.SignUpActivityViewModel
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -25,10 +25,12 @@ import com.google.firebase.ktx.Firebase
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 class Signup : AppCompatActivity() {
     private lateinit var binding: ViewSignupBinding
     lateinit var existingKeyList: List<String>
+    @Inject lateinit var repository: DatabaseRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +44,7 @@ class Signup : AppCompatActivity() {
             verifyDetails()
         }
 
-        val viewModel = SignUpActivityViewModel()
-        viewModel.init()
+        val viewModel = SignUpActivityViewModel(repository)
 
         viewModel.getUserKeys().observe(this, {
             existingKeyList = it

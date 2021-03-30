@@ -16,14 +16,18 @@ import com.ezbalans.app.ezbalans.helpers.GetIdentityKey
 import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.HashMap
 
+@AndroidEntryPoint
 class CreateRoom: AppCompatActivity(){
     private lateinit var binding: ViewCreateRoomBinding
 
@@ -35,6 +39,7 @@ class CreateRoom: AppCompatActivity(){
     private val identityKeys = GetIdentityKey()
     private val getCurrentDate = GetCurrentDate()
     lateinit var existingKeyList: List<String>
+    @Inject lateinit var repository: DatabaseRepository
 
     var roomType = ""
     var roomCurrency = ""
@@ -46,8 +51,7 @@ class CreateRoom: AppCompatActivity(){
         val view = binding.root
         setContentView(view)
 
-        val viewModel = CreateRoomActivityViewModel()
-        viewModel.init()
+        val viewModel = CreateRoomActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             userList.clear()
@@ -213,7 +217,7 @@ class CreateRoom: AppCompatActivity(){
         admins[firebaseUser!!.uid] = true
 
         val residents = HashMap<String, String>()
-        residents[firebaseUser!!.uid] = Constants.added
+        residents[firebaseUser.uid] = Constants.added
         for (uid in addedUsers){
             residents[uid] = Constants.added
         }

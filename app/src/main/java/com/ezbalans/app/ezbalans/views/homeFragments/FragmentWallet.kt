@@ -57,6 +57,12 @@ class FragmentWallet : Fragment() {
         myContext = context
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
     enum class GraphFilter {
         ThreeMonths, Year, AllTime
     }
@@ -64,7 +70,6 @@ class FragmentWallet : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentWalletBinding.inflate(inflater, container, false)
         return binding.root
-
 
     }
 
@@ -114,7 +119,6 @@ class FragmentWallet : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(WalletFragmentViewModel::class.java)
-        viewModel.init()
 
         viewModel.getMyBudgets().observe(requireActivity(), { budgets ->
             for (entry in budgets) {
@@ -154,12 +158,7 @@ class FragmentWallet : Fragment() {
                 graphFilterPeriod()
 
             }
-
-
-
         })
-
-
     }
 
 
@@ -177,7 +176,7 @@ class FragmentWallet : Fragment() {
 
         when (selectedFilter) {
             GraphFilter.ThreeMonths -> {
-                var pastMonth = 0;
+                val pastMonth: Int
                 var pastYear = currentYear
                 if (currentMonth < 3) {
                     pastMonth = 12 + currentMonth - 3
@@ -265,7 +264,9 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+        if (isAttached()){
+            dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+        }
         dataSet.valueTextSize = 10f
         dataSet.setDrawValues(true)
 
@@ -322,7 +323,10 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+        if (isAttached()){
+            dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+
+        }
         dataSet.valueTextSize = 10f
         dataSet.setDrawValues(true)
 
@@ -389,7 +393,10 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+        if (isAttached()){
+            dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
+
+        }
         dataSet.valueTextSize = 10f
         dataSet.setDrawValues(true)
 
@@ -530,6 +537,10 @@ class FragmentWallet : Fragment() {
             container.addView(rowView)
         }
         dialog.show()
+    }
+
+    private fun isAttached() : Boolean {
+        return (isVisible && activity != null)
     }
 
 

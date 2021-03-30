@@ -1,5 +1,6 @@
 package com.ezbalans.app.ezbalans.viewmodels.homeFragments
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,27 +9,18 @@ import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ProfileFragmentViewModel : ViewModel() {
+@HiltViewModel
+class ProfileFragmentViewModel
+@Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
-    lateinit var repository: DatabaseRepository
-    lateinit var myRooms: MutableLiveData<List<Room>>
-    lateinit var myUser: MutableLiveData<User>
-
-    fun init(){
-        if (this::repository.isInitialized && this::myUser.isInitialized){
-            return
-        }
-        repository = DatabaseRepository
-        myUser = MutableLiveData<User>()
-
-    }
+    private var myUser =  MutableLiveData<HashMap<String, User>>()
 
 
-    fun getMyUser(): LiveData<User> {
-        val users = repository.getAllUsers().value!!
-        myUser.postValue(users[Firebase.auth.currentUser!!.uid])
-        return myUser
+    fun getMyUser(): LiveData<HashMap<String, User>> {
+        return repository.provideAllUsers()
     }
 
 

@@ -28,14 +28,12 @@ import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
 import com.ezbalans.app.ezbalans.helpers.CheckPasswordStrength
 import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
 import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.ProfileFragmentViewModel
-import com.ezbalans.app.ezbalans.viewmodels.homeFragments.RoomsFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -62,6 +60,12 @@ class FragmentProfile : Fragment() {
         _binding = ViewProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,18 +119,14 @@ class FragmentProfile : Fragment() {
             openAuthenticationDialog(Constants.password)
 
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(ProfileFragmentViewModel::class.java)
-        viewModel.init()
 
         viewModel.getMyUser().observe(requireActivity(), {
-            user = it
-            loadMyData()
-
+            if (it != null) {
+                user = it[firebaseUser.uid]!!
+                loadMyData()
+            }
         })
     }
 
@@ -321,8 +321,9 @@ class FragmentProfile : Fragment() {
             storageReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).downloadUrl.addOnSuccessListener {
                 val imageUri = it.toString()
                 databaseReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).setValue(imageUri).addOnSuccessListener {
-                    val profileUpdates = userProfileChangeRequest { photoUri = uri }
-                    firebaseUser.updateProfile(profileUpdates).addOnSuccessListener {
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                    profileUpdates.photoUri = uri
+                    firebaseUser.updateProfile(profileUpdates.build()).addOnSuccessListener {
                         Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
                         dialog.dismiss()
 
@@ -342,6 +343,7 @@ class FragmentProfile : Fragment() {
             }
         }
     }
+
 
     private fun openEditDialog(){
         val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_profile).create()
@@ -404,8 +406,9 @@ class FragmentProfile : Fragment() {
             if (newUsername.isNotEmpty() && newUsername != user.username){
                 mapValues[Constants.username] = newUsername
 
-                val profileUpdates = userProfileChangeRequest { displayName = newUsername }
-                firebaseUser.updateProfile(profileUpdates)
+                val profileUpdates = UserProfileChangeRequest.Builder()
+                profileUpdates.displayName = newUsername
+                firebaseUser.updateProfile(profileUpdates.build())
             }
 
             if (mapValues.isNotEmpty()){

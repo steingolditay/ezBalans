@@ -197,6 +197,7 @@
     <string name="share">שתף</string>
     <string name="add">הוסף</string>
     <string name="join">הצטרף</string>
+    <string name="settings">הגדרות</string>
 
     <string-array name="room_types">
         <item>משפחה</item>

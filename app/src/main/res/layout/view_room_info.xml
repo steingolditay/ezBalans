@@ -10,29 +10,68 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/title_background"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:background="@drawable/bg_rooms"
-            android:paddingBottom="20dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/title_card"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_margin="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardElevation="2dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <ImageView
+                    android:id="@+id/title_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="350dp"
+                    android:background="@drawable/bg_rooms"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:layout_margin="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBackground"
+                    android:text="ROOM SETTINGS"
+                    />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="10dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
-            android:src="@drawable/group"
+            android:src="@drawable/default_account"
             app:civ_border_color="@color/colorBackground"
             app:civ_border_width="2dp"
             app:civ_circle_background_color="@color/colorBackground"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_card"
+            android:elevation="4dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/edit"
@@ -56,7 +95,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/transparentBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image">

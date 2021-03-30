@@ -233,6 +233,7 @@
     <string name="notifications">Notifications</string>
     <string name="login_information">Login Information</string>
     <string name="action_by">From: %1$s</string>
+    <string name="settings">Settings</string>
 
     <string-array name="room_types">
         <item>Family</item>

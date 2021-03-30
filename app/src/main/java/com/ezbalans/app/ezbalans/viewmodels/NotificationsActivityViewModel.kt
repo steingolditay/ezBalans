@@ -7,29 +7,24 @@ import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class NotificationsActivityViewModel : ViewModel() {
+@HiltViewModel
+class NotificationsActivityViewModel
 
-    lateinit var repository: DatabaseRepository
-    lateinit var myRooms: MutableLiveData<List<Room>>
-
-    fun init(){
-        if (this::myRooms.isInitialized){
-            return
-        }
-        repository = DatabaseRepository
-    }
+@Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
     fun getAllUsers(): LiveData<HashMap<String, User>> {
-        return repository.getAllUsers()
+        return repository.provideAllUsers()
     }
 
     fun getMyNotifications(): LiveData<HashMap<String, Notification>> {
-        return repository.getMyNotifications()
+        return repository.provideMyNotifications()
     }
 
     fun getAllRooms(): LiveData<List<Room>> {
-       return repository.getAllRooms()
+       return repository.provideAllRooms()
     }
 
 }
