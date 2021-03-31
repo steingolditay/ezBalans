@@ -30,9 +30,11 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
 import com.skydoves.powerspinner.PowerSpinnerView
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.collections.HashMap
 
+@AndroidEntryPoint
 class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     private var _binding: FragmentRoomStatusBinding? = null
     private val binding get() = _binding!!

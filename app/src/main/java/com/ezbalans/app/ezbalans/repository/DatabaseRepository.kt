@@ -6,6 +6,7 @@ import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,7 +27,6 @@ import javax.inject.Singleton
 class DatabaseRepository
 
 @Inject constructor(){
-
     private val databaseReference = Firebase.database.reference
     private val roomsArray = ArrayList<Room>()
     private val myRoomsArray = ArrayList<Room>()
@@ -40,7 +40,7 @@ class DatabaseRepository
     val myBudgetsMap = hashMapOf<String, Int>()
     val shoppingListsMap = hashMapOf<String, HashMap<String, Boolean>>()
 
-    private val firebaseUser = Firebase.auth.currentUser!!
+    val firebaseUser: FirebaseUser? = Firebase.auth.currentUser
     private var rooms = MutableLiveData<List<Room>>()
     private var roomKeys = MutableLiveData<List<String>>()
     private var myRooms = MutableLiveData<List<Room>>()
@@ -135,8 +135,8 @@ class DatabaseRepository
                     val room = entry.getValue<Room>()!!
                     roomsArray.add(room)
                     roomsKeysArray.add(room.identity_key)
-                    if (room.residents.containsKey(firebaseUser.uid)) {
-                        if (room.residents[firebaseUser.uid] == Constants.added) {
+                    if (room.residents.containsKey(firebaseUser?.uid)) {
+                        if (room.residents[firebaseUser?.uid] == Constants.added) {
                             myRoomsArray.add(room)
                             myRoomsKeysArray.add(room.identity_key)
 
@@ -165,8 +165,8 @@ class DatabaseRepository
                     userKeysArray.add(user.identity_key)
 
                 }
-                users.postValue(usersMap)
-                userKeys.postValue(userKeysArray)
+                users.value = usersMap
+                userKeys.value = userKeysArray
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -176,7 +176,7 @@ class DatabaseRepository
     }
 
     private fun getNotificationsData(){
-        databaseReference.child(Constants.notifications).child(firebaseUser.uid).addValueEventListener(object : ValueEventListener {
+        databaseReference.child(Constants.notifications).child(firebaseUser!!.uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 notificationsMap.clear()
                 for (entry in snapshot.children) {
@@ -201,7 +201,7 @@ class DatabaseRepository
                     entry.children.forEach {
                         val payment = it.getValue<Payment>()!!
                         paymentsMap[payment.payment_uid] = payment
-                        if (payment.from == firebaseUser.uid) {
+                        if (payment.from == firebaseUser!!.uid) {
                             myPaymentsMap[payment.payment_uid] = payment
                         }
                     }
@@ -218,7 +218,7 @@ class DatabaseRepository
     }
 
     private fun getBudgetsData(){
-        databaseReference.child(Constants.budgets).child(firebaseUser.uid).addValueEventListener(object : ValueEventListener {
+        databaseReference.child(Constants.budgets).child(firebaseUser!!.uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 myBudgetsMap.clear()
                 for (data in snapshot.children) {

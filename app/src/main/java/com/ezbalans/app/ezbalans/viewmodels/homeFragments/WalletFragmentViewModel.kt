@@ -13,6 +13,7 @@ import javax.inject.Inject
 class WalletFragmentViewModel
 @Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
+    private val paymentsMap = MutableLiveData<HashMap<String, Payment>>()
 
     fun getMyBudgets(): LiveData<HashMap<String, Int>> {
         return repository.provideMyBudgets()
@@ -23,7 +24,8 @@ class WalletFragmentViewModel
     }
 
     fun getMyPayments(): LiveData<HashMap<String, Payment>> {
-       return repository.provideMyPayments()
+        paymentsMap.postValue(repository.provideMyPayments().value)
+        return paymentsMap
     }
 
 }

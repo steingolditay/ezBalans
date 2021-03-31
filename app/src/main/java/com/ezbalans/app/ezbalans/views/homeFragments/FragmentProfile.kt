@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.views.homeFragments
 
-
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -18,7 +17,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.signIn.WelcomeActivity
@@ -41,9 +40,11 @@ import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.collections.HashMap
 
 
+@AndroidEntryPoint
 class FragmentProfile : Fragment() {
     private var _binding: ViewProfileBinding? = null
     private val binding get() = _binding!!
@@ -51,47 +52,71 @@ class FragmentProfile : Fragment() {
     private val databaseReference = Firebase.database.reference
     private val storageReference = Firebase.storage.reference
     private val firebaseUser = Firebase.auth.currentUser!!
-    lateinit var viewModel: ProfileFragmentViewModel
+    private val viewModel: ProfileFragmentViewModel by viewModels()
+
     lateinit var user: User
-
     lateinit var adapter: NotificationsAdapter
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = ViewProfileBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = ViewProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        languageSelector()
 
         binding.image.setOnClickListener {
             loadImageCropper()
         }
 
         binding.identityKeyCopy.setOnClickListener{
-            val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clipData = ClipData.newPlainText("label",user.identity_key)
-            clipboard.setPrimaryClip(clipData)
-            Toast.makeText(requireContext(), getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
+            copyToClipboard()
+
         }
 
         binding.edit.setOnClickListener {
             openEditDialog()
         }
 
-
         binding.logout.setOnClickListener {
             openLogoutDialog()
         }
 
+
+        binding.changeEmail.setOnClickListener {
+            openAuthenticationDialog(Constants.email)
+        }
+
+        binding.changePassword.setOnClickListener {
+            openAuthenticationDialog(Constants.password)
+
+        }
+
+        viewModel.getMyUser().observe(viewLifecycleOwner, {
+                user = it[firebaseUser.uid]!!
+                loadMyData()
+
+        })
+
+        languageSelector()
+        checkIfEmailVerified()
+
+    }
+
+    private fun copyToClipboard(){
+        val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("label",user.identity_key)
+        clipboard.setPrimaryClip(clipData)
+        Toast.makeText(requireContext(), getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun checkIfEmailVerified(){
         if (!firebaseUser.isEmailVerified){
             firebaseUser.getIdToken(true).addOnSuccessListener {
                 firebaseUser.reload().addOnSuccessListener {
@@ -110,24 +135,6 @@ class FragmentProfile : Fragment() {
 
             }
         }
-
-        binding.changeEmail.setOnClickListener {
-            openAuthenticationDialog(Constants.email)
-        }
-
-        binding.changePassword.setOnClickListener {
-            openAuthenticationDialog(Constants.password)
-
-        }
-
-        viewModel = ViewModelProvider(requireActivity()).get(ProfileFragmentViewModel::class.java)
-
-        viewModel.getMyUser().observe(requireActivity(), {
-            if (it != null) {
-                user = it[firebaseUser.uid]!!
-                loadMyData()
-            }
-        })
     }
 
     private fun openAuthenticationDialog(source: String){
@@ -343,7 +350,6 @@ class FragmentProfile : Fragment() {
             }
         }
     }
-
 
     private fun openEditDialog(){
         val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_profile).create()

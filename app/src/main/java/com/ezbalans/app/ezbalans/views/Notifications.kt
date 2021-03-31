@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.helpers.Constants
@@ -40,7 +41,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
     private var rooms = hashMapOf<String, Room>()
     private var users =  HashMap<String, User>()
     private val notifications =  ArrayList<Notification>()
-    @Inject lateinit var repository: DatabaseRepository
+    private val viewModel: NotificationsActivityViewModel by viewModels()
 
     lateinit var adapter: NotificationsAdapter
 
@@ -51,7 +52,6 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         setContentView(view)
 
 
-        val viewModel = NotificationsActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             users = it

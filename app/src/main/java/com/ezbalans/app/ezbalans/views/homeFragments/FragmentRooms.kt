@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
@@ -44,12 +45,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     private val binding get() = _binding!!
 
     private val databaseReference = Firebase.database.reference
-    val firebaseUser = Firebase.auth.currentUser!!
-    lateinit var myRooms: List<Room>
+    private val firebaseUser = Firebase.auth.currentUser!!
     private val myRoomsKeys = arrayListOf<String>()
-     lateinit var viewModel: RoomsFragmentViewModel
+    private val viewModel: RoomsFragmentViewModel by viewModels()
 
     private lateinit var adapter: MyRoomsAdapter
+    private lateinit var myRooms: List<Room>
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -59,18 +60,16 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        // deep-link join loading
         val roomUid = arguments?.getString(Constants.room_uid)
         if (roomUid != null){
             joinFromDeepLink(roomUid)
         }
+
         binding.notification.setOnClickListener{
             val intent = Intent(requireContext(), Notifications::class.java)
             startActivity(intent)
@@ -81,36 +80,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         }
 
         loadLanguageUI()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(RoomsFragmentViewModel::class.java)
-
-        viewModel.getMyRooms().observe(requireActivity(), {
-            initRecyclerView()
-            myRooms = viewModel.getMyRooms().value!!
-            updateRoomsVisibility(viewModel.getMyRooms().value!!.size)
-        })
-
-        viewModel.getMyNotifications().observe(requireActivity(), { notifications ->
-            var counter = 0
-
-            for (notification in notifications.values){
-                if (!notification.seen){
-                    counter +=1
-                }
-            }
-            if (counter > 0){
-                binding.badge.visibility = View.VISIBLE
-                binding.badge.text = counter.toString()
-            }
-            else {
-                binding.badge.visibility = View.GONE
-                binding.badge.text = ""
-            }
-        })
-
+        initViewModel()
     }
 
     private fun loadLanguageUI(){
@@ -172,8 +142,34 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         }
     }
 
-    private fun initRecyclerView(){
-        adapter = MyRoomsAdapter(requireContext(), viewModel.getMyRooms().value, this)
+    private fun initViewModel(){
+        viewModel.getMyRooms().observe(viewLifecycleOwner, {
+            initRecyclerView(it)
+            myRooms = it
+            updateRoomsVisibility()
+        })
+
+        viewModel.getMyNotifications().observe(viewLifecycleOwner, { notifications ->
+            var counter = 0
+
+            for (notification in notifications.values){
+                if (!notification.seen){
+                    counter +=1
+                }
+            }
+            if (counter > 0){
+                binding.badge.visibility = View.VISIBLE
+                binding.badge.text = counter.toString()
+            }
+            else {
+                binding.badge.visibility = View.GONE
+                binding.badge.text = ""
+            }
+        })
+    }
+
+    private fun initRecyclerView(myRooms: List<Room>){
+        adapter = MyRoomsAdapter(requireContext(), myRooms, this)
         binding.list.layoutManager = LinearLayoutManager(context)
         binding.list.adapter = adapter
 
@@ -248,17 +244,15 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     }
 
-    private fun updateRoomsVisibility(size: Int){
-        if (size != 0){
+    private fun updateRoomsVisibility(){
+        if (myRooms.isNotEmpty()){
             binding.emptyContainer.visibility = View.GONE
             binding.list.visibility = View.VISIBLE
         }
         else {
             binding.emptyContainer.visibility = View.VISIBLE
             binding.list.visibility = View.GONE
-
         }
-
     }
 
     override fun onItemClick(position: Int) {

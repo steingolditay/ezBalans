@@ -129,8 +129,8 @@ object Constants {
 
 
 
-    const val default_user_image = "https://firebasestorage.googleapis.com/v0/b/expenses-7e9e1.appspot.com/o/default_account.png?alt=media&token=f5f8db3b-455f-4367-bd69-4587e696c6d3"
-    const val default_room_image = "https://firebasestorage.googleapis.com/v0/b/expenses-7e9e1.appspot.com/o/default_room.png?alt=media&token=371855c6-59f0-4f35-865b-3717beab109a"
+    const val default_user_image = "https://firebasestorage.googleapis.com/v0/b/ezbalans-87bc5.appspot.com/o/user.png?alt=media&token=34b4b9da-062a-4822-826f-05aabb08dc74"
+    const val default_room_image = "https://firebasestorage.googleapis.com/v0/b/ezbalans-87bc5.appspot.com/o/open-door.png?alt=media&token=ef394a81-7bcf-4b1d-8880-06b728b18aa4"
 
     @JvmField val room_types = arrayListOf<String>("Family", "Roommates", "Couple", "Vacation")
 

@@ -20,10 +20,12 @@ import com.ezbalans.app.ezbalans.viewmodels.roomFragments.HistoryFragmentViewMod
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+@AndroidEntryPoint
 class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
 
     private var _binding: FragmentRoomHistoryBinding? = null

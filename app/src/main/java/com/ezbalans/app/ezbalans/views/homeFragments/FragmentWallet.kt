@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.ezbalans.app.ezbalans.helpers.Constants
 import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
@@ -30,38 +31,34 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+@AndroidEntryPoint
 class FragmentWallet : Fragment() {
     private var _binding: FragmentWalletBinding? = null
     private val binding get() = _binding!!
 
     private val firebaseUser = Firebase.auth.currentUser!!
     private val databaseReference = Firebase.database.reference
-    val payments = arrayListOf<Payment>()
-    lateinit var myContext: Context
-    lateinit var viewModel: WalletFragmentViewModel
-
-    var roomPayments = HashMap<String, HashMap<String, Payment>>()
+    private var payments = arrayListOf<Payment>()
+    private var roomPayments = HashMap<String, HashMap<String, Payment>>()
     private val myRooms = HashMap<String, Room>()
-    var totalBudget = 0
-    var roomBudgets = HashMap<String, Int>()
-    var selectedFilter = GraphFilter.ThreeMonths
 
+    private var totalBudget = 0
+    private var roomBudgets = HashMap<String, Int>()
+    private var selectedFilter = GraphFilter.ThreeMonths
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        myContext = context
-    }
+    private val viewModel: WalletFragmentViewModel by viewModels()
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 
     enum class GraphFilter {
         ThreeMonths, Year, AllTime
@@ -70,7 +67,6 @@ class FragmentWallet : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentWalletBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,13 +109,10 @@ class FragmentWallet : Fragment() {
             }
         }
 
+        initViewModels()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel = ViewModelProvider(requireActivity()).get(WalletFragmentViewModel::class.java)
-
+    private fun initViewModels(){
         viewModel.getMyBudgets().observe(requireActivity(), { budgets ->
             for (entry in budgets) {
                 if (entry.key == firebaseUser.uid) {
@@ -128,18 +121,13 @@ class FragmentWallet : Fragment() {
                     roomBudgets[entry.key] = entry.value
                 }
             }
-            graphFilterPeriod()
 
         })
 
-        viewModel.getMyRooms().observe(requireActivity(), {
-
-            myRooms.clear()
-            for (room in it) {
-                if (room.residents.containsKey(firebaseUser.uid))
-                    myRooms[room.uid] = room
+        viewModel.getMyRooms().observe(requireActivity(), { result ->
+            for (room in result){
+                myRooms[room.uid] = room
             }
-            graphFilterPeriod()
 
         })
 
@@ -147,17 +135,19 @@ class FragmentWallet : Fragment() {
             payments.clear()
             roomPayments.clear()
 
-            for (roomUid in myRooms.keys){
-                val paymentMap = HashMap<String, Payment>()
-                for (payment in it.values) {
-                    if (payment.to in myRooms.keys)
-                        paymentMap[payment.payment_uid] = payment
-                        payments.add(payment)
-                }
-                roomPayments[roomUid] = paymentMap
-                graphFilterPeriod()
+            payments.addAll(it.values)
 
+            for (payment in it.values){
+                if (roomPayments.containsKey(payment.to)){
+                    roomPayments[payment.to]!![payment.payment_uid] = payment
+                }
+                else {
+                    val paymentHash = hashMapOf<String, Payment>()
+                    paymentHash[payment.payment_uid] = payment
+                    roomPayments[payment.to] = paymentHash
+                }
             }
+            graphFilterPeriod()
         })
     }
 
@@ -237,7 +227,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun createCategoryChart(payments: ArrayList<Payment>) {
-        val paymentsByCategory = HashMap<String, Float>()
+        val paymentsByCategory = TreeMap<String, Float>()
 
         for (payment in payments) {
             val category = payment.category
@@ -251,12 +241,12 @@ class FragmentWallet : Fragment() {
                 }
             }
         }
-        val sortedCategories = paymentsByCategory.toSortedMap()
+
         val categories = ArrayList(paymentsByCategory.keys)
 
         var i = 0
         val barEntries = arrayListOf<BarEntry>()
-        for (dataEntry in sortedCategories) {
+        for (dataEntry in paymentsByCategory) {
             val entry = BarEntry(i.toFloat(), dataEntry.value)
             barEntries.add(entry)
             i++
@@ -395,7 +385,6 @@ class FragmentWallet : Fragment() {
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
         if (isAttached()){
             dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
-
         }
         dataSet.valueTextSize = 10f
         dataSet.setDrawValues(true)
@@ -420,7 +409,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun editRoomBudgetDialog(roomUid: String) {
-        val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_edit_room_budget).create()
+        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -450,7 +439,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showOptions(view: View) {
-        val optionsPopup = PopupMenu(myContext, view)
+        val optionsPopup = PopupMenu(requireContext(), view)
         val inflater = optionsPopup.menuInflater
         inflater.inflate(R.menu.menu_budgets_options, optionsPopup.menu)
 
@@ -469,7 +458,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showTotalBudgetDialog() {
-        val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_edit_total_budget).create()
+        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_total_budget).create()
         val budget = dialog.findViewById<TextView>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -493,7 +482,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showRoomsDialog() {
-        val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_rooms_list).create()
+        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_rooms_list).create()
         val container = dialog.findViewById<LinearLayout>(R.id.container)
 
         for (r in myRooms) {

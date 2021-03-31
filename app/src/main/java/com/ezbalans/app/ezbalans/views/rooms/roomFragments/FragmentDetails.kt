@@ -27,13 +27,14 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.math.RoundingMode
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-
+@AndroidEntryPoint
 class FragmentDetails: Fragment(){
     private var _binding: FragmentRoomDetailsBinding? = null
     private val binding get() = _binding!!
@@ -75,6 +76,8 @@ class FragmentDetails: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel = ViewModelProvider(requireActivity()).get(DetailsFragmentViewModel::class.java)
+
         roomUid = arguments?.getString(Constants.room_uid)!!
         totalChart = binding.totalChart
         categoryChart = binding.categoryChart
@@ -90,7 +93,8 @@ class FragmentDetails: Fragment(){
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(DetailsFragmentViewModel::class.java)
+        payments.clear()
+
 
         viewModel.getAllUsers().observe(requireActivity(), {
             allUsers = it
@@ -112,6 +116,12 @@ class FragmentDetails: Fragment(){
                    }
                }
             }
+            if (payments.isNotEmpty()){
+                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
+                createTotalExpensesChart()
+                createCategoryChart()
+                createBalanceChart()
+            }
         })
 
         viewModel.getMyPayments().observe(requireActivity(), {
@@ -122,20 +132,21 @@ class FragmentDetails: Fragment(){
                 }
             }
 
+            if (payments.isNotEmpty() && roomUsersMap.isNotEmpty()) {
+                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
+                createTotalExpensesChart()
+                createCategoryChart()
+                createBalanceChart()
+            } else {
+                binding.emptyItem.visibility = View.VISIBLE
+            }
+
         })
     }
 
     override fun onStart() {
         super.onStart()
 
-        if (payments.isNotEmpty()) {
-            payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-            createTotalExpensesChart()
-            createCategoryChart()
-            createBalanceChart()
-        } else {
-            binding.emptyItem.visibility = View.VISIBLE
-        }
     }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{

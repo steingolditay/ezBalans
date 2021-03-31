@@ -39,9 +39,11 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.skydoves.powerspinner.PowerSpinnerView
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.util.*
 
+@AndroidEntryPoint
 class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     private var _binding: FragmentRoomHistoryMonthBinding? = null
