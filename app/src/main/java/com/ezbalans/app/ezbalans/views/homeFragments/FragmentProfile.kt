@@ -18,15 +18,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.signIn.WelcomeActivity
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
-import com.ezbalans.app.ezbalans.helpers.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
-import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
+import com.ezbalans.app.ezbalans.utils.CheckPasswordStrength
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.ProfileFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
@@ -286,7 +286,7 @@ class FragmentProfile : Fragment() {
         else{
             binding.english.isChecked = true
         }
-        binding.radioGroup.setOnCheckedChangeListener() { _, checkedId ->
+        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId){
                 binding.english.id -> {
                     binding.notifyChange.visibility = if (lang != Constants.language_english) View.VISIBLE else View.GONE

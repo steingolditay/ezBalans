@@ -1,13 +1,12 @@
 package com.ezbalans.app.ezbalans.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.TranslateToHebrew
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.TranslateToHebrew
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
@@ -18,8 +17,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class RoomPaymentsAdapter (private val context: Context,
-                           private val payments: ArrayList<Payment>,
+class RoomPaymentsAdapter (private val payments: ArrayList<Payment>,
                            private val users: ArrayList<User>,
                            private val currency: String,
                            private val listener: OnItemClickListener) :

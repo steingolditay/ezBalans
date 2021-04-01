@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.helpers
+package com.ezbalans.app.ezbalans.utils
 
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Room

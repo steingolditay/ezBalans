@@ -1,15 +1,14 @@
 package com.ezbalans.app.ezbalans.views.rooms.roomFragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.ezbalans.app.ezbalans.helpers.Constants
+import androidx.fragment.app.viewModels
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
@@ -25,7 +24,6 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
@@ -44,7 +42,7 @@ class FragmentDetails: Fragment(){
     val payments = arrayListOf<Payment>()
     private val roomUsers = arrayListOf<User>()
     private val roomUsersMap = HashMap<String, User>()
-    var allUsers = HashMap<String, User>()
+    private var allUsers = HashMap<String, User>()
 
     private lateinit var roomUid: String
 
@@ -57,13 +55,14 @@ class FragmentDetails: Fragment(){
     private lateinit var categoryChartCard: CardView
     private lateinit var balanceChartCard: CardView
 
-    lateinit var viewModel: DetailsFragmentViewModel
+    private val viewModel: DetailsFragmentViewModel by viewModels()
 
-    var currencySymbol = ""
-    var room = Room()
-    var totalAmount = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var currencySymbol = ""
+    private var room = Room()
+    private var totalAmount = 0
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRoomDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -76,8 +75,6 @@ class FragmentDetails: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(DetailsFragmentViewModel::class.java)
-
         roomUid = arguments?.getString(Constants.room_uid)!!
         totalChart = binding.totalChart
         categoryChart = binding.categoryChart
@@ -88,33 +85,33 @@ class FragmentDetails: Fragment(){
         balanceChartCard = binding.balanceCard
 
         debt = binding.debt
+
+        initViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
+    private fun initViewModel(){
         payments.clear()
+        println(binding)
 
-
-        viewModel.getAllUsers().observe(requireActivity(), {
+        viewModel.getAllUsers().observe(viewLifecycleOwner, {
             allUsers = it
         })
 
-        viewModel.getMyRooms().observe(requireActivity(), {
-
+        viewModel.getMyRooms().observe(viewLifecycleOwner, {
             for (roomObject in it){
-               if (roomObject.uid == roomUid){
-                   room = roomObject
-                   currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
+                if (roomObject.uid == roomUid){
+                    room = roomObject
+                    currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
-                   for (resident in room.residents.keys){
-                       if (allUsers.containsKey(resident)){
-                           val user = allUsers[resident]!!
-                           roomUsers.add(user)
-                           roomUsersMap[user.uid] = user
-                       }
-                   }
-               }
+                    for (resident in room.residents.keys){
+                        if (allUsers.containsKey(resident)){
+                            val user = allUsers[resident]!!
+                            roomUsers.add(user)
+                            roomUsersMap[user.uid] = user
+                        }
+                    }
+                }
             }
             if (payments.isNotEmpty()){
                 payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
@@ -124,7 +121,7 @@ class FragmentDetails: Fragment(){
             }
         })
 
-        viewModel.getMyPayments().observe(requireActivity(), {
+        viewModel.getMyPayments().observe(viewLifecycleOwner, {
             for (payment in it.values) {
                 if (payment.to == room.uid && payment.status == Constants.payment_valid && paymentFromThisMonth(payment)) {
                     payments.add(payment)
@@ -144,10 +141,6 @@ class FragmentDetails: Fragment(){
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-
-    }
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
         val calendar = Calendar.getInstance(TimeZone.getDefault())

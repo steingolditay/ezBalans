@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -18,11 +19,10 @@ import androidx.core.content.ContextCompat
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.RowUserBinding
 import com.ezbalans.app.ezbalans.databinding.ViewRoomInfoBinding
-import com.ezbalans.app.ezbalans.helpers.*
+import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
-import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomActivityViewModel
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomInfoActivityViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
@@ -51,12 +51,12 @@ class RoomInfo : AppCompatActivity() {
     val residents = arrayListOf<String>()
     var users = HashMap<String, User>()
     lateinit var room: Room
-    var admin = false
+    private var admin: Boolean = false
     private lateinit var roomUID: String
 
     private val roomTypes = Constants.room_types
     private val roomCategories = HashMap<String, Boolean>()
-    @Inject lateinit var repository: DatabaseRepository
+    private val viewModel: RoomInfoActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +92,6 @@ class RoomInfo : AppCompatActivity() {
             openMOTDDialog()
         }
 
-        val viewModel = RoomInfoActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             users = it

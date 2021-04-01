@@ -4,7 +4,6 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -25,7 +24,7 @@
             android:src="@drawable/info"
             app:tint="@color/colorYellow"
             android:layout_margin="10dp"
-
+            android:contentDescription="@string/image_content_descriptor"
             />
 
         <View
@@ -147,7 +146,6 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/texts"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintStart_toEndOf="@id/titles"
             app:layout_constraintEnd_toEndOf="parent"

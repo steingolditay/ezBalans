@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.helpers
+package com.ezbalans.app.ezbalans.utils
 
 class TranslateToHebrew {
 
@@ -138,15 +138,15 @@ class TranslateToHebrew {
     }
 
     fun roomCurrency(type: String): String {
-        when (type){
+        return when (type){
             "NIS" -> {
-                return "שקל"
+                "שקל"
             }
             "USD" -> {
-                return "דולר"
+                "דולר"
             }
             else -> {
-                return ""
+                ""
             }
         }
 

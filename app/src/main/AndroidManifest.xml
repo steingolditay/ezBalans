@@ -28,7 +28,7 @@
         <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Login"/>
         <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Signup"/>
         <activity android:name=".views.signIn.WelcomeActivity"/>
-        <activity android:name=".views.Notifications"/>
+        <activity android:name=".views.NotificationsActivity"/>
 
         <activity android:name=".views.HomeActivity">
             <intent-filter>

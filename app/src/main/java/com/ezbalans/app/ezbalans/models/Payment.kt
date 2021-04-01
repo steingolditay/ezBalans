@@ -8,6 +8,4 @@ class Payment (
         var timestamp: String = "",
         var description: String = "",
         var status: String = "",
-        var category: String = "") {
-
-}
+        var category: String = "")

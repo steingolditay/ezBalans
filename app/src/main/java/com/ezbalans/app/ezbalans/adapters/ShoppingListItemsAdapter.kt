@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-class ShoppingListItemsAdapter (private val context: Context,
-                                private val items: ArrayList<HashMap<String, Boolean>>,
+class ShoppingListItemsAdapter (private val items: ArrayList<HashMap<String, Boolean>>,
                                 private val listener: OnItemClickListener) :
         RecyclerView.Adapter<ShoppingListItemsAdapter.ViewHolder>(){
 

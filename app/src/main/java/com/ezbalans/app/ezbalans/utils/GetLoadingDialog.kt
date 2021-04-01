@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.helpers
+package com.ezbalans.app.ezbalans.utils
 
 import android.app.Dialog
 import android.content.Context

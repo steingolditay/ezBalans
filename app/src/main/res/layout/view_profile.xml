@@ -28,14 +28,16 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/title_background"
                     android:layout_width="wrap_content"
                     android:layout_height="350dp"
                     android:background="@drawable/bg_profile"
                     android:paddingBottom="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/image_content_descriptor"
+
+                    />
 
                 <TextView
                     android:id="@+id/title"
@@ -208,6 +210,7 @@
                     android:src="@drawable/copy"
                     app:tint="@color/colorText"
                     android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/image_content_descriptor"
                     />
 
 
@@ -268,12 +271,11 @@
                         android:text="@string/hebrew"
                         android:textColor="@color/colorText"
 
-
                         />
                 </RadioGroup>
 
                 <TextView
-                    android:id="@+id/notify_change"
+                    android:id="@+id/notifyChange"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"

@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintDimensionRatio="1f"
         android:padding="50dp"
+        android:contentDescription="@string/image_content_descriptor"
         />
 
     <TextView

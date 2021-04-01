@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.viewmodels.roomActivities
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User

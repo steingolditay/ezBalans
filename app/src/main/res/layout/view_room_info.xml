@@ -26,14 +26,15 @@
 
 
                 <ImageView
-                    android:id="@+id/title_background"
                     android:layout_width="wrap_content"
                     android:layout_height="350dp"
                     android:background="@drawable/bg_rooms"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/image_content_descriptor"
+                    />
 
 
                 <TextView
@@ -49,7 +50,7 @@
                     android:layout_margin="10dp"
                     android:textStyle="bold"
                     android:textColor="@color/colorBackground"
-                    android:text="ROOM SETTINGS"
+                    android:text="@string/room_settings"
                     />
 
 
@@ -213,7 +214,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/room_currency"
+                    android:id="@+id/roomCurrency"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -288,6 +289,7 @@
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/residentsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="10dp">
@@ -305,7 +307,6 @@
 />
 
                 <LinearLayout
-                    android:id="@+id/residents_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -333,6 +334,7 @@
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/adminsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="10dp">
@@ -349,7 +351,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
-                    android:id="@+id/admins_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"

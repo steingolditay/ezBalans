@@ -4,7 +4,6 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -25,6 +24,7 @@
             android:src="@drawable/budget"
             app:tint="@color/colorGreen"
             android:layout_margin="10dp"
+            android:contentDescription="@string/image_content_descriptor"
             />
 
         <View

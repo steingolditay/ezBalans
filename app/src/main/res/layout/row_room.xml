@@ -4,17 +4,15 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="4dp"
         >
 
 
@@ -68,6 +66,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"
+            android:contentDescription="@string/image_content_descriptor"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -101,6 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:layout_marginVertical="8dp"
+                android:contentDescription="@string/image_content_descriptor"
                 />
 
             <ImageView
@@ -112,6 +112,7 @@
                 android:background="@drawable/details"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
+                android:contentDescription="@string/image_content_descriptor"
                 />
 
             <ImageView
@@ -123,6 +124,7 @@
                 android:background="@drawable/edit"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
+                android:contentDescription="@string/image_content_descriptor"
                 />
 
             <TextView
@@ -163,7 +165,6 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

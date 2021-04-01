@@ -5,20 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.RoomHistoryAdapter
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomActivity
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomHistoryBinding
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.viewmodels.roomFragments.HistoryFragmentViewModel
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -31,46 +29,42 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
     private var _binding: FragmentRoomHistoryBinding? = null
     private val binding get() = _binding!!
 
-    private val databaseReference = Firebase.database.reference
-    lateinit var viewModel: HistoryFragmentViewModel
+    private val viewModel: HistoryFragmentViewModel by viewModels()
 
     val payments = arrayListOf<Payment>()
     private val roomUsers = arrayListOf<User>()
-    var allUsers = HashMap<String, User>()
+    private var allUsers = HashMap<String, User>()
     private val pastPayments = HashMap<Long, Int>()
     var keys = arrayListOf<Long>()
     val firebaseUser = Firebase.auth.currentUser!!
 
-
     var room = Room()
     var roomUid: String = ""
-    var totalAmount = 0
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentRoomHistoryBinding.inflate(inflater, container, false)
-
-        roomUid = arguments?.getString(Constants.room_uid)!!
-
-        return binding.root
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentRoomHistoryBinding.inflate(inflater, container, false)
+        roomUid = arguments?.getString(Constants.room_uid)!!
+        return binding.root
+    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViewModel()
+    }
 
-        viewModel = ViewModelProvider(requireActivity()).get(HistoryFragmentViewModel::class.java)
 
+    private fun initViewModel(){
 
-        viewModel.getAllUsers().observe(requireActivity(), { users ->
+        viewModel.getAllUsers().observe(viewLifecycleOwner, { users ->
             allUsers = users
         })
 
-        viewModel.getMyRooms().observe(requireActivity(), {
+        viewModel.getMyRooms().observe(viewLifecycleOwner, {
             for (roomObject in it){
                 if (roomObject.uid == roomUid){
                     room = roomObject
@@ -86,9 +80,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
             }
         })
 
-
-
-        viewModel.getMyPayments().observe(requireActivity(), { paymentsList ->
+        viewModel.getMyPayments().observe(viewLifecycleOwner, { paymentsList ->
             payments.clear()
             pastPayments.clear()
 
@@ -99,10 +91,6 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
             }
 
         })
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         if (payments.isEmpty()) {
             binding.historyList.visibility = View.GONE
@@ -117,6 +105,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
             getPaymentsPerMonth()
         }
     }
+
 
     private fun putPaymentsDates(payment: Payment){
         val calendar = Calendar.getInstance(TimeZone.getDefault())
@@ -180,7 +169,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
         details[Constants.room_uid] = roomUid
         details[Constants.uid] = firebaseUser.uid
 
-        val adapter = RoomHistoryAdapter(requireActivity(), sortedMap, keys, room.currency, this)
+        val adapter = RoomHistoryAdapter(sortedMap, keys, room.currency, this)
 
         binding.historyList.adapter = adapter
         binding.historyList.layoutManager = LinearLayoutManager(context)
@@ -189,7 +178,7 @@ class FragmentHistory: Fragment(), RoomHistoryAdapter.OnItemClickListener{
     }
 
     override fun onItemClick(position: Long) {
-        val fragmentBundle = Bundle();
+        val fragmentBundle = Bundle()
         fragmentBundle.putString(Constants.room_uid, room.uid)
         fragmentBundle.putLong(Constants.time_stamp, position)
 

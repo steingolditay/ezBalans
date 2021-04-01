@@ -4,23 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.ezbalans.app.ezbalans.models.Notification
-import com.ezbalans.app.ezbalans.models.Payment
-import com.ezbalans.app.ezbalans.models.Room
-import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewSplashScreenBinding
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.LocaleManager
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.LocaleManager
 import com.ezbalans.app.ezbalans.views.AppIntro
 import com.ezbalans.app.ezbalans.views.HomeActivity
 import com.ezbalans.app.ezbalans.views.signIn.WelcomeActivity
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
 

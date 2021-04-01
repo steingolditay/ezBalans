@@ -23,7 +23,6 @@
             android:layout_height="match_parent">
 
             <View
-                android:id="@+id/title_background"
                 android:layout_width="0dp"
                 android:layout_height="350dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -85,9 +84,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="20dp"
         app:backgroundTint="@color/colorYellow"
         android:src="@drawable/add_plus"
+        android:contentDescription="@string/image_content_descriptor"
         />
 
 

@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User

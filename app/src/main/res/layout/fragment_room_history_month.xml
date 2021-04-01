@@ -132,12 +132,6 @@
                 android:visibility="gone"
                 android:textColor="@color/colorBlue"
                 />
-
-
-
-
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
@@ -148,9 +142,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="20dp"
         android:backgroundTint="@color/colorBlue"
         android:src="@drawable/add_plus"
+        android:contentDescription="@string/image_content_descriptor"
         />
 
 

@@ -27,13 +27,13 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/title_background"
                     android:layout_width="0dp"
                     android:layout_height="350dp"
                     android:background="@drawable/bg_profile"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:contentDescription="@string/image_content_descriptor"
                     />
 
                 <TextView
@@ -58,7 +58,6 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/signup_card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -128,7 +127,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/password_ver"
+                        android:id="@+id/passwordVer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"

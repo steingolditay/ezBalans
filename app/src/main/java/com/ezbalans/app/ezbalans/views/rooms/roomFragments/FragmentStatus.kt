@@ -3,7 +3,6 @@ package com.ezbalans.app.ezbalans.views.rooms.roomFragments
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +11,13 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.RoomPaymentsAdapter
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
-import com.ezbalans.app.ezbalans.helpers.TranslateToHebrew
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.TranslateToHebrew
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
@@ -42,7 +41,8 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     private val firebaseUser = Firebase.auth.currentUser!!
     private val databaseReference = Firebase.database.reference
 
-    lateinit var viewModel: StatusFragmentViewModel
+    private val viewModel: StatusFragmentViewModel by viewModels()
+
     lateinit var roomUid: String
 
 
@@ -53,8 +53,8 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     var room = Room()
     private val roomCategories = arrayListOf<String>()
-    var totalAmount = 0
-    lateinit var myContext: Context
+    private var totalAmount = 0
+    private lateinit var myContext: Context
     lateinit var adapter: RoomPaymentsAdapter
 
 
@@ -63,7 +63,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         myContext = context
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRoomStatusBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -78,14 +78,12 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         }
 
         roomUid = arguments?.getString(Constants.room_uid)!!
+
+        initViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel = ViewModelProvider(requireActivity()).get(StatusFragmentViewModel::class.java)
-
-        viewModel.getMyRooms().observe(requireActivity(), {
+    private fun initViewModel(){
+        viewModel.getMyRooms().observe(viewLifecycleOwner, {
             for (roomObject in it){
                 if (roomObject.uid == roomUid){
                     room = roomObject
@@ -101,7 +99,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             }
         })
 
-        viewModel.getAllUsers().observe(requireActivity(), {
+        viewModel.getAllUsers().observe(viewLifecycleOwner, {
             roomUsers.clear()
             roomUsersMap.clear()
             allUsers = it
@@ -114,7 +112,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             }
         })
 
-        viewModel.getAllPayments().observe(requireActivity(), {
+        viewModel.getAllPayments().observe(viewLifecycleOwner, {
             payments.clear()
             totalAmount = 0
 
@@ -238,7 +236,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun updatePayments(){
-        adapter = RoomPaymentsAdapter(requireContext(), payments, roomUsers, room.currency, this)
+        adapter = RoomPaymentsAdapter(payments, roomUsers, room.currency, this)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(context)
     }
@@ -276,7 +274,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
 
         userInfo.text = user.username
-        amountInfo.text = payment.amount + "$currencySymbol"
+        amountInfo.text = payment.amount + currencySymbol
         dateInfo.text = GetCurrentDate().dateFromTimestamp(payment.timestamp.toLong())
         descriptionInfo.text = payment.description
         categoryInfo.text = payment.category

@@ -9,13 +9,14 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewRoomBinding
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.CreateNotification
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.CreateNotification
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
@@ -44,18 +45,18 @@ class RoomActivity: AppCompatActivity(){
 
     private val databaseReference = Firebase.database.reference
     private val firebaseUser = Firebase.auth.currentUser!!
-    var admin = false
+    private var admin: Boolean = false
     var room: Room = Room()
     private var roomUID: String? = ""
-    var userList = arrayListOf<User>()
+    private var userList = arrayListOf<User>()
 
     private val fragmentStatus = FragmentStatus()
     private val fragmentDetails = FragmentDetails()
     private val fragmentHistory = FragmentHistory()
     private val fragmentBundle = Bundle()
 
-    var fragmentSelector = ""
-    @Inject lateinit var repository: DatabaseRepository
+    private var fragmentSelector = ""
+    private val viewModel: RoomActivityViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +80,6 @@ class RoomActivity: AppCompatActivity(){
 
         }
 
-        val viewModel = RoomActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             for (user in it.values){
@@ -160,7 +160,7 @@ class RoomActivity: AppCompatActivity(){
         val inflater = optionsPopup.menuInflater
         inflater.inflate(R.menu.menu_room_options, optionsPopup.menu)
 
-        optionsPopup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
+        optionsPopup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.settings -> {
                     goToRoomSettings()
@@ -178,7 +178,7 @@ class RoomActivity: AppCompatActivity(){
                 }
             }
             true
-        })
+        }
         optionsPopup.show()
     }
 
@@ -286,7 +286,7 @@ class RoomActivity: AppCompatActivity(){
     override fun onBackPressed() {
         if (currentFragment == Constants.past_tag){
             val fragmentHistory = FragmentHistory()
-            val fragmentBundle = Bundle();
+            val fragmentBundle = Bundle()
             fragmentBundle.putString(Constants.room_uid, roomUID)
             fragmentHistory.arguments = fragmentBundle
 

@@ -9,18 +9,17 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
-import com.ezbalans.app.ezbalans.helpers.CreateNotification
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.CreateNotification
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.NotificationsActivityViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -30,10 +29,9 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
+class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
     private lateinit var binding: ViewNotificationsBinding
 
     private val databaseReference = Firebase.database.reference
@@ -41,8 +39,8 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
     private var rooms = hashMapOf<String, Room>()
     private var users =  HashMap<String, User>()
     private val notifications =  ArrayList<Notification>()
-    private val viewModel: NotificationsActivityViewModel by viewModels()
 
+    private val viewModel: NotificationsActivityViewModel by viewModels()
     lateinit var adapter: NotificationsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +49,12 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val view = binding.root
         setContentView(view)
 
+        initViewModel()
 
 
+    }
+
+    private fun initViewModel(){
         viewModel.getAllUsers().observe(this, {
             users = it
         })
@@ -278,8 +280,8 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
         val description = dialog.findViewById<TextView>(R.id.description_info)
         val category = dialog.findViewById<TextView>(R.id.category_info)
 
-        val decline = dialog.findViewById<Button>(R.id.decline_payment)
-        val validate = dialog.findViewById<Button>(R.id.validate_payment)
+        val decline = dialog.findViewById<Button>(R.id.negative)
+        val validate = dialog.findViewById<Button>(R.id.positive)
 
         val user = users[notification.source_uid]!!
         val room = rooms[notification.room_uid]!!
@@ -310,7 +312,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
                         }
                     }
                     else {
-                        Toast.makeText(this@Notifications, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@NotificationsActivity, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
 
 
@@ -327,7 +329,7 @@ class Notifications: AppCompatActivity(), NotificationsAdapter.OnItemClickListen
                         }
                     }
                     else {
-                        Toast.makeText(this@Notifications, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@NotificationsActivity, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
                 }
 

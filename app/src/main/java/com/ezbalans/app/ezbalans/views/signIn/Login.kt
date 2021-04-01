@@ -8,11 +8,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.views.HomeActivity
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewLoginBinding
-import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
+import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -36,7 +36,7 @@ class  Login : AppCompatActivity(){
         }
     }
     private fun verifyDetails(){
-        val email = binding.email.text.toString().trim();
+        val email = binding.email.text.toString().trim()
         val password = binding.password.text.toString().trim()
 
         if (email.isEmpty()){
@@ -59,7 +59,7 @@ class  Login : AppCompatActivity(){
         val loadingDialog = GetLoadingDialog(this, getString(R.string.logging_in)).create()
         loadingDialog.show()
 
-        val auth = Firebase.auth;
+        val auth = Firebase.auth
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful){
                 loadingDialog.dismiss()
@@ -67,7 +67,7 @@ class  Login : AppCompatActivity(){
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
-            else{
+            else {
                 loadingDialog.dismiss()
                 Toast.makeText(this, resources.getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
             }

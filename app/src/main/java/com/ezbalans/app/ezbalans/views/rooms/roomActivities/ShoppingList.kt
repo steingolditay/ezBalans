@@ -6,34 +6,33 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.ShoppingListItemsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.ShoppingListActivityViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickListener {
     private lateinit var binding: ViewShoppingListBinding
 
-    var shoppingListUid = ""
-    var roomUid = ""
-    val databaseReference = Firebase.database.reference
-    var room = Room()
-    var shoppingList = arrayListOf<HashMap<String, Boolean>>()
-    var items = arrayListOf<String>()
+    private var shoppingListUid = ""
+    private var roomUid = ""
+    private val databaseReference = Firebase.database.reference
+    private var room = Room()
+    private var shoppingList = arrayListOf<HashMap<String, Boolean>>()
+    private var items = arrayListOf<String>()
+
+    private val viewModel: ShoppingListActivityViewModel by viewModels()
     lateinit var adapter: ShoppingListItemsAdapter
-    @Inject lateinit var repository: DatabaseRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +50,15 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
             }
         }
 
-        val viewModel = ShoppingListActivityViewModel(repository)
+        binding.fab.setOnClickListener{
+            addItem()
 
+        }
+
+        initViewModel()
+    }
+
+    private fun initViewModel(){
         viewModel.getAllRooms().observe(this, {
             for (roomObject in it){
                 if (roomObject.uid == roomUid){
@@ -71,17 +77,13 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
                 shoppingList.add(itemMap)
                 items.add(item.key)
             }
+
             initAdapter()
         })
-
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener{
-            addItem()
-        }
     }
 
     private fun initAdapter(){
-        adapter = ShoppingListItemsAdapter(this, shoppingList, this)
+        adapter = ShoppingListItemsAdapter(shoppingList, this)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(this)
     }

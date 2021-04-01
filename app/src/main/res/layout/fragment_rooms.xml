@@ -23,7 +23,6 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/title_background"
                 android:layout_width="wrap_content"
                 android:layout_height="350dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +30,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/bg_rooms"
                 android:elevation="0dp"
+                android:contentDescription="@string/image_content_descriptor"
                 />
 
             <TextView
@@ -88,7 +88,6 @@
         android:id="@+id/list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_card"
@@ -96,7 +95,7 @@
         android:clipToPadding="false"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/empty_container"
+        android:id="@+id/emptyContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/title_card"
@@ -106,7 +105,6 @@
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/empty_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -128,14 +126,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="70dp"
+            android:contentDescription="@string/image_content_descriptor"
             />
 
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
 
     <com.github.clans.fab.FloatingActionMenu
@@ -148,12 +142,13 @@
         app:menu_colorNormal="@color/colorBlue"
         app:menu_colorRipple="@color/colorPrimary"
         app:menu_labels_colorNormal="@color/colorBlue"
-        android:layout_margin="10dp"
+        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="10dp"
 
         >
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/create_room"
+            android:id="@+id/createRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/room"
@@ -164,7 +159,7 @@
             />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/join_room"
+            android:id="@+id/joinRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/join"
@@ -176,7 +171,7 @@
     </com.github.clans.fab.FloatingActionMenu>
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_heb"
+        android:id="@+id/fabHeb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -193,7 +188,7 @@
         >
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/create_room_heb"
+            android:id="@+id/createRoomHeb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/room"
@@ -204,7 +199,7 @@
             />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/join_room_heb"
+            android:id="@+id/joinRoomHeb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/join"

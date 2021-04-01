@@ -1,10 +1,8 @@
 package com.ezbalans.app.ezbalans.views.homeFragments
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +10,9 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
@@ -64,7 +61,7 @@ class FragmentWallet : Fragment() {
         ThreeMonths, Year, AllTime
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentWalletBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -113,7 +110,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun initViewModels(){
-        viewModel.getMyBudgets().observe(requireActivity(), { budgets ->
+        viewModel.getMyBudgets().observe(viewLifecycleOwner, { budgets ->
             for (entry in budgets) {
                 if (entry.key == firebaseUser.uid) {
                     totalBudget = entry.value
@@ -124,14 +121,14 @@ class FragmentWallet : Fragment() {
 
         })
 
-        viewModel.getMyRooms().observe(requireActivity(), { result ->
+        viewModel.getMyRooms().observe(viewLifecycleOwner, { result ->
             for (room in result){
                 myRooms[room.uid] = room
             }
 
         })
 
-        viewModel.getMyPayments().observe(requireActivity(), {
+        viewModel.getMyPayments().observe(viewLifecycleOwner, {
             payments.clear()
             roomPayments.clear()
 
@@ -443,7 +440,7 @@ class FragmentWallet : Fragment() {
         val inflater = optionsPopup.menuInflater
         inflater.inflate(R.menu.menu_budgets_options, optionsPopup.menu)
 
-        optionsPopup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
+        optionsPopup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.total_budget -> {
                     showTotalBudgetDialog()
@@ -453,7 +450,7 @@ class FragmentWallet : Fragment() {
                 }
             }
             true
-        })
+        }
         optionsPopup.show()
     }
 
@@ -487,7 +484,7 @@ class FragmentWallet : Fragment() {
 
         for (r in myRooms) {
             val room = r.value
-            var roomBudget: Int = 0
+            var roomBudget = 0
             var roomExpenses = 0
             if (roomBudgets.containsKey(room.uid)) {
                 roomBudget = roomBudgets[room.uid]!!

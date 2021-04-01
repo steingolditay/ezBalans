@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.views.rooms.roomFragments
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,19 +11,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.RoomPaymentsAdapter
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.CreateNotification
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.CreateNotification
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomHistoryMonthBinding
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.ezbalans.app.ezbalans.viewmodels.roomFragments.PastMonthFragmentViewModel
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
@@ -51,36 +49,30 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
     private val firebaseUser = Firebase.auth.currentUser!!
     private val databaseReference = Firebase.database.reference
-    lateinit var viewModel: PastMonthFragmentViewModel
+    private val viewModel: PastMonthFragmentViewModel by viewModels()
 
     val payments = arrayListOf<Payment>()
     private val roomUsers = arrayListOf<User>()
     private val roomUsersList = HashMap<String, User>()
-    var allUsers = HashMap<String, User>()
+    private var allUsers = HashMap<String, User>()
 
 
     var room = Room()
-    var totalAmount = 0
-    lateinit var myContext: Context
+    private var totalAmount = 0
     private var monthTimestamp: Long = 0
-    val roomCategories = arrayListOf<String>()
+    private val roomCategories = arrayListOf<String>()
 
     private lateinit var balanceChartCard: CardView
     private lateinit var balanceChart: PieChart
     private lateinit var debt: TextView
     private lateinit var breakEven: Button
-    var currencySymbol = ""
+    private var currencySymbol = ""
     private lateinit var roomUid: String
-
 
     lateinit var adapter: RoomPaymentsAdapter
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        myContext = context
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRoomHistoryMonthBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -103,18 +95,17 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
         monthTimestamp = arguments?.getLong(Constants.time_stamp)!!
         roomUid = arguments?.getString(Constants.room_uid)!!
+
+        initViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(PastMonthFragmentViewModel::class.java)
-
-        viewModel.getAllUsers().observe(requireActivity(), {
+    private fun initViewModel(){
+        viewModel.getAllUsers().observe(viewLifecycleOwner, {
             allUsers = it
         })
 
-        viewModel.getMyRooms().observe(requireActivity(), {
+        viewModel.getMyRooms().observe(viewLifecycleOwner, {
             for (roomObject in it) {
                 if (roomObject.uid == roomUid){
                     room = roomObject
@@ -136,7 +127,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
             }
         })
 
-        viewModel.getAllPayments().observe(requireActivity(), {
+        viewModel.getAllPayments().observe(viewLifecycleOwner, {
             payments.clear()
             totalAmount = 0
 
@@ -163,8 +154,8 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 updatePayments()
             }
         })
-
     }
+
 
     private fun paymentFromThisMonth(payment: Payment) : Boolean{
         val calendar = Calendar.getInstance(TimeZone.getDefault())
@@ -182,7 +173,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun updatePayments(){
-        adapter = RoomPaymentsAdapter(requireContext(), payments, roomUsers, room.currency, this)
+        adapter = RoomPaymentsAdapter(payments, roomUsers, room.currency, this)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(context)
         binding.list.setHasFixedSize(true)
@@ -211,7 +202,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val maximumDays = getMaximumDays()
         var paymentType = ""
 
-        val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_add_payment).create()
+        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_add_payment).create()
         val paymentTypeSpinner = dialog.findViewById<PowerSpinnerView>(R.id.payment_type)
         val addPayment = dialog.findViewById<Button>(R.id.add_payment)
 
@@ -273,7 +264,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val payment = payments[position]
         val user = roomUsersList[payment.from]!!
 
-        val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_payment_info).create()
+        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_payment_info).create()
         val userInfo = dialog.findViewById<TextView>(R.id.user_info)
         val amountInfo = dialog.findViewById<TextView>(R.id.amount_info)
         val dateInfo = dialog.findViewById<TextView>(R.id.date_info)
@@ -455,7 +446,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
 
         breakEven.setOnClickListener {
-            val dialog = GetCustomDialog(Dialog(myContext), R.layout.dialog_break_even).create()
+            val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_break_even).create()
             val approve = dialog.findViewById<Button>(R.id.approve)
 
             approve.setOnClickListener{

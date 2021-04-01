@@ -1,12 +1,11 @@
 package com.ezbalans.app.ezbalans.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -14,8 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RoomHistoryAdapter(private val context: Context,
-                         private val pastPayments: SortedMap<Long, Int>,
+class RoomHistoryAdapter(private val pastPayments: SortedMap<Long, Int>,
                          private val keys: ArrayList<Long>,
                          private val currency: String,
                          private val listener: OnItemClickListener) :

@@ -40,14 +40,16 @@
 
 
             <ImageView
-                android:id="@+id/title_background"
+                android:id="@+id/options"
                 android:layout_width="wrap_content"
                 android:layout_height="350dp"
                 android:background="@drawable/bg_rooms"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/image_content_descriptor"
+                />
 
 
             <TextView
@@ -70,7 +72,6 @@
     </androidx.cardview.widget.CardView>
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/options"
         android:layout_width="36dp"
         android:layout_height="36dp"
         app:layout_constraintEnd_toEndOf="@id/name_card"
@@ -86,7 +87,7 @@
         android:id="@+id/mainframe"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:layout_marginVertical="10dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

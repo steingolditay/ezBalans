@@ -1,13 +1,10 @@
-package com.ezbalans.app.ezbalans.helpers
+package com.ezbalans.app.ezbalans.utils
 
 object Constants {
 
 
     // general
-    const val tag = "TAG";
     const val admin = "admin"
-    const val main_activity_count = "main_activity_count"
-    const val room_activity_count = "room_activity_count"
     const val room_uid = "room_uid"
     const val language = "language"
     const val language_english = "english"
@@ -93,67 +90,67 @@ object Constants {
     const val history_tag = "HISTORY_TAG"
 
     //currencies
-    @JvmField val room_currencies = arrayListOf<String>("USD", "NIS")
+    @JvmField val room_currencies = arrayListOf("USD", "NIS")
     const val nis = "NIS"
     const val usd = "USD"
     const val nis_symbol = "₪"
     const val usd_symbol = "$"
 
     // room types
-    const val category_rent = "Rent"
-    const val category_bills = "Bills"
-    const val category_repairs = "Repairs"
-    const val category_groceries = "Groceries"
-    const val category_clothing = "Clothing"
-    const val category_medical = "Medical and Healthcare"
-    const val category_gifts = "Gifts"
-    const val category_entertainment = "Entertainment"
-    const val category_alcohol = "Alcohol"
-    const val category_tobacco = "Tobacco and Smoking"
-    const val category_gas = "Gas"
-    const val category_car = "Car Maintenance"
-    const val category_parking = "Parking"
-    const val category_pet = "Pet Food"
-    const val category_phone = "Phone"
-    const val category_internet = "Internet"
-    const val category_tv = "TV and Streaming"
-    const val category_insurance = "Insurance"
-    const val category_gym = "Gym"
-    const val category_haircut = "Haircut and Salon"
-    const val category_babysitter = "Babysitter"
-    const val category_loans = "Loans"
-    const val category_education = "Education"
-    const val category_school = "School"
-    const val category_vacations = "Vacations"
-    const val category_other = "Other"
+    private const val category_rent = "Rent"
+    private const val category_bills = "Bills"
+    private const val category_repairs = "Repairs"
+    private const val category_groceries = "Groceries"
+    private const val category_clothing = "Clothing"
+    private const val category_medical = "Medical and Healthcare"
+    private const val category_gifts = "Gifts"
+    private const val category_entertainment = "Entertainment"
+    private const val category_alcohol = "Alcohol"
+    private const val category_tobacco = "Tobacco and Smoking"
+    private const val category_gas = "Gas"
+    private const val category_car = "Car Maintenance"
+    private const val category_parking = "Parking"
+    private const val category_pet = "Pet Food"
+    private const val category_phone = "Phone"
+    private const val category_internet = "Internet"
+    private const val category_tv = "TV and Streaming"
+    private const val category_insurance = "Insurance"
+    private const val category_gym = "Gym"
+    private const val category_haircut = "Haircut and Salon"
+    private const val category_babysitter = "Babysitter"
+    private const val category_loans = "Loans"
+    private const val category_education = "Education"
+    private const val category_school = "School"
+    private const val category_vacations = "Vacations"
+    private const val category_other = "Other"
 
 
 
     const val default_user_image = "https://firebasestorage.googleapis.com/v0/b/ezbalans-87bc5.appspot.com/o/user.png?alt=media&token=34b4b9da-062a-4822-826f-05aabb08dc74"
     const val default_room_image = "https://firebasestorage.googleapis.com/v0/b/ezbalans-87bc5.appspot.com/o/open-door.png?alt=media&token=ef394a81-7bcf-4b1d-8880-06b728b18aa4"
 
-    @JvmField val room_types = arrayListOf<String>("Family", "Roommates", "Couple", "Vacation")
+    @JvmField val room_types = arrayListOf("Family", "Roommates", "Couple", "Vacation")
 
 
-    @JvmField val room_category_family = arrayListOf<String>(
+    @JvmField val room_category_family = arrayListOf(
         category_rent, category_bills, category_repairs, category_groceries, category_clothing, category_medical,
                                                                      category_gifts, category_entertainment, category_alcohol, category_tobacco, category_gas, category_car, category_parking, category_pet,
                                                                      category_phone, category_internet, category_tv, category_insurance, category_gym, category_haircut, category_babysitter, category_loans,
                                                                      category_education, category_school, category_vacations, category_other
     )
 
-    val room_category_roommates = arrayListOf<String>(
+    val room_category_roommates = arrayListOf(
         category_rent, category_bills, category_repairs, category_groceries, category_pet, category_internet,
                                                                     category_tv, category_other
     )
 
-    val room_category_couple = arrayListOf<String>(
+    val room_category_couple = arrayListOf(
         category_rent, category_bills, category_repairs, category_groceries, category_medical, category_gifts, category_entertainment, category_alcohol,
                                                                     category_tobacco, category_gas, category_car, category_parking, category_pet, category_phone, category_internet, category_tv, category_loans,
                                                                     category_vacations, category_other
     )
 
-    val room_category_vacation = arrayListOf<String>(
+    val room_category_vacation = arrayListOf(
         category_rent, category_groceries, category_medical, category_entertainment, category_alcohol, category_tobacco, category_gas,
                                                                     category_insurance, category_loans, category_other
     )

@@ -7,24 +7,24 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
+import kotlin.collections.HashMap
 
-class MyRoomsAdapter(private val context: Context, private val rooms: List<Room>?, private val listener: MyRoomsAdapter.OnItemClickListener) :
-        RecyclerView.Adapter<MyRoomsAdapter.ViewHolder>() {
-
-    private val firebaseUser = Firebase.auth.currentUser!!
-    private val databaseReference = Firebase.database.reference
-
+class MyRoomsAdapter(private val context: Context,
+                     private val rooms: List<Room>?,
+                     private val payments: HashMap<String, Payment>,
+                     private val budgets: HashMap<String, Int>,
+                     private val listener: OnItemClickListener)
+    : RecyclerView.Adapter<MyRoomsAdapter.ViewHolder>() {
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
@@ -40,7 +40,7 @@ class MyRoomsAdapter(private val context: Context, private val rooms: List<Room>
         private val cart: ImageView = itemView.findViewById(R.id.cart)
         private val details: ImageView = itemView.findViewById(R.id.details)
         private val edit: ImageView = itemView.findViewById(R.id.edit)
-        val motd_title: TextView = itemView.findViewById(R.id.motd_title)
+        val motdTitle: TextView = itemView.findViewById(R.id.motd_title)
         val motd: TextView = itemView.findViewById(R.id.motd)
         val budget:TextView = itemView.findViewById(R.id.budget)
 
@@ -92,7 +92,7 @@ class MyRoomsAdapter(private val context: Context, private val rooms: List<Room>
 
         if (room.motd.isEmpty()){
             holder.motd.visibility = View.GONE
-            holder.motd_title.visibility = View.GONE
+            holder.motdTitle.visibility = View.GONE
         }
         holder.motd.text = room.motd
 
@@ -102,28 +102,15 @@ class MyRoomsAdapter(private val context: Context, private val rooms: List<Room>
     }
 
     override fun getItemCount(): Int {
-        return if (rooms == null){
-            0
-        } else{
-            rooms.size
-        }
+        return rooms?.size ?: 0
     }
 
     private fun loadBudget(roomUid: String, holder: MyRoomsAdapter.ViewHolder, roomCurrency: String){
         var totalAmount = 0
-        var budget = 0
+        val budget = budgets[roomUid]!!
         val currency = if (roomCurrency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
-        val myBudgets = GetPrefs().getMyBudgets()
-        if (myBudgets.containsKey(roomUid)){
-            budget = myBudgets[roomUid]!!.toInt()
-        }
-        else {
-            databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(roomUid).setValue(0)
-        }
-
-        val paymentsPref = GetPrefs().getMyPayments()
-        for (payment in paymentsPref.values){
+        for (payment in payments.values){
             if (payment.status == Constants.payment_valid && paymentFromThisMonth(payment) && payment.to == roomUid){
                 totalAmount += payment.amount.toInt()
             }

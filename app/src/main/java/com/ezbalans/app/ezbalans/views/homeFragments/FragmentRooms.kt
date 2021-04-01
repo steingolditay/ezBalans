@@ -13,20 +13,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.views.Notifications
-import com.ezbalans.app.ezbalans.helpers.CreateNotification
-import com.ezbalans.app.ezbalans.helpers.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.views.NotificationsActivity
+import com.ezbalans.app.ezbalans.utils.CreateNotification
+import com.ezbalans.app.ezbalans.utils.GetCustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.rooms.roomActivities.CreateRoom
 import com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomActivity
 import com.ezbalans.app.ezbalans.views.rooms.roomActivities.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
-import com.ezbalans.app.ezbalans.helpers.GetPrefs
+import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.RoomsFragmentViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -37,7 +36,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.preference.PowerPreference
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlin.collections.HashMap
 
 @AndroidEntryPoint
 class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
@@ -51,13 +50,15 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     private lateinit var adapter: MyRoomsAdapter
     private lateinit var myRooms: List<Room>
+    private lateinit var myPayments: HashMap<String, Payment>
+    private lateinit var myBudgets: HashMap<String, Int>
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRoomsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -65,22 +66,23 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initViewModel()
+
         val roomUid = arguments?.getString(Constants.room_uid)
         if (roomUid != null){
             joinFromDeepLink(roomUid)
         }
 
         binding.notification.setOnClickListener{
-            val intent = Intent(requireContext(), Notifications::class.java)
+            val intent = Intent(requireContext(), NotificationsActivity::class.java)
             startActivity(intent)
         }
         binding.badge.setOnClickListener{
-            val intent = Intent(requireContext(), Notifications::class.java)
+            val intent = Intent(requireContext(), NotificationsActivity::class.java)
             startActivity(intent)
         }
 
         loadLanguageUI()
-        initViewModel()
     }
 
     private fun loadLanguageUI(){
@@ -144,9 +146,19 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     private fun initViewModel(){
         viewModel.getMyRooms().observe(viewLifecycleOwner, {
-            initRecyclerView(it)
             myRooms = it
-            updateRoomsVisibility()
+            initRecyclerView()
+        })
+
+        viewModel.getMyPayments().observe(viewLifecycleOwner, {
+
+            myPayments = it
+            initRecyclerView()
+        })
+
+        viewModel.getMyBudgets().observe(viewLifecycleOwner, {
+            myBudgets = it
+            initRecyclerView()
         })
 
         viewModel.getMyNotifications().observe(viewLifecycleOwner, { notifications ->
@@ -168,10 +180,15 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         })
     }
 
-    private fun initRecyclerView(myRooms: List<Room>){
-        adapter = MyRoomsAdapter(requireContext(), myRooms, this)
-        binding.list.layoutManager = LinearLayoutManager(context)
-        binding.list.adapter = adapter
+    private fun initRecyclerView(){
+        if (this::myRooms.isInitialized && this::myPayments.isInitialized && this::myBudgets.isInitialized){
+            adapter = MyRoomsAdapter(requireContext(), myRooms, myPayments, myBudgets,this)
+            binding.list.layoutManager = LinearLayoutManager(context)
+            binding.list.adapter = adapter
+
+            updateRoomsVisibility()
+
+        }
 
     }
 
@@ -217,8 +234,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun requestJoinRoom(identityKey: String, dialog: Dialog){
-        val rooms = GetPrefs().getAllRooms()
-        for (room in rooms.values){
+        for (room in myRooms){
             if (room.identity_key == identityKey){
                 val status = room.residents[firebaseUser.uid]
                 if (!room.residents.containsKey(firebaseUser.uid) || !(status == Constants.requested || status == Constants.added || status == Constants.declined)){
@@ -281,22 +297,21 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     override fun onEditClick(position: Int) {
         val room = myRooms[position]
-        var currentBudget: Int = 0
+        var currentBudget = 0
         val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val button = dialog.findViewById<Button>(R.id.apply)
 
-        val myBudgets = GetPrefs().getMyBudgets()
 
         if (myBudgets.containsKey(room.uid)){
             val roomBudget = myBudgets[room.uid]!!
-            budget.setText(roomBudget)
-            currentBudget = roomBudget.toInt()
+            println(roomBudget)
+            budget.setText(roomBudget.toString())
+            currentBudget = roomBudget
         }
         else {
             databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(0)
             budget.setText("0")
-
         }
 
 
@@ -304,11 +319,9 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             val newBudget = budget.text.toString().toInt()
             if (newBudget != currentBudget){
                 databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(newBudget).addOnSuccessListener {
-//                    getMyRooms()
                     dialog.dismiss()
                 }
             }
-
         }
 
         dialog.show()
@@ -354,4 +367,5 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
         })
     }
+
 }

@@ -28,6 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/intro_rooms_screen"
+        android:contentDescription="@string/image_content_descriptor"
         />
 
 

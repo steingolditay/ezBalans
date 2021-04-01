@@ -5,18 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.RowUserBinding
 import com.ezbalans.app.ezbalans.databinding.ViewCreateRoomBinding
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.GetCurrentDate
-import com.ezbalans.app.ezbalans.helpers.GetIdentityKey
-import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.GetIdentityKey
+import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -24,7 +24,6 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import javax.inject.Inject
 import kotlin.collections.HashMap
 
 @AndroidEntryPoint
@@ -34,15 +33,17 @@ class CreateRoom: AppCompatActivity(){
 
     private val firebaseUser = Firebase.auth.currentUser
     private val databaseReference = Firebase.database.reference
-    var userList = arrayListOf<User>()
+    private var userList = arrayListOf<User>()
     private var addedUsers = arrayListOf<String>()
     private val identityKeys = GetIdentityKey()
     private val getCurrentDate = GetCurrentDate()
-    lateinit var existingKeyList: List<String>
-    @Inject lateinit var repository: DatabaseRepository
+    private lateinit var existingKeyList: List<String>
 
-    var roomType = ""
-    var roomCurrency = ""
+
+    private val viewModel: CreateRoomActivityViewModel by viewModels()
+
+    private var roomType = ""
+    private var roomCurrency = ""
     private val roomCategories = HashMap<String, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +52,6 @@ class CreateRoom: AppCompatActivity(){
         val view = binding.root
         setContentView(view)
 
-        val viewModel = CreateRoomActivityViewModel(repository)
 
         viewModel.getAllUsers().observe(this, {
             userList.clear()
@@ -124,7 +124,7 @@ class CreateRoom: AppCompatActivity(){
 
     private fun findUser(){
         var found = false
-        val userIdentityKey = binding.identity.text.toString().toUpperCase(Locale.getDefault()).trim();
+        val userIdentityKey = binding.identity.text.toString().toUpperCase(Locale.getDefault()).trim()
         for (user in userList){
             if (user.identity_key == userIdentityKey){
                 found = true
@@ -158,7 +158,7 @@ class CreateRoom: AppCompatActivity(){
             Picasso.get().load(R.drawable.default_account).into(rowBinding.image)
 
         }
-        rowBinding.username.text = user.username;
+        rowBinding.username.text = user.username
         rowBinding.name.text = String.format("%s %s", user.first_name, user.last_name)
         rowBinding.identityKey.text = user.identity_key
         rowBinding.remove.visibility = View.VISIBLE
@@ -239,7 +239,7 @@ class CreateRoom: AppCompatActivity(){
                 Constants.room_active,
                 getString(R.string.default_motd))
 
-        databaseReference.child(Constants.rooms).child(roomUid).setValue(room).addOnCompleteListener() { result ->
+        databaseReference.child(Constants.rooms).child(roomUid).setValue(room).addOnCompleteListener { result ->
             if (result.isSuccessful){
                 databaseReference.child(Constants.shopping_lists).child(shoppingList).child(getString(R.string.example_item)).setValue(true)
                 dialog.dismiss()

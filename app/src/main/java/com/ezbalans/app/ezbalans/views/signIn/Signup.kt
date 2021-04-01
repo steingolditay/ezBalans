@@ -6,16 +6,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.ezbalans.app.ezbalans.helpers.Constants
-import com.ezbalans.app.ezbalans.helpers.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.helpers.GetIdentityKey
+import com.ezbalans.app.ezbalans.utils.Constants
+import com.ezbalans.app.ezbalans.utils.CheckPasswordStrength
+import com.ezbalans.app.ezbalans.utils.GetIdentityKey
 import com.ezbalans.app.ezbalans.views.HomeActivity
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewSignupBinding
-import com.ezbalans.app.ezbalans.helpers.GetLoadingDialog
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
+import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
 import com.ezbalans.app.ezbalans.viewmodels.signinActivities.SignUpActivityViewModel
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -25,12 +25,11 @@ import com.google.firebase.ktx.Firebase
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
 
 class Signup : AppCompatActivity() {
     private lateinit var binding: ViewSignupBinding
-    lateinit var existingKeyList: List<String>
-    @Inject lateinit var repository: DatabaseRepository
+    private lateinit var existingKeyList: List<String>
+    private val viewModel: SignUpActivityViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +38,9 @@ class Signup : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-
         binding.signup.setOnClickListener {
             verifyDetails()
         }
-
-        val viewModel = SignUpActivityViewModel(repository)
 
         viewModel.getUserKeys().observe(this, {
             existingKeyList = it
@@ -55,10 +51,10 @@ class Signup : AppCompatActivity() {
     private fun verifyDetails() {
         val email = binding.email.text.toString().trim()
         val password = binding.password.text.toString().trim()
-        val passwordVer = binding.passwordVer.text.toString().trim();
-        val username = binding.username.text.toString().trim();
-        val firstName = binding.firstName.text.toString().trim();
-        val lastName = binding.lastName.text.toString().trim();
+        val passwordVer = binding.passwordVer.text.toString().trim()
+        val username = binding.username.text.toString().trim()
+        val firstName = binding.firstName.text.toString().trim()
+        val lastName = binding.lastName.text.toString().trim()
 
         val passStrength = CheckPasswordStrength().check(this, password)
 

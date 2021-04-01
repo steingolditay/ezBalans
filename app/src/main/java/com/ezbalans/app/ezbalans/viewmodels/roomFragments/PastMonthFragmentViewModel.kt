@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.viewmodels.roomFragments
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room

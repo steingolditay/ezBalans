@@ -3,7 +3,7 @@ package com.ezbalans.app.ezbalans.views
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.ezbalans.app.ezbalans.helpers.Constants
+import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.views.signIn.WelcomeActivity
 import com.github.appintro.AppIntro
