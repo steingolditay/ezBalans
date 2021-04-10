@@ -21,16 +21,16 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.CreateRoom"/>
-        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.ShoppingList"/>
-        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomInfo"/>
-        <activity android:name="com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomActivity"/>
-        <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Login"/>
-        <activity android:name="com.ezbalans.app.ezbalans.views.signIn.Signup"/>
-        <activity android:name=".views.signIn.WelcomeActivity"/>
-        <activity android:name=".views.NotificationsActivity"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.CreateRoom"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.ShoppingList"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.RoomSettings"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.RoomActivity"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.signIn.Login"/>
+        <activity android:name="com.ezbalans.app.ezbalans.presentation.signIn.Signup"/>
+        <activity android:name=".presentation.signIn.WelcomeActivity"/>
+        <activity android:name=".presentation.NotificationsActivity"/>
 
-        <activity android:name=".views.HomeActivity">
+        <activity android:name=".presentation.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -53,9 +53,6 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/>
-
-        <activity android:name=".views.AppIntro"
-            android:label="My Custom AppIntro" />
 
     </application>
 

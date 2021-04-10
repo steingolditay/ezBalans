@@ -1,7 +1,10 @@
 package com.ezbalans.app.ezbalans.viewmodels.roomActivities
 
+import android.app.Dialog
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +20,11 @@ class CreateRoomActivityViewModel
 
     fun getAllRoomKeys(): LiveData<List<String>> {
         return repository.provideAllRoomKeys()
+    }
+
+    fun createRoom(context: Context, room: Room){
+       return repository.roomCreatedUpdate(context, room)
+
     }
 
 }

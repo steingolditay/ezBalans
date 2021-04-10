@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.ezbalans.app.ezbalans.R
 
-class GetLoadingDialog (context: Context, private val input: String?) {
+class LoadingDialog (context: Context, private val input: String?) {
 
     val dialog = Dialog(context)
 

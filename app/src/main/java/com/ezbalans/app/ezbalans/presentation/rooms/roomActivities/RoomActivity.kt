@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.rooms.roomActivities
+package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
 import android.app.Dialog
 import android.content.Intent
@@ -16,14 +16,13 @@ import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewRoomBinding
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomActivityViewModel
-import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentDetails
-import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentHistory
-import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentStatus
+import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentDetails
+import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentHistory
+import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentStatus
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -33,7 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class RoomActivity: AppCompatActivity(){
@@ -46,9 +44,9 @@ class RoomActivity: AppCompatActivity(){
     private val databaseReference = Firebase.database.reference
     private val firebaseUser = Firebase.auth.currentUser!!
     private var admin: Boolean = false
-    var room: Room = Room()
-    private var roomUID: String? = ""
-    private var userList = arrayListOf<User>()
+    private var room: Room = Room()
+    private var roomUID: String = ""
+    private var userList = listOf<User>()
 
     private val fragmentStatus = FragmentStatus()
     private val fragmentDetails = FragmentDetails()
@@ -68,36 +66,18 @@ class RoomActivity: AppCompatActivity(){
         val bundle = intent.extras
         if (bundle != null){
             if (bundle.containsKey(Constants.room_uid) && bundle.containsKey(Constants.fragmentSelector)){
-                roomUID = bundle.getString(Constants.room_uid)
+                roomUID = bundle.getString(Constants.room_uid)!!
                 fragmentSelector = bundle.getString(Constants.fragmentSelector).toString()
                 fragmentBundle.putString(Constants.room_uid, roomUID)
 
                 fragmentStatus.arguments = fragmentBundle
                 fragmentDetails.arguments = fragmentBundle
                 fragmentHistory.arguments = fragmentBundle
-
             }
-
         }
 
 
-        viewModel.getAllUsers().observe(this, {
-            for (user in it.values){
-                userList.add(user)
-            }
-        })
-
-        viewModel.getAllRooms().observe(this, {
-            for (roomObject in it){
-                if (roomObject.uid == roomUID){
-                    room = roomObject
-                    loadRoom()
-                    if (room.admins[firebaseUser.uid] == true){
-                        admin = true
-                    }
-                }
-            }
-        })
+        initViewModel()
 
 
         when (fragmentSelector) {
@@ -142,7 +122,24 @@ class RoomActivity: AppCompatActivity(){
     }
 
 
-    private fun loadRoom(){
+    private fun initViewModel(){
+        viewModel.roomUid = roomUID
+
+        viewModel.allUsers.observe(this, {
+            userList = it
+
+        })
+
+        viewModel.myRoom.observe(this, {
+            room = it
+            loadRoomData()
+            if (room.admins[firebaseUser.uid] == true){
+                admin = true
+            }
+        })
+
+    }
+    private fun loadRoomData(){
         Picasso.get().load(room.image).into(binding.image)
         binding.name.text = room.name
     }
@@ -183,14 +180,14 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun goToRoomSettings(){
-        val intent = Intent(this, RoomInfo::class.java)
+        val intent = Intent(this, RoomSettings::class.java)
         intent.putExtra(Constants.room_uid, roomUID)
         intent.putExtra(Constants.admin, admin)
         startActivity(intent)
     }
 
     private fun leaveRoom(){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_leave_room).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_leave_room).create()
 
         val leaveRoom  = dialog.findViewById<Button>(R.id.leave_room)
         leaveRoom.setOnClickListener {
@@ -235,7 +232,7 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun addResident(){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_add_resident).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_add_resident).create()
         val identityText = dialog.findViewById<EditText>(R.id.identity)
         val addResident = dialog.findViewById<Button>(R.id.add_resident)
 
@@ -245,12 +242,11 @@ class RoomActivity: AppCompatActivity(){
             for (user in userList){
                 if (user.identity_key == identityKey){
                     found = true
-                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(user.uid).setValue(
-                            Constants.added).addOnSuccessListener {
-                        CreateNotification().create(room, Constants.notify_user_joined, firebaseUser.uid, user.uid, "")
+                        viewModel.addUserToRoom(user.uid, room)
                         dialog.dismiss()
                         Toast.makeText(this, getString(R.string.resident_added), Toast.LENGTH_SHORT).show()
-                    }
+
+
                 }
             }
             if (!found){
@@ -264,7 +260,7 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun closeRoomDialog(){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_close_room).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_close_room).create()
         val body = dialog.findViewById<TextView>(R.id.body)
         val closeRoom = dialog.findViewById<Button>(R.id.close_room)
 

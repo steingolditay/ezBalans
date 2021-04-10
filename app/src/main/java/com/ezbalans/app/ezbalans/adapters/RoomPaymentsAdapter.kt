@@ -17,8 +17,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class RoomPaymentsAdapter (private val payments: ArrayList<Payment>,
-                           private val users: ArrayList<User>,
+class RoomPaymentsAdapter (private val payments: List<Payment>,
+                           private val users: List<User>,
                            private val currency: String,
                            private val listener: OnItemClickListener) :
         RecyclerView.Adapter<RoomPaymentsAdapter.ViewHolder>(){

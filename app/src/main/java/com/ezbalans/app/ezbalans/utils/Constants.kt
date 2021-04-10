@@ -15,7 +15,6 @@ object Constants {
     const val password = "password"
     const val my_rooms = "my_rooms"
     const val my_payments = "my_payments"
-    const val first_time = "first_time"
 
 
     // db

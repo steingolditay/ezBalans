@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.homeFragments
+package com.ezbalans.app.ezbalans.presentation.homeFragments
 
 import android.app.Dialog
 import android.graphics.Typeface
@@ -11,12 +11,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.utils.GetCurrentDate
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
+import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.views.rooms.roomFragments.FragmentDetails
+import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentDetails
 import com.ezbalans.app.ezbalans.databinding.FragmentWalletBinding
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.WalletFragmentViewModel
 import com.github.mikephil.charting.components.XAxis
@@ -41,14 +41,14 @@ class FragmentWallet : Fragment() {
 
     private val firebaseUser = Firebase.auth.currentUser!!
     private val databaseReference = Firebase.database.reference
-    private var payments = arrayListOf<Payment>()
-    private var roomPayments = HashMap<String, HashMap<String, Payment>>()
-    private val myRooms = HashMap<String, Room>()
 
-    private var totalBudget = 0
-    private var roomBudgets = HashMap<String, Int>()
+    private lateinit var payments: List<Payment>
+    private lateinit var roomPayments: HashMap<String, HashMap<String, Payment>>
+    private lateinit var myRooms: Map<String, Room>
+    private lateinit var roomBudgets: HashMap<String, Int>
+    private var totalBudget = -1
+
     private var selectedFilter = GraphFilter.ThreeMonths
-
     private val viewModel: WalletFragmentViewModel by viewModels()
 
 
@@ -109,91 +109,76 @@ class FragmentWallet : Fragment() {
         initViewModels()
     }
 
-    private fun initViewModels(){
+    private fun initViewModels() {
+
         viewModel.getMyBudgets().observe(viewLifecycleOwner, { budgets ->
-            for (entry in budgets) {
-                if (entry.key == firebaseUser.uid) {
-                    totalBudget = entry.value
-                } else {
-                    roomBudgets[entry.key] = entry.value
-                }
-            }
+            roomBudgets = budgets
+            totalBudget = budgets[firebaseUser.uid]!!
+            graphFilterPeriod()
 
         })
 
-        viewModel.getMyRooms().observe(viewLifecycleOwner, { result ->
-            for (room in result){
-                myRooms[room.uid] = room
-            }
+        viewModel.myRoomsList.observe(viewLifecycleOwner, {
+            myRooms = it
+            graphFilterPeriod()
 
         })
 
-        viewModel.getMyPayments().observe(viewLifecycleOwner, {
-            payments.clear()
-            roomPayments.clear()
-
-            payments.addAll(it.values)
-
-            for (payment in it.values){
-                if (roomPayments.containsKey(payment.to)){
-                    roomPayments[payment.to]!![payment.payment_uid] = payment
-                }
-                else {
-                    val paymentHash = hashMapOf<String, Payment>()
-                    paymentHash[payment.payment_uid] = payment
-                    roomPayments[payment.to] = paymentHash
-                }
-            }
+        viewModel.myRoomPaymentsList.observe(viewLifecycleOwner, {
+            roomPayments = it
             graphFilterPeriod()
         })
+
+        viewModel.myPaymentsList.observe(viewLifecycleOwner, {
+            payments = it
+            graphFilterPeriod()
+
+        })
+
     }
 
 
     private fun graphFilterPeriod() {
-        val currentTime = GetCurrentDate().timestamp().toLong()
-        val currentMonth = GetCurrentDate().monthNumber().toInt()
-        val currentYear = GetCurrentDate().year().toInt()
-        var pastTime: Long = 0
+        if (this::roomBudgets.isInitialized && this::myRooms.isInitialized && this::roomPayments.isInitialized && this::payments.isInitialized){
+            val currentTime = DateAndTimeUtils().currentTimestamp().toLong()
+            val currentMonth = DateAndTimeUtils().currentMonthNumber().toInt()
+            val currentYear = DateAndTimeUtils().currentYear().toInt()
+            var pastTime: Long = 0
 
-        val calendar = Calendar.getInstance(TimeZone.getDefault())
-        calendar.set(Calendar.HOUR, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
+            val calendar = Calendar.getInstance(TimeZone.getDefault())
+            calendar.set(Calendar.HOUR, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
 
-        when (selectedFilter) {
-            GraphFilter.ThreeMonths -> {
-                val pastMonth: Int
-                var pastYear = currentYear
-                if (currentMonth < 3) {
-                    pastMonth = 12 + currentMonth - 3
-                    pastYear -= 1
-                } else {
-                    pastMonth = currentMonth - 3
+            when (selectedFilter) {
+                GraphFilter.ThreeMonths -> {
+                    val pastMonth: Int
+                    var pastYear = currentYear
+                    if (currentMonth < 3) {
+                        pastMonth = 12 + currentMonth - 3
+                        pastYear -= 1
+                    } else {
+                        pastMonth = currentMonth - 3
+                    }
+                    calendar.set(Calendar.YEAR, pastYear)
+                    calendar.set(Calendar.MONTH, pastMonth - 1)
+                    calendar.set(Calendar.DAY_OF_MONTH, 1)
+                    pastTime = calendar.timeInMillis
                 }
+                GraphFilter.Year -> {
+                    calendar.set(Calendar.YEAR, currentYear - 1)
+                    calendar.set(Calendar.MONTH, currentMonth)
+                    calendar.set(Calendar.DAY_OF_MONTH, 1)
+                    pastTime = calendar.timeInMillis
+                }
+                GraphFilter.AllTime -> {
+                    pastTime = 0
 
-                calendar.set(Calendar.YEAR, pastYear)
-                calendar.set(Calendar.MONTH, pastMonth - 1)
-                calendar.set(Calendar.DAY_OF_MONTH, 1)
-                pastTime = calendar.timeInMillis
+                }
             }
-
-            GraphFilter.Year -> {
-                calendar.set(Calendar.YEAR, currentYear - 1)
-                calendar.set(Calendar.MONTH, currentMonth)
-                calendar.set(Calendar.DAY_OF_MONTH, 1)
-                pastTime = calendar.timeInMillis
-            }
-
-            GraphFilter.AllTime -> {
-                pastTime = 0
-
-            }
+            showGraphs(pastTime, currentTime)
         }
-
-        showGraphs(pastTime, currentTime)
-        // show graphs between periods
-
     }
 
     private fun showGraphs(pastTime: Long, currentTime: Long) {
@@ -251,7 +236,7 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        if (isAttached()){
+        if (isAttached()) {
             dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
         }
         dataSet.valueTextSize = 10f
@@ -310,7 +295,7 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        if (isAttached()){
+        if (isAttached()) {
             dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
 
         }
@@ -380,7 +365,7 @@ class FragmentWallet : Fragment() {
 
         val dataSet = BarDataSet(barEntries, "")
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS, 80)
-        if (isAttached()){
+        if (isAttached()) {
             dataSet.valueTextColor = resources.getColor(R.color.colorGreen, resources.newTheme())
         }
         dataSet.valueTextSize = 10f
@@ -406,7 +391,8 @@ class FragmentWallet : Fragment() {
     }
 
     private fun editRoomBudgetDialog(roomUid: String) {
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
+        val dialog =
+            CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -420,11 +406,15 @@ class FragmentWallet : Fragment() {
             if (budget.text.isNotEmpty()) {
                 val newBudget = budget.text.toString().toInt()
                 databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(roomUid)
-                        .setValue(newBudget).addOnSuccessListener {
-                            roomBudgets[roomUid] = newBudget
-                            dialog.dismiss()
-                            Toast.makeText(context, getString(R.string.room_budget_updated), Toast.LENGTH_SHORT).show()
-                        }
+                    .setValue(newBudget).addOnSuccessListener {
+                        roomBudgets[roomUid] = newBudget
+                        dialog.dismiss()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.room_budget_updated),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
             } else {
                 dialog.dismiss()
             }
@@ -455,7 +445,8 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showTotalBudgetDialog() {
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_total_budget).create()
+        val dialog =
+            CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_total_budget).create()
         val budget = dialog.findViewById<TextView>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -464,10 +455,10 @@ class FragmentWallet : Fragment() {
             when {
                 budget.text.isNotEmpty() && budget.text.toString() != totalBudget.toString() -> {
                     databaseReference.child(Constants.budgets).child(firebaseUser.uid)
-                            .child(firebaseUser.uid).setValue(budget.text.toString().toInt())
-                            .addOnSuccessListener {
-                                dialog.dismiss()
-                            }
+                        .child(firebaseUser.uid).setValue(budget.text.toString().toInt())
+                        .addOnSuccessListener {
+                            dialog.dismiss()
+                        }
                 }
                 else -> {
                     dialog.dismiss()
@@ -479,7 +470,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showRoomsDialog() {
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_rooms_list).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_rooms_list).create()
         val container = dialog.findViewById<LinearLayout>(R.id.container)
 
         for (r in myRooms) {
@@ -497,8 +488,8 @@ class FragmentWallet : Fragment() {
 
             val rowView = LayoutInflater.from(context).inflate(R.layout.row_room, container, false)
             val layoutParams = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             layoutParams.setMargins(10, 10, 10, 10)
 
@@ -525,7 +516,7 @@ class FragmentWallet : Fragment() {
         dialog.show()
     }
 
-    private fun isAttached() : Boolean {
+    private fun isAttached(): Boolean {
         return (isVisible && activity != null)
     }
 

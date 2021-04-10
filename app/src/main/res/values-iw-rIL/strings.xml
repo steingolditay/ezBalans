@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Expenses</string>
     <string name="login">התנתק</string>
     <string name="settings">הגדרות</string>
     <string name="logout">התנתק</string>
@@ -225,8 +224,11 @@
     <string name="promoted_resident">דייר קודם לתפקיד מנהל בחדר</string>
     <string name="demoted_resident">דייר ירד מתפקיד מנהל בחדר</string>
     <string name="total_expenses">סך הוצאות</string>
-    <string name="category_expenses">הוצאות על פי קטגוריה</string>
+    <string name="expenses_by_category">הוצאות על פי קטגוריה</string>
     <string name="room_settings">הגדרות חדר</string>
+    <string name="total">"סך הכל: "</string>
+    <string name="expenses_by_time">הוצאות על פי זמן בחודש</string>
+    <string name="expenses_by_room">הוצאות על פי חדר</string>
 
 
 </resources>

@@ -3,39 +3,39 @@ package com.ezbalans.app.ezbalans.utils
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GetCurrentDate {
-    private val date = Date()
+class DateAndTimeUtils {
+    private val calendar = Calendar.getInstance(TimeZone.getDefault())
 
-    fun formatted(): String{
-        val formatter = SimpleDateFormat("dd//MM/yyy", Locale.getDefault())
+    fun formattedCurrentDateString(): String{
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
-        return formatter.format(date)
+        return formatter.format(Date())
     }
 
-    fun timestamp(): String{
+    fun currentTimestamp(): String{
         val calendar = Calendar.getInstance(TimeZone.getDefault()).timeInMillis
         return calendar.toString()
     }
 
-    fun monthName(): String{
+    fun currentMonthName(): String{
         val formatter = SimpleDateFormat("MMMM", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
-        return formatter.format(date)
+        return formatter.format(Date())
     }
 
-    fun monthNumber(): String{
+    fun currentMonthNumber(): String{
         val formatter = SimpleDateFormat("MM", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
-        return formatter.format(date)
+        return formatter.format(Date())
     }
 
-    fun year(): String{
+    fun currentYear(): String{
         val formatter = SimpleDateFormat("yyyy", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
-        return formatter.format(date)
+        return formatter.format(Date())
     }
 
-    fun customMonthName(timestamp: Long): String{
+    fun monthNameFromCustomTimestamp(timestamp: Long): String{
         val date = Date(timestamp)
         val formatter = SimpleDateFormat("MMMM", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
@@ -44,8 +44,7 @@ class GetCurrentDate {
     }
 
 
-    fun customYear(timestamp: Long): String{
-
+    fun yearFromCustomTimestamp(timestamp: Long): String{
         val date = Date(timestamp)
         val formatter = SimpleDateFormat("yyyy", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
@@ -53,8 +52,7 @@ class GetCurrentDate {
 
     }
 
-    fun dateFromTimestamp(timestamp: Long): String{
-
+    fun dateFromCustomTimestamp(timestamp: Long): String{
         val date = Date(timestamp)
         val formatter = SimpleDateFormat("dd/MM//yyyy", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
@@ -63,11 +61,25 @@ class GetCurrentDate {
     }
 
     fun dateAndTimeFromTimestamp(timestamp: Long): String{
-        val calendar = Calendar.getInstance(TimeZone.getDefault())
+        calendar.clear()
         calendar.timeInMillis = timestamp
-        val formatter = SimpleDateFormat("dd/MM//yyyy hh:mm:ss", Locale.getDefault())
+        val formatter = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.getDefault())
         return formatter.format(calendar.timeInMillis)
+    }
 
+    fun flatTimestampForDayInThisMonth(day: Int): String{
+        calendar.clear()
+        calendar.set(Calendar.DAY_OF_MONTH, day)
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        return (calendar.time.time).toString()
+    }
+
+    fun currentMonthMaximumDays() : Int{
+        calendar.clear()
+        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
 }

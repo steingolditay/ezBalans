@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.homeFragments
+package com.ezbalans.app.ezbalans.presentation.homeFragments
 
 import android.app.Dialog
 import android.content.Intent
@@ -16,14 +16,14 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
 import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.views.NotificationsActivity
+import com.ezbalans.app.ezbalans.presentation.NotificationsActivity
 import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.views.rooms.roomActivities.CreateRoom
-import com.ezbalans.app.ezbalans.views.rooms.roomActivities.RoomActivity
-import com.ezbalans.app.ezbalans.views.rooms.roomActivities.ShoppingList
+import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.CreateRoom
+import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.RoomActivity
+import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.RoomsFragmentViewModel
@@ -53,6 +53,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     private lateinit var myPayments: HashMap<String, Payment>
     private lateinit var myBudgets: HashMap<String, Int>
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -66,6 +67,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showProgressBar()
         initViewModel()
 
         val roomUid = arguments?.getString(Constants.room_uid)
@@ -87,16 +89,26 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 
     private fun loadLanguageUI(){
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
+
         if (lang == Constants.language_hebrew){
             binding.fabHeb.visibility = View.VISIBLE
             binding.fab.visibility = View.GONE
             binding.arrow.setImageResource(R.drawable.arrow_heb)
 
-            binding.joinRoomHeb.setOnClickListener{
-                joinRoomDialog()
-            }
+            bindFabViewByLanguage(binding.createRoomHeb, binding.joinRoomHeb)
+        }
 
-            binding.createRoomHeb.setOnClickListener{
+        else {
+            binding.fabHeb.visibility = View.GONE
+            binding.fab.visibility = View.VISIBLE
+
+            bindFabViewByLanguage(binding.createRoom, binding.joinRoom)
+
+        }
+    }
+
+    private fun bindFabViewByLanguage(createButton: View, joinButton: View){
+            createButton.setOnClickListener {
                 if (!firebaseUser.isEmailVerified){
                     firebaseUser.getIdToken(true).addOnSuccessListener {
                         firebaseUser.reload().addOnSuccessListener {
@@ -109,7 +121,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                                 openNotVerifiedDialog()
                             }
                         }
-
                     }
                 }
                 else {
@@ -118,30 +129,12 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                     binding.fab.close(true)
                 }
             }
-        }
-        else {
-            binding.fabHeb.visibility = View.GONE
-            binding.fab.visibility = View.VISIBLE
 
-            binding.joinRoom.setOnClickListener{
-                joinRoomDialog()
-            }
+        joinButton.setOnClickListener {
+            joinRoomDialog()
 
-            binding.createRoom.setOnClickListener{
-                firebaseUser.getIdToken(true).addOnSuccessListener {
-                    firebaseUser.reload().addOnSuccessListener {
-                        if (firebaseUser.isEmailVerified){
-                            val intent = Intent(context, CreateRoom::class.java)
-                            startActivity(intent)
-                            binding.fab.close(true)
-                        }
-                        else {
-                            openNotVerifiedDialog()
-                        }
-                    }
-                }
-            }
         }
+
     }
 
     private fun initViewModel(){
@@ -151,7 +144,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
         })
 
         viewModel.getMyPayments().observe(viewLifecycleOwner, {
-
             myPayments = it
             initRecyclerView()
         })
@@ -186,14 +178,13 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             binding.list.layoutManager = LinearLayoutManager(context)
             binding.list.adapter = adapter
 
+            hideProgressBar()
             updateRoomsVisibility()
-
         }
-
     }
 
     private fun openNotVerifiedDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
         val sendEmail = dialog.findViewById<Button>(R.id.send_email)
 
         sendEmail.setOnClickListener {
@@ -212,7 +203,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun joinRoomDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_join_room).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_join_room).create()
         val identityKey = dialog.findViewById<TextView>(R.id.identity)
         val sendRequest = dialog.findViewById<Button>(R.id.send_request)
 
@@ -238,8 +229,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             if (room.identity_key == identityKey){
                 val status = room.residents[firebaseUser.uid]
                 if (!room.residents.containsKey(firebaseUser.uid) || !(status == Constants.requested || status == Constants.added || status == Constants.declined)){
-                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(firebaseUser.uid).setValue(
-                        Constants.requested).addOnSuccessListener {
+                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(firebaseUser.uid).setValue(Constants.requested).addOnSuccessListener {
                         CreateNotification().create(room, Constants.notify_user_requested, firebaseUser.uid, room.uid, "")
                         dialog.dismiss()
                         Toast.makeText(requireContext(),getString(R.string.request_sent), Toast.LENGTH_SHORT).show()
@@ -252,6 +242,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                     Toast.makeText(requireContext(),getString(R.string.cant_send_request), Toast.LENGTH_SHORT).show()
                 }
             }
+            break
         }
         if (dialog.isShowing){
             dialog.dismiss()
@@ -298,14 +289,13 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     override fun onEditClick(position: Int) {
         val room = myRooms[position]
         var currentBudget = 0
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val button = dialog.findViewById<Button>(R.id.apply)
 
 
         if (myBudgets.containsKey(room.uid)){
             val roomBudget = myBudgets[room.uid]!!
-            println(roomBudget)
             budget.setText(roomBudget.toString())
             currentBudget = roomBudget
         }
@@ -313,8 +303,6 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
             databaseReference.child(Constants.budgets).child(firebaseUser.uid).child(room.uid).setValue(0)
             budget.setText("0")
         }
-
-
         button.setOnClickListener {
             val newBudget = budget.text.toString().toInt()
             if (newBudget != currentBudget){
@@ -323,9 +311,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
                 }
             }
         }
-
         dialog.show()
-
     }
 
     private fun joinFromDeepLink(roomUid: String){
@@ -358,14 +344,16 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
 //                        getMyRooms()
                     }
                 }
-
-
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
 
         })
     }
+
+    private fun showProgressBar(){binding.progressBar.visibility = View.VISIBLE}
+
+    private fun hideProgressBar(){binding.progressBar.visibility = View.GONE}
+
 
 }

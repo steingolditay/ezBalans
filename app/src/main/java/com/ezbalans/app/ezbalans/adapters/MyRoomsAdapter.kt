@@ -40,7 +40,6 @@ class MyRoomsAdapter(private val context: Context,
         private val cart: ImageView = itemView.findViewById(R.id.cart)
         private val details: ImageView = itemView.findViewById(R.id.details)
         private val edit: ImageView = itemView.findViewById(R.id.edit)
-        val motdTitle: TextView = itemView.findViewById(R.id.motd_title)
         val motd: TextView = itemView.findViewById(R.id.motd)
         val budget:TextView = itemView.findViewById(R.id.budget)
 
@@ -92,7 +91,6 @@ class MyRoomsAdapter(private val context: Context,
 
         if (room.motd.isEmpty()){
             holder.motd.visibility = View.GONE
-            holder.motdTitle.visibility = View.GONE
         }
         holder.motd.text = room.motd
 

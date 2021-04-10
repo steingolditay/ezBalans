@@ -1,6 +1,7 @@
 package com.ezbalans.app.ezbalans.viewmodels.roomActivities
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
@@ -12,13 +13,36 @@ import javax.inject.Inject
 class RoomActivityViewModel
 @Inject constructor(private val repository: DatabaseRepository): ViewModel() {
 
+    var roomUid = ""
 
-    fun getAllUsers(): LiveData<HashMap<String, User>> {
-        return repository.provideAllUsers()
+    val myRoom : LiveData<Room> = Transformations.map(repository.provideMyRooms()) { data ->
+        getMyRoom(data)
     }
 
-    fun getAllRooms(): LiveData<List<Room>> {
-        return repository.provideAllRooms()
+    val allUsers: LiveData<List<User>> = Transformations.map(repository.provideAllUsers()) { data ->
+        getAllUsers(data)
+    }
+
+
+
+    fun addUserToRoom(user: String, room: Room){
+        return repository.addUserToRoom(user, room)
+
+    }
+
+    private fun getMyRoom(data: List<Room>): Room {
+        var myRoom = Room()
+        for (room in data){
+            if (room.uid == roomUid){
+                myRoom = room
+                break
+            }
+        }
+        return myRoom
+    }
+
+    private fun getAllUsers(data: HashMap<String, User>): List<User>{
+        return data.values.toList()
     }
 
 }

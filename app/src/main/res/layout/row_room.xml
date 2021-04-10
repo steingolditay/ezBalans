@@ -92,45 +92,46 @@
 
             <ImageView
                 android:id="@+id/cart"
+                android:layout_height="28dp"
+                android:layout_width="28dp"
                 app:layout_constraintTop_toBottomOf="@id/separator"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_width="wrap_content"
-                android:backgroundTint="@color/colorBlue"
-                android:background="@drawable/cart"
-                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:layout_marginVertical="8dp"
+                android:backgroundTint="@color/colorBlue"
+                android:background="@drawable/cart"
                 android:contentDescription="@string/image_content_descriptor"
                 />
 
             <ImageView
                 android:id="@+id/details"
+                android:layout_height="28dp"
+                android:layout_width="28dp"
                 app:layout_constraintTop_toTopOf="@id/cart"
                 app:layout_constraintEnd_toStartOf="@id/cart"
-                android:layout_width="wrap_content"
                 android:backgroundTint="@color/colorBlue"
                 android:background="@drawable/details"
-                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:contentDescription="@string/image_content_descriptor"
                 />
 
             <ImageView
                 android:id="@+id/edit"
+                android:layout_height="28dp"
+                android:layout_width="28dp"
                 app:layout_constraintTop_toTopOf="@id/cart"
                 app:layout_constraintEnd_toStartOf="@id/details"
-                android:layout_width="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/budget"
+                android:layout_marginHorizontal="10dp"
                 android:backgroundTint="@color/colorBlue"
                 android:background="@drawable/edit"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
                 android:contentDescription="@string/image_content_descriptor"
                 />
 
             <TextView
                 android:id="@+id/budget"
                 android:layout_width="0dp"
-                android:layout_height="24dp"
+                android:layout_height="28dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/edit"
                 app:layout_constraintTop_toBottomOf="@id/separator"
@@ -139,24 +140,13 @@
                 android:textStyle="bold"
                 />
 
-            <TextView
-                android:id="@+id/motd_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/budget"
-                android:text = "@string/message_of_the_day"
-                android:layout_margin="4dp"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                />
 
             <TextView
                 android:id="@+id/motd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/motd_title"
+                app:layout_constraintTop_toBottomOf="@id/budget"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_margin="4dp"

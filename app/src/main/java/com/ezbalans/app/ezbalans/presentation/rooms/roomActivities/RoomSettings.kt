@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.rooms.roomActivities
+package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
 import android.Manifest
 import android.app.Dialog
@@ -22,7 +22,6 @@ import com.ezbalans.app.ezbalans.databinding.ViewRoomInfoBinding
 import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
-import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomInfoActivityViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
@@ -36,11 +35,10 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import javax.inject.Inject
 import kotlin.collections.HashMap
 
 @AndroidEntryPoint
-class RoomInfo : AppCompatActivity() {
+class RoomSettings : AppCompatActivity() {
     private lateinit var binding: ViewRoomInfoBinding
 
 
@@ -92,111 +90,28 @@ class RoomInfo : AppCompatActivity() {
             openMOTDDialog()
         }
 
+        initViewModel()
 
-        viewModel.getAllUsers().observe(this, {
-            users = it
-            if (users.isNotEmpty() && this::room.isInitialized){
-                loadResidents()
-            }
-        })
 
-        viewModel.getAllRooms().observe(this, {
-            for (roomObject in it){
-                if (roomObject.uid == roomUID){
-                    room = roomObject
 
-                    loadRoomDetails()
-
-                    if (users.isNotEmpty()){
-                        loadResidents()
-                    }
-                    break
-                }
-            }
-        })
 
     }
 
+    private fun initViewModel(){
 
+        viewModel.roomUid = roomUID
 
-    private fun loadResidents() {
-        binding.adminsContainer.removeAllViews()
-        binding.residentsContainer.removeAllViews()
+        viewModel.getAllUsers().observe(this, {
+            users = it
+            loadResidents()
 
-        for (residentUser in residents){
-            val user = users[residentUser]!!
-            val rowView = LayoutInflater.from(this).inflate(R.layout.row_user, binding.residentsContainer, false)
-            val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-            layoutParams.setMargins(10, 10, 10, 10)
-            if (admin) {
-                val remove = rowView.findViewById<ImageView>(R.id.remove)
-                val promote = rowView.findViewById<ImageView>(R.id.promote)
-                remove.visibility = View.VISIBLE
-                promote.visibility = View.VISIBLE
+        })
 
-                remove.setOnClickListener {
-                    removeResidentDialog(user, rowView)
-
-                }
-
-                promote.setOnClickListener {
-                    promoteResidentDialog(user, rowView)
-                }
-            }
-            val image = rowView.findViewById<ImageView>(R.id.image)
-            val username = rowView.findViewById<TextView>(R.id.username)
-            val name = rowView.findViewById<TextView>(R.id.name)
-            val identityKey = rowView.findViewById<TextView>(R.id.identity_key)
-
-            Picasso.get().load(user.image).into(image)
-            username.text = user.username
-            name.text = String.format("%s %s", user.first_name, user.last_name)
-            identityKey.text = user.identity_key
-
-            rowView.setOnLongClickListener {
-                val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData = ClipData.newPlainText("label", user.identity_key)
-                clipboard.setPrimaryClip(clipData)
-                Toast.makeText(this, getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
-                true
-
-            }
-            binding.residentsContainer.addView(rowView, layoutParams)
-        }
-
-        for (adminUser in admins){
-            val user = users[adminUser]!!
-
-            val rowView = LayoutInflater.from(this).inflate(R.layout.row_user, binding.adminsContainer, false)
-            val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-            layoutParams.setMargins(10, 10, 10, 10)
-
-            if (admin) {
-                val remove = rowView.findViewById<ImageView>(R.id.remove)
-                remove.setOnClickListener {
-                    removeAdminDialog(user, rowView)
-                }
-            }
-            val image = rowView.findViewById<ImageView>(R.id.image)
-            val username = rowView.findViewById<TextView>(R.id.username)
-            val name = rowView.findViewById<TextView>(R.id.name)
-            val identityKey = rowView.findViewById<TextView>(R.id.identity_key)
-
-            Picasso.get().load(user.image).into(image)
-            username.text = user.username
-            name.text = String.format("%s %s", user.first_name, user.last_name)
-            identityKey.text = user.identity_key
-
-            rowView.setOnLongClickListener {
-                val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData = ClipData.newPlainText("label", user.identity_key)
-                clipboard.setPrimaryClip(clipData)
-                Toast.makeText(this, getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
-                true
-
-            }
-            binding.adminsContainer.addView(rowView, layoutParams)
-        }
+        viewModel.myRoom.observe(this, {
+            room = it
+            loadRoomDetails()
+            loadResidents()
+        })
     }
 
     private fun loadRoomDetails() {
@@ -231,6 +146,89 @@ class RoomInfo : AppCompatActivity() {
 
     }
 
+    private fun loadResidents() {
+        binding.adminsContainer.removeAllViews()
+        binding.residentsContainer.removeAllViews()
+        if (users.isNotEmpty()){
+            for (residentUser in residents){
+                val user = users[residentUser]!!
+                val rowView = LayoutInflater.from(this).inflate(R.layout.row_user, binding.residentsContainer, false)
+                val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                layoutParams.setMargins(10, 10, 10, 10)
+                if (admin) {
+                    val remove = rowView.findViewById<ImageView>(R.id.remove)
+                    val promote = rowView.findViewById<ImageView>(R.id.promote)
+                    remove.visibility = View.VISIBLE
+                    promote.visibility = View.VISIBLE
+
+                    remove.setOnClickListener {
+                        removeResidentDialog(user, rowView)
+
+                    }
+
+                    promote.setOnClickListener {
+                        promoteResidentDialog(user, rowView)
+                    }
+                }
+                val image = rowView.findViewById<ImageView>(R.id.image)
+                val username = rowView.findViewById<TextView>(R.id.username)
+                val name = rowView.findViewById<TextView>(R.id.name)
+                val identityKey = rowView.findViewById<TextView>(R.id.identity_key)
+
+                Picasso.get().load(user.image).into(image)
+                username.text = user.username
+                name.text = String.format("%s %s", user.first_name, user.last_name)
+                identityKey.text = user.identity_key
+
+                rowView.setOnLongClickListener {
+                    val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText("label", user.identity_key)
+                    clipboard.setPrimaryClip(clipData)
+                    Toast.makeText(this, getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
+                    true
+
+                }
+                binding.residentsContainer.addView(rowView, layoutParams)
+            }
+
+            for (adminUser in admins){
+                val user = users[adminUser]!!
+
+                val rowView = LayoutInflater.from(this).inflate(R.layout.row_user, binding.adminsContainer, false)
+                val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                layoutParams.setMargins(10, 10, 10, 10)
+
+                if (admin) {
+                    val remove = rowView.findViewById<ImageView>(R.id.remove)
+                    remove.setOnClickListener {
+                        removeAdminDialog(user, rowView)
+                    }
+                }
+                val image = rowView.findViewById<ImageView>(R.id.image)
+                val username = rowView.findViewById<TextView>(R.id.username)
+                val name = rowView.findViewById<TextView>(R.id.name)
+                val identityKey = rowView.findViewById<TextView>(R.id.identity_key)
+
+                Picasso.get().load(user.image).into(image)
+                username.text = user.username
+                name.text = String.format("%s %s", user.first_name, user.last_name)
+                identityKey.text = user.identity_key
+
+                rowView.setOnLongClickListener {
+                    val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText("label", user.identity_key)
+                    clipboard.setPrimaryClip(clipData)
+                    Toast.makeText(this, getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
+                    true
+
+                }
+                binding.adminsContainer.addView(rowView, layoutParams)
+            }
+        }
+
+
+    }
+
     private fun loadImageCropper() {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON_TOUCH)
@@ -240,7 +238,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun uploadImage(imageUri: Uri) {
-        val loadingDialog = GetLoadingDialog(this, getString(R.string.uploading_image)).create()
+        val loadingDialog = LoadingDialog(this, getString(R.string.uploading_image)).create()
         loadingDialog.show()
 
         storageReference.child(Constants.room).child(room.uid).child(Constants.image).putFile(imageUri).addOnSuccessListener {
@@ -255,7 +253,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun removeResidentDialog(user: User, view: View) {
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_remove_resident).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_remove_resident).create()
         val remove = dialog.findViewById<Button>(R.id.remove)
         remove.setOnClickListener {
             removeResident(user, view)
@@ -266,7 +264,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun removeAdminDialog(user: User, view: View) {
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_remove_admin).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_remove_admin).create()
         val removeAdmin = dialog.findViewById<Button>(R.id.remove_admin)
         val remove = dialog.findViewById<Button>(R.id.remove)
 
@@ -289,7 +287,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun promoteResidentDialog(user: User, view: View) {
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_promote_resident).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_promote_resident).create()
         val promote = dialog.findViewById<Button>(R.id.promote)
 
         promote.setOnClickListener {
@@ -373,7 +371,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun openEditDialog() {
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_edit_room_info).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_edit_room_info).create()
 
         val name = dialog.findViewById<EditText>(R.id.name)
         val desc = dialog.findViewById<EditText>(R.id.desc)
@@ -520,11 +518,11 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun closeRoomDialog() {
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_close_room).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_close_room).create()
 
         val updates = hashMapOf<String, Any>()
         updates[Constants.status] = Constants.room_inactive
-        updates[Constants.room_closing_date] = GetCurrentDate().dateFromTimestamp(Date().time)
+        updates[Constants.room_closing_date] = DateAndTimeUtils().dateFromCustomTimestamp(Date().time)
 
         binding.closeRoom.setOnClickListener {
             databaseReference.child(Constants.rooms).child(room.uid).updateChildren(updates).addOnSuccessListener {
@@ -538,7 +536,7 @@ class RoomInfo : AppCompatActivity() {
     }
 
     private fun openMOTDDialog(){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_edit_motd).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_edit_motd).create()
         val motd = dialog.findViewById<EditText>(R.id.motd)
         val apply = dialog.findViewById<Button>(R.id.apply)
 

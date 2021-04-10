@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views
+package com.ezbalans.app.ezbalans.presentation
 
 import android.app.Dialog
 import android.os.Bundle
@@ -14,8 +14,8 @@ import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
 import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.GetCurrentDate
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
+import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
@@ -31,14 +31,14 @@ import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
+class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemClickListener {
     private lateinit var binding: ViewNotificationsBinding
 
     private val databaseReference = Firebase.database.reference
     private val firebaseUser = Firebase.auth.currentUser!!
     private var rooms = hashMapOf<String, Room>()
-    private var users =  HashMap<String, User>()
-    private val notifications =  ArrayList<Notification>()
+    private var users = HashMap<String, User>()
+    private val notifications = ArrayList<Notification>()
 
     private val viewModel: NotificationsActivityViewModel by viewModels()
     lateinit var adapter: NotificationsAdapter
@@ -51,24 +51,23 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
 
         initViewModel()
 
-
     }
 
-    private fun initViewModel(){
+    private fun initViewModel() {
         viewModel.getAllUsers().observe(this, {
             users = it
         })
 
         viewModel.getAllRooms().observe(this, {
             rooms.clear()
-            for (roomObject in it){
+            for (roomObject in it) {
                 rooms[roomObject.uid] = roomObject
             }
         })
 
         viewModel.getMyNotifications().observe(this, {
             notifications.clear()
-            for (notification in it.values){
+            for (notification in it.values) {
                 notifications.add(notification)
             }
 
@@ -92,7 +91,7 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
     override fun onItemClick(position: Int) {
         val notification = notifications[position]
         databaseReference.child(Constants.notifications).child(firebaseUser.uid).child(notification.uid).child(
-            Constants.seen
+                Constants.seen
         ).setValue(true).addOnSuccessListener {
             notification.seen = true
 
@@ -161,8 +160,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         }
     }
 
-    private fun showUserJoinedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showUserJoinedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val from = dialog.findViewById<TextView>(R.id.from)
@@ -183,9 +182,7 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
             from.text = String.format(getString(R.string.action_by), admin)
             to.visibility = View.GONE
 
-        }
-
-        else {
+        } else {
             title.text = getString(R.string.new_resident_in_room)
             body.text = String.format(getString(R.string.added_to_room), admin, user)
 
@@ -195,8 +192,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showUserDeclinedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showUserDeclinedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val from = dialog.findViewById<TextView>(R.id.from)
@@ -215,8 +212,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showUserQuitDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showUserQuitDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -229,8 +226,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showUserRemovedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showUserRemovedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -250,8 +247,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showRoomInfoChangedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showRoomInfoChangedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -263,14 +260,11 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         val from = dialog.findViewById<TextView>(R.id.from)
         from.text = String.format(getString(R.string.action_by), admin)
 
-
-
-
         dialog.show()
     }
 
-    private fun showPaymentInvalidDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
+    private fun showPaymentInvalidDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -295,23 +289,22 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
                 body.text = getString(R.string.payment_validation_body)
                 username.text = user.username
                 amount.text = payment.amount
-                date.text = GetCurrentDate().dateFromTimestamp(payment.timestamp.toLong())
+                date.text = DateAndTimeUtils().dateFromCustomTimestamp(payment.timestamp.toLong())
                 description.text = payment.description
                 category.text = payment.category
 
 
 
                 decline.setOnClickListener {
-                    if (payment.status == Constants.notify_payment_invalid){
+                    if (payment.status == Constants.notify_payment_invalid) {
                         databaseReference.child(Constants.payments).child(room.uid).child(paymentUid).child(
-                            Constants.status
+                                Constants.status
                         ).setValue(Constants.payment_declined).addOnSuccessListener {
                             CreateNotification().create(room,
-                                Constants.notify_payment_declined, firebaseUser.uid, user.uid, paymentUid)
+                                    Constants.notify_payment_declined, firebaseUser.uid, user.uid, paymentUid)
                             dialog.dismiss()
                         }
-                    }
-                    else {
+                    } else {
                         Toast.makeText(this@NotificationsActivity, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
 
@@ -319,16 +312,15 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
                 }
 
                 validate.setOnClickListener {
-                    if (payment.status == Constants.notify_payment_invalid){
+                    if (payment.status == Constants.notify_payment_invalid) {
                         databaseReference.child(Constants.payments).child(room.uid).child(paymentUid).child(
-                            Constants.status
+                                Constants.status
                         ).setValue(Constants.payment_valid).addOnSuccessListener {
                             CreateNotification().create(room,
-                                Constants.notify_payment_validated, firebaseUser.uid, user.uid, paymentUid)
+                                    Constants.notify_payment_validated, firebaseUser.uid, user.uid, paymentUid)
                             dialog.dismiss()
                         }
-                    }
-                    else {
+                    } else {
                         Toast.makeText(this@NotificationsActivity, getString(R.string.action_already_taken), Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -345,8 +337,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showPaymentValidatedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showPaymentValidatedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -365,8 +357,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showPaymentDeclinedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showPaymentDeclinedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -384,8 +376,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showRoomClosedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showRoomClosedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -401,8 +393,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showAdminDemotedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showAdminDemotedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -421,8 +413,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showAdminPromotedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showAdminPromotedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -441,8 +433,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showMOTDChangedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+    private fun showMOTDChangedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -459,8 +451,8 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         dialog.show()
     }
 
-    private fun showUserRequestedDialog(notification: Notification){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
+    private fun showUserRequestedDialog(notification: Notification) {
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val positive = dialog.findViewById<Button>(R.id.positive)
@@ -480,38 +472,25 @@ class NotificationsActivity: AppCompatActivity(), NotificationsAdapter.OnItemCli
         from.text = String.format(getString(R.string.action_by), user.username)
 
 
-        if (room.residents[user.uid] == Constants.requested){
+        if (room.residents[user.uid] == Constants.requested) {
             positive.setOnClickListener {
-                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(user.uid).setValue(
-                        Constants.added
-                    ).addOnSuccessListener {
-                        CreateNotification().create(room,
-                            Constants.notify_user_joined, firebaseUser.uid, user.uid, "")
-                        dialog.dismiss()
-                        Toast.makeText(this, getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
-                    }
-            }
-            negative.setOnClickListener {
-                    databaseReference.child(Constants.rooms).child(room.uid).child(Constants.residents).child(user.uid).setValue(
-                        Constants.declined
-                    ).addOnSuccessListener {
-                        CreateNotification().create(room,
-                            Constants.notify_user_declined, firebaseUser.uid, user.uid, "")
-                        dialog.dismiss()
-                        Toast.makeText(this, getString(R.string.request_declined), Toast.LENGTH_SHORT).show()
-                    }
+                viewModel.addUserToRoom(user.uid, room)
+                dialog.dismiss()
+                Toast.makeText(this, getString(R.string.request_approved), Toast.LENGTH_SHORT).show()
 
             }
-        }
-        else{
+            negative.setOnClickListener {
+                viewModel.declineUser(user.uid, room)
+                dialog.dismiss()
+                Toast.makeText(this, getString(R.string.request_declined), Toast.LENGTH_SHORT).show()
+            }
+
+        } else {
             positive.alpha = 0.5f
             negative.alpha = 0.5f
             positive.isClickable = false
             negative.isClickable = false
         }
-
-
-
 
         dialog.show()
     }

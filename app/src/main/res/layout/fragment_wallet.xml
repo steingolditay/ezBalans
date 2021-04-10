@@ -139,14 +139,27 @@
                 android:padding="10dp"
                 >
 
+                <TextView
+                    android:id="@+id/categoryChartTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_margin="10dp"
+                    android:textStyle="bold"
+                    android:textAlignment="viewStart"
+                    android:text="@string/expenses_by_category"
+                    />
+
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/categoryChart"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-
+                    app:layout_constraintTop_toBottomOf="@id/categoryChartTitle"
+                    android:layout_marginTop="10dp"
                     />
 
 
@@ -171,13 +184,27 @@
                 android:padding="10dp"
                 >
 
+                <TextView
+                    android:id="@+id/totalChartTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_margin="10dp"
+                    android:textStyle="bold"
+                    android:textAlignment="viewStart"
+                    android:text="@string/expenses_by_room"
+                    />
+
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/totalChart"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/totalChartTitle"
+                    android:layout_marginTop="10dp"
 
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -200,15 +227,29 @@
                 android:padding="10dp"
                 >
 
+                <TextView
+                    android:id="@+id/timeChartTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_margin="10dp"
+                    android:textStyle="bold"
+                    android:textAlignment="viewStart"
+                    android:text="@string/expenses_by_time"
+                    />
+
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/timeChart"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-
+                    app:layout_constraintTop_toBottomOf="@id/timeChartTitle"
+                    android:layout_marginTop="10dp"
                     />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 

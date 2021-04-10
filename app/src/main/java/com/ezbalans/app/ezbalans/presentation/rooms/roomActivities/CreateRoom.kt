@@ -1,28 +1,29 @@
-package com.ezbalans.app.ezbalans.views.rooms.roomActivities
+package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.databinding.RowUserBinding
 import com.ezbalans.app.ezbalans.databinding.ViewCreateRoomBinding
-import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.utils.GetCurrentDate
-import com.ezbalans.app.ezbalans.utils.GetIdentityKey
-import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.CreateRoomActivityViewModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -33,12 +34,12 @@ class CreateRoom: AppCompatActivity(){
 
     private val firebaseUser = Firebase.auth.currentUser
     private val databaseReference = Firebase.database.reference
-    private var userList = arrayListOf<User>()
     private var addedUsers = arrayListOf<String>()
-    private val identityKeys = GetIdentityKey()
-    private val getCurrentDate = GetCurrentDate()
+    private val identityKeys = IdentityKeys()
+    private val getCurrentDate = DateAndTimeUtils()
     private lateinit var existingKeyList: List<String>
-
+    private lateinit var userList: List<User>
+    private var uiLoaded = false
 
     private val viewModel: CreateRoomActivityViewModel by viewModels()
 
@@ -54,20 +55,15 @@ class CreateRoom: AppCompatActivity(){
 
 
         viewModel.getAllUsers().observe(this, {
-            userList.clear()
-            for (user in it.values){
-                userList.add(user)
-            }
+            userList = it.values.toList()
+            loadUI()
+
         })
 
         viewModel.getAllRoomKeys().observe(this, {
             existingKeyList = it
+            loadUI()
         })
-
-
-        loadUI()
-
-
 
         binding.add.setOnClickListener {
             findUser()
@@ -81,43 +77,48 @@ class CreateRoom: AppCompatActivity(){
     }
 
     private fun loadUI(){
-        binding.roomCurrencySpinner.setItems(resources.getStringArray(R.array.room_currencies).toList())
-        binding.roomCurrencySpinner.setOnSpinnerItemSelectedListener<String>{position, _ ->
-            roomCurrency = Constants.room_currencies[position]
-        }
+        if (this::userList.isInitialized && this::existingKeyList.isInitialized && !uiLoaded){
+            uiLoaded = true
 
-        val roomTypes = resources.getStringArray(R.array.room_types).toList()
-        binding.roomTypeSpinner.setItems(resources.getStringArray(R.array.room_types).toList())
-        binding.roomTypeSpinner.setOnSpinnerItemSelectedListener<String>{ position, item ->
-            roomType = Constants.room_types[position]
-            var categories = arrayListOf<String>()
-            when (item){
-                roomTypes[0] -> {
-                    categories = Constants.room_category_family
-                }
-                roomTypes[1] -> {
-                    categories = Constants.room_category_roommates
-                }
-                roomTypes[2] -> {
-                    categories = Constants.room_category_couple
-
-                }
-                roomTypes[3] -> {
-                    categories = Constants.room_category_vacation
-                }
+            binding.roomCurrencySpinner.setItems(resources.getStringArray(R.array.room_currencies).toList())
+            binding.roomCurrencySpinner.setOnSpinnerItemSelectedListener<String>{position, _ ->
+                roomCurrency = Constants.room_currencies[position]
             }
 
-            for (category in Constants.room_category_family){
-                when (categories.contains(category)){
-                    true -> {
-                        roomCategories[category] = true
+            val roomTypes = resources.getStringArray(R.array.room_types).toList()
+            binding.roomTypeSpinner.setItems(resources.getStringArray(R.array.room_types).toList())
+            binding.roomTypeSpinner.setOnSpinnerItemSelectedListener<String>{ position, item ->
+                roomType = Constants.room_types[position]
+                var categories = arrayListOf<String>()
+                when (item){
+                    roomTypes[0] -> {
+                        categories = Constants.room_category_family
                     }
-                    false -> {
-                        roomCategories[category] = false
+                    roomTypes[1] -> {
+                        categories = Constants.room_category_roommates
+                    }
+                    roomTypes[2] -> {
+                        categories = Constants.room_category_couple
+
+                    }
+                    roomTypes[3] -> {
+                        categories = Constants.room_category_vacation
+                    }
+                }
+
+                for (category in Constants.room_category_family){
+                    when (categories.contains(category)){
+                        true -> {
+                            roomCategories[category] = true
+                        }
+                        false -> {
+                            roomCategories[category] = false
+                        }
                     }
                 }
             }
         }
+
 
     }
 
@@ -145,25 +146,25 @@ class CreateRoom: AppCompatActivity(){
     }
 
     private fun addUser(user: User){
-        val rowBinding: RowUserBinding = RowUserBinding.inflate(layoutInflater)
         val rowView = LayoutInflater.from(this).inflate(R.layout.row_user, binding.list, false)
         val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
         layoutParams.setMargins(10,10,10,10)
 
+        val image = rowView.findViewById<CircleImageView>(R.id.image)
+        val username = rowView.findViewById<TextView>(R.id.username)
+        val name = rowView.findViewById<TextView>(R.id.name)
+        val identityKey = rowView.findViewById<TextView>(R.id.identity_key)
+        val remove = rowView.findViewById<ImageView>(R.id.remove)
 
-        if (user.image.isNotEmpty()){
-            Picasso.get().load(user.image).into(rowBinding.image)
-        }
-        else{
-            Picasso.get().load(R.drawable.default_account).into(rowBinding.image)
 
-        }
-        rowBinding.username.text = user.username
-        rowBinding.name.text = String.format("%s %s", user.first_name, user.last_name)
-        rowBinding.identityKey.text = user.identity_key
-        rowBinding.remove.visibility = View.VISIBLE
+        Picasso.get().load(user.image).into(image)
 
-        rowBinding.remove.setOnClickListener{
+        username.text = user.username
+        name.text = String.format("%s %s", user.first_name, user.last_name)
+        identityKey.text = user.identity_key
+        remove.visibility = View.VISIBLE
+
+        remove.setOnClickListener{
             binding.list.removeView(rowView)
             addedUsers.remove(user.uid)
 
@@ -200,7 +201,7 @@ class CreateRoom: AppCompatActivity(){
     }
 
     private fun createRoom(){
-        val dialog = GetLoadingDialog(this, "Creating Room").dialog
+        val dialog = LoadingDialog(this, "Creating Room").create()
         dialog.show()
 
         val name  = findViewById<TextView>(R.id.name)
@@ -210,7 +211,7 @@ class CreateRoom: AppCompatActivity(){
         val identityKey = identityKeys.create(existingKeyList)
         val roomName = name.text.toString().trim()
         val roomDescription = binding.description.text.toString().trim()
-        val creationDate = getCurrentDate.formatted()
+        val creationDate = getCurrentDate.formattedCurrentDateString()
         val roomBudget = binding.budget.text.toString().trim()
 
         val admins = HashMap<String, Boolean>()
@@ -239,13 +240,25 @@ class CreateRoom: AppCompatActivity(){
                 Constants.room_active,
                 getString(R.string.default_motd))
 
-        databaseReference.child(Constants.rooms).child(roomUid).setValue(room).addOnCompleteListener { result ->
-            if (result.isSuccessful){
-                databaseReference.child(Constants.shopping_lists).child(shoppingList).child(getString(R.string.example_item)).setValue(true)
-                dialog.dismiss()
-                finish()
+        // update database
+        databaseReference.child(Constants.rooms).child(roomUid).addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    dialog.dismiss()
+                    finish()
+
+                }
             }
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+        viewModel.createRoom(this, room)
+
+
+
 
     }
 }

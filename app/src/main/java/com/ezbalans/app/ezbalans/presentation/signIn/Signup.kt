@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.signIn
+package com.ezbalans.app.ezbalans.presentation.signIn
 
 import android.app.Dialog
 import android.content.Intent
@@ -10,25 +10,28 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.utils.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.utils.GetIdentityKey
-import com.ezbalans.app.ezbalans.views.HomeActivity
+import com.ezbalans.app.ezbalans.utils.IdentityKeys
+import com.ezbalans.app.ezbalans.presentation.HomeActivity
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewSignupBinding
-import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
+import com.ezbalans.app.ezbalans.utils.LoadingDialog
 import com.ezbalans.app.ezbalans.viewmodels.signinActivities.SignUpActivityViewModel
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class Signup : AppCompatActivity() {
     private lateinit var binding: ViewSignupBinding
     private lateinit var existingKeyList: List<String>
+
     private val viewModel: SignUpActivityViewModel by viewModels()
 
 
@@ -82,7 +85,7 @@ class Signup : AppCompatActivity() {
     }
 
     private fun registerUser(email: String, password: String, username: String) {
-        val loadingDialog = GetLoadingDialog(this, getString(R.string.registering)).create()
+        val loadingDialog = LoadingDialog(this, getString(R.string.registering)).create()
         loadingDialog.show()
 
         val auth = Firebase.auth
@@ -103,7 +106,7 @@ class Signup : AppCompatActivity() {
     }
 
     private fun createUser(email: String, username: String, loadingDialog: Dialog) {
-        val getIdentityKey = GetIdentityKey()
+        val getIdentityKey = IdentityKeys()
         val firebaseUser = Firebase.auth.currentUser!!
         val profileUpdates = UserProfileChangeRequest.Builder()
         profileUpdates.displayName = username
@@ -124,6 +127,9 @@ class Signup : AppCompatActivity() {
 
                     Firebase.database.reference.child(Constants.users).child(firebaseUser.uid).setValue(user).addOnSuccessListener{
                         Firebase.database.reference.child(Constants.budgets).child(firebaseUser.uid).child(firebaseUser.uid).setValue(0).addOnSuccessListener {
+
+                            viewModel.loginRepository()
+
                             firebaseUser.sendEmailVerification()
                             loadingDialog.dismiss()
                             val intent = Intent(this, HomeActivity::class.java)

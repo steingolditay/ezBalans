@@ -14,6 +14,9 @@ class RoomsFragmentViewModel
 
 @Inject constructor(private val repository: DatabaseRepository): ViewModel(){
 
+
+
+
     fun getMyRooms(): LiveData<List<Room>> {
         return repository.provideMyRooms()
     }

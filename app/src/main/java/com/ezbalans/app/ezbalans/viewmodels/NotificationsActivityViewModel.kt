@@ -23,7 +23,16 @@ class NotificationsActivityViewModel
     }
 
     fun getAllRooms(): LiveData<List<Room>> {
-       return repository.provideAllRooms()
+        return repository.provideAllRooms()
+    }
+
+    fun addUserToRoom(user: String, room: Room){
+        return repository.addUserToRoom(user, room)
+
+    }
+
+    fun declineUser(user: String, room: Room){
+        return repository.declineUserJoin(user, room)
     }
 
 }

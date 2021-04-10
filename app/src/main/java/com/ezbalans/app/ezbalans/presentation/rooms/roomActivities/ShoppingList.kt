@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.rooms.roomActivities
+package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
 import android.app.Dialog
 import android.os.Bundle
@@ -13,7 +13,7 @@ import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.ShoppingListItemsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewShoppingListBinding
 import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
+import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.ShoppingListActivityViewModel
 import com.google.firebase.database.ktx.database
@@ -92,7 +92,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
         val itemName = shoppingList[position].keys.toTypedArray()[0]
         val itemValue = shoppingList[position].values.toTypedArray()[0]
 
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_edit_item_name).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_edit_item_name).create()
         val name = dialog.findViewById<EditText>(R.id.name)
         val button = dialog.findViewById<Button>(R.id.apply)
         name.setText(itemName)
@@ -120,7 +120,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
     override fun onRemoveClick(position: Int) {
         val itemName = shoppingList[position].keys.toTypedArray()[0]
 
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_remove_shopping_list_item).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_remove_shopping_list_item).create()
         val title = dialog.findViewById<TextView>(R.id.title)
         val button = dialog.findViewById<Button>(R.id.remove_item)
 
@@ -137,7 +137,7 @@ class ShoppingList: AppCompatActivity(), ShoppingListItemsAdapter.OnItemClickLis
     }
 
     private fun addItem(){
-        val dialog = GetCustomDialog(Dialog(this), R.layout.dialog_add_item).create()
+        val dialog = CustomDialog(Dialog(this), R.layout.dialog_add_item).create()
         val name = dialog.findViewById<EditText>(R.id.name)
         val button = dialog.findViewById<Button>(R.id.apply)
 

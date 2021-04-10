@@ -7,7 +7,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import com.ezbalans.app.ezbalans.R
 
-class GetCustomDialog (dialog: Dialog, layout: Int) {
+class CustomDialog (dialog: Dialog, layout: Int) {
 
     private val contextDialog = dialog
     private val contextLayout = layout

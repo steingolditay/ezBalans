@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.signIn
+package com.ezbalans.app.ezbalans.presentation.signIn
 
 import android.content.Intent
 import android.os.Bundle

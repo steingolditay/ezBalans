@@ -152,7 +152,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:text="@string/category_expenses"
+                    android:text="@string/expenses_by_category"
                     android:textStyle="bold"
                     android:layout_margin="10dp"
 

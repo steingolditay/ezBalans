@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.rooms.roomFragments
+package com.ezbalans.app.ezbalans.presentation.rooms.roomFragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,17 +39,15 @@ class FragmentDetails: Fragment(){
 
     private val firebaseUser = Firebase.auth.currentUser!!
 
-    val payments = arrayListOf<Payment>()
-    private val roomUsers = arrayListOf<User>()
-    private val roomUsersMap = HashMap<String, User>()
-    private var allUsers = HashMap<String, User>()
+    private lateinit var payments: List<Payment>
+    private lateinit var roomUsers: List<User>
+    private lateinit var roomUsersMap: Map<String, User>
 
     private lateinit var roomUid: String
 
     private lateinit var totalChart: LineChart
     private lateinit var categoryChart: BarChart
     private lateinit var balanceChart: PieChart
-    private lateinit var debt: TextView
 
     private lateinit var totalChartCard: CardView
     private lateinit var categoryChartCard: CardView
@@ -59,7 +57,7 @@ class FragmentDetails: Fragment(){
 
 
     private var currencySymbol = ""
-    private var room = Room()
+    private lateinit var room: Room
     private var totalAmount = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -84,73 +82,51 @@ class FragmentDetails: Fragment(){
         categoryChartCard = binding.categoryCard
         balanceChartCard = binding.balanceCard
 
-        debt = binding.debt
-
         initViewModel()
     }
 
 
     private fun initViewModel(){
-        payments.clear()
-        println(binding)
+        viewModel.roomUid = roomUid
 
-        viewModel.getAllUsers().observe(viewLifecycleOwner, {
-            allUsers = it
+
+        viewModel.myRoom.observe(viewLifecycleOwner, {
+            room = it
+            currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
+            createGraphs()
         })
 
-        viewModel.getMyRooms().observe(viewLifecycleOwner, {
-            for (roomObject in it){
-                if (roomObject.uid == roomUid){
-                    room = roomObject
-                    currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
-
-                    for (resident in room.residents.keys){
-                        if (allUsers.containsKey(resident)){
-                            val user = allUsers[resident]!!
-                            roomUsers.add(user)
-                            roomUsersMap[user.uid] = user
-                        }
-                    }
-                }
-            }
-            if (payments.isNotEmpty()){
-                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-                createTotalExpensesChart()
-                createCategoryChart()
-                createBalanceChart()
-            }
+        viewModel.roomResidentsList.observe(viewLifecycleOwner, { result ->
+            roomUsers = result
+            roomUsersMap = result.associateBy { it.uid }
+            createGraphs()
         })
 
-        viewModel.getMyPayments().observe(viewLifecycleOwner, {
-            for (payment in it.values) {
-                if (payment.to == room.uid && payment.status == Constants.payment_valid && paymentFromThisMonth(payment)) {
-                    payments.add(payment)
-                    totalAmount += payment.amount.toInt()
-                }
-            }
-
-            if (payments.isNotEmpty() && roomUsersMap.isNotEmpty()) {
-                payments.sortWith { obj1, obj2 -> obj1.timestamp.compareTo(obj2.timestamp) }
-                createTotalExpensesChart()
-                createCategoryChart()
-                createBalanceChart()
-            } else {
-                binding.emptyItem.visibility = View.VISIBLE
-            }
+        viewModel.roomPaymentsList.observe(viewLifecycleOwner, { result ->
+            payments = result
+            totalAmount = result.sumByDouble { it.amount.toDouble() }.toInt()
+            createGraphs()
 
         })
+
     }
 
+    private fun createGraphs(){
+        if (this::payments.isInitialized && this::roomUsers.isInitialized && this::roomUsersMap.isInitialized && this::room.isInitialized) {
+            if (payments.isNotEmpty() && roomUsers.isNotEmpty() && roomUsersMap.isNotEmpty()){
+                if (payments.isEmpty()){
+                    binding.emptyItem.visibility = View.VISIBLE
 
-    private fun paymentFromThisMonth(payment: Payment) : Boolean{
-        val calendar = Calendar.getInstance(TimeZone.getDefault())
-        val thisMonth = calendar.get(Calendar.MONTH) + 1
-        val thisYear = calendar.get(Calendar.YEAR)
-        calendar.timeInMillis = payment.timestamp.toLong()
-        val paymentMonth = calendar.get(Calendar.MONTH) +1
-        val paymentYear = calendar.get(Calendar.YEAR)
+                }
+                else {
+                    createTotalExpensesChart()
+                    createCategoryChart()
+                    createBalanceChart()
+                    binding.emptyItem.visibility = View.GONE
+                }
+            }
 
-        return (thisMonth == paymentMonth) && (paymentYear == thisYear)
+        }
     }
 
     private fun createTotalExpensesChart(){
@@ -309,9 +285,10 @@ class FragmentDetails: Fragment(){
             }
         }
 
-        users.sort()
+//        users.sort()
 
         val sortedList = usersExpenses.toSortedMap()
+        println(sortedList)
 
         if (sortedList.isNotEmpty()){
             balanceChartCard.visibility = View.VISIBLE
@@ -405,7 +382,7 @@ class FragmentDetails: Fragment(){
                     }
 
                 }
-                debt.text = stringBuilder
+                binding.debt.text = stringBuilder
 
         }
         // check who i owe to
@@ -413,7 +390,7 @@ class FragmentDetails: Fragment(){
             val myDebt = (splitAmount - myAmount).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
             if (topPayers.size == 1){
                 val topPayerName = roomUsersMap[topPayers[0]]!!.username
-                debt.text = String.format(getString(R.string.your_owe), topPayerName, myDebt, currencySymbol)
+                binding.debt.text = String.format(getString(R.string.your_owe), topPayerName, myDebt, currencySymbol)
             }
             else {
                 var totalExtra = 0f
@@ -435,7 +412,7 @@ class FragmentDetails: Fragment(){
 
 
                 }
-                debt.text = stringBuilder
+                binding.debt.text = stringBuilder
             }
         }
     }

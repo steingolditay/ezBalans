@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.utils.GetCurrentDate
+import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
@@ -63,7 +63,7 @@ class NotificationsAdapter(private val context: Context,
             holder.itemView.alpha = 0.5f
         }
 
-        holder.timestamp.text = GetCurrentDate().dateAndTimeFromTimestamp(notification.timestamp)
+        holder.timestamp.text = DateAndTimeUtils().dateAndTimeFromTimestamp(notification.timestamp)
 
         when (notification.type){
             Constants.notify_user_joined -> {

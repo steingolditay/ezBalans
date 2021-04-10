@@ -1,4 +1,4 @@
-package com.ezbalans.app.ezbalans.views.homeFragments
+package com.ezbalans.app.ezbalans.presentation.homeFragments
 
 import android.app.Dialog
 import android.content.ClipData
@@ -20,13 +20,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
-import com.ezbalans.app.ezbalans.views.signIn.WelcomeActivity
+import com.ezbalans.app.ezbalans.presentation.signIn.WelcomeActivity
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
 import com.ezbalans.app.ezbalans.utils.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.utils.GetCustomDialog
-import com.ezbalans.app.ezbalans.utils.GetLoadingDialog
+import com.ezbalans.app.ezbalans.utils.CustomDialog
+import com.ezbalans.app.ezbalans.utils.LoadingDialog
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.ProfileFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
@@ -98,8 +98,8 @@ class FragmentProfile : Fragment() {
 
         }
 
-        viewModel.getMyUser().observe(viewLifecycleOwner, {
-                user = it[firebaseUser.uid]!!
+        viewModel.myUser.observe(viewLifecycleOwner, {
+                user = it
                 loadMyData()
 
         })
@@ -111,7 +111,7 @@ class FragmentProfile : Fragment() {
 
     private fun copyToClipboard(){
         val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("label",user.identity_key)
+        val clipData = ClipData.newPlainText("label", user.identity_key)
         clipboard.setPrimaryClip(clipData)
         Toast.makeText(requireContext(), getString(R.string.identity_key_copied), Toast.LENGTH_SHORT).show()
     }
@@ -135,10 +135,14 @@ class FragmentProfile : Fragment() {
 
             }
         }
+
+        else {
+            binding.emailVerification.visibility = View.GONE
+        }
     }
 
     private fun openAuthenticationDialog(source: String){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_authentication).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_authentication).create()
         val passwordField = dialog.findViewById<EditText>(R.id.password)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -165,7 +169,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openChangeEmailDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_email).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_email).create()
         val emailField = dialog.findViewById<EditText>(R.id.email)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -185,8 +189,21 @@ class FragmentProfile : Fragment() {
                     firebaseUser.updateEmail(email).addOnCompleteListener {
                         when {
                             it.isSuccessful -> {
-                                Toast.makeText(requireContext(), getString(R.string.email_updated), Toast.LENGTH_SHORT).show()
-                                dialog.dismiss()
+                                databaseReference.child(Constants.users).child(firebaseUser.uid).child(Constants.email).setValue(email).addOnCompleteListener { result ->
+                                    if (result.isSuccessful){
+                                        if (!firebaseUser.isEmailVerified){
+                                            firebaseUser.sendEmailVerification().addOnCompleteListener {
+                                                Toast.makeText(requireContext(), getString(R.string.email_updated), Toast.LENGTH_SHORT).show()
+                                                dialog.dismiss()
+                                            }
+                                        }
+                                        else {
+                                            Toast.makeText(requireContext(), getString(R.string.email_updated), Toast.LENGTH_SHORT).show()
+                                            dialog.dismiss()
+                                        }
+
+                                    }
+                                }
                             }
                             it.exception is FirebaseAuthUserCollisionException -> {
                                 Toast.makeText(requireContext(), getString(R.string.email_in_use), Toast.LENGTH_SHORT).show()
@@ -209,7 +226,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openChangePasswordDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_password).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_password).create()
         val passField = dialog.findViewById<EditText>(R.id.password)
         val passVerFiled = dialog.findViewById<EditText>(R.id.passwordVer)
         val apply = dialog.findViewById<Button>(R.id.apply)
@@ -256,7 +273,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openNotVerifiedDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
         val sendEmail = dialog.findViewById<Button>(R.id.send_email)
 
         sendEmail.setOnClickListener {
@@ -322,7 +339,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun setNewImage(uri: Uri){
-        val dialog = GetLoadingDialog(requireContext(), getString(R.string.uploading_image)).create()
+        val dialog = LoadingDialog(requireContext(), getString(R.string.uploading_image)).create()
         dialog.show()
         storageReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).putFile(uri).addOnSuccessListener {
             storageReference.child(Constants.users).child(firebaseUser.uid).child(Constants.image).downloadUrl.addOnSuccessListener {
@@ -352,7 +369,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openEditDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_edit_profile).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_profile).create()
 
         val firstName = dialog.findViewById<EditText>(R.id.first_name)
         val lastName = dialog.findViewById<EditText>(R.id.last_name)
@@ -419,7 +436,7 @@ class FragmentProfile : Fragment() {
 
             if (mapValues.isNotEmpty()){
                 dialog.dismiss()
-                val loadingDialog = GetLoadingDialog(requireContext(), getString(R.string.Updating_info)).create()
+                val loadingDialog = LoadingDialog(requireContext(), getString(R.string.Updating_info)).create()
                 loadingDialog.show()
                 databaseReference.child(Constants.users).child(firebaseUser.uid).updateChildren(mapValues).addOnSuccessListener {
                     loadingDialog.dismiss()
@@ -433,15 +450,19 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openLogoutDialog(){
-        val dialog = GetCustomDialog(Dialog(requireContext()), R.layout.dialog_logout).create()
+        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_logout).create()
         val logout = dialog.findViewById<Button>(R.id.logout)
 
         logout.setOnClickListener {
             dialog.dismiss()
-            val loadingDialog = GetLoadingDialog(requireContext(), getString(R.string.logging_out)).create()
+
+            val loadingDialog = LoadingDialog(requireContext(), getString(R.string.logging_out)).create()
             loadingDialog.show()
 
+
             Firebase.auth.signOut()
+            viewModel.logoutRepository()
+
             val intent = Intent(requireContext(), WelcomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             loadingDialog.dismiss()
