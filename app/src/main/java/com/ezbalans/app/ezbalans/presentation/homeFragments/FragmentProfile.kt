@@ -236,7 +236,7 @@ class FragmentProfile : Fragment() {
         apply.setOnClickListener {
             val password = passField.text.toString()
             val passwordVer = passVerFiled.text.toString()
-            val passStrength = CheckPasswordStrength().check(requireContext(), password)
+            val passStrength = CheckPasswordStrength.check(requireContext(), password)
 
             when {
                 password.isEmpty() -> {

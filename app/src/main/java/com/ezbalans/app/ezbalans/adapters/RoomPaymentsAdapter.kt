@@ -65,7 +65,7 @@ class RoomPaymentsAdapter (private val payments: List<Payment>,
 
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
         if (lang == Constants.language_hebrew){
-            holder.category.text = TranslateToHebrew().paymentCategory(payment.category)
+            holder.category.text = TranslateToHebrew.paymentCategory(payment.category)
         }
         else {
             holder.category.text = payment.category

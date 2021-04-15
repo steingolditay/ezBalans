@@ -63,7 +63,7 @@ class NotificationsAdapter(private val context: Context,
             holder.itemView.alpha = 0.5f
         }
 
-        holder.timestamp.text = DateAndTimeUtils().dateAndTimeFromTimestamp(notification.timestamp)
+        holder.timestamp.text = DateAndTimeUtils.dateAndTimeFromTimestamp(notification.timestamp)
 
         when (notification.type){
             Constants.notify_user_joined -> {

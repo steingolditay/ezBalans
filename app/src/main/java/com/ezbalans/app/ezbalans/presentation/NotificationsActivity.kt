@@ -289,7 +289,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
                 body.text = getString(R.string.payment_validation_body)
                 username.text = user.username
                 amount.text = payment.amount
-                date.text = DateAndTimeUtils().dateFromCustomTimestamp(payment.timestamp.toLong())
+                date.text = DateAndTimeUtils.dateFromCustomTimestamp(payment.timestamp.toLong())
                 description.text = payment.description
                 category.text = payment.category
 

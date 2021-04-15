@@ -3,7 +3,7 @@ package com.ezbalans.app.ezbalans.utils
 import android.content.Context
 import com.ezbalans.app.ezbalans.R
 
-class CheckPasswordStrength {
+object CheckPasswordStrength {
 
     fun check(context: Context, input: String): String{
         return when  {

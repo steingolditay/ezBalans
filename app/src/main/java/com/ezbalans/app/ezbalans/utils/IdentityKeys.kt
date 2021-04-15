@@ -1,6 +1,6 @@
 package com.ezbalans.app.ezbalans.utils
 
-class IdentityKeys {
+object IdentityKeys {
 
     fun create(keyList: List<String>): String{
         val allowedChars = ('A'..'Z') + ('0'..'9')

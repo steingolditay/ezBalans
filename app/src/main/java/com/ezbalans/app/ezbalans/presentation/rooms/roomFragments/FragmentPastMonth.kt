@@ -90,7 +90,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         monthTimestamp = arguments?.getLong(Constants.time_stamp)!!
         roomUid = arguments?.getString(Constants.room_uid)!!
 
-        binding.monthTitle.text = String.format("%s %s", DateAndTimeUtils().monthNameFromCustomTimestamp(monthTimestamp), DateAndTimeUtils().yearFromCustomTimestamp(monthTimestamp))
+        binding.monthTitle.text = String.format("%s %s", DateAndTimeUtils.monthNameFromCustomTimestamp(monthTimestamp), DateAndTimeUtils.yearFromCustomTimestamp(monthTimestamp))
 
 
         initViewModel()
@@ -157,7 +157,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun  addPaymentDialog(){
-        val maximumDays = DateAndTimeUtils().currentMonthMaximumDays()
+        val maximumDays = DateAndTimeUtils.currentMonthMaximumDays()
         var paymentType = ""
 
         val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_add_payment).create()
@@ -200,7 +200,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 else -> {
                     val status = if (room.admins[firebaseUser.uid] == true) Constants.payment_valid else Constants.payment_invalid
 
-                    val timestamp = DateAndTimeUtils().flatTimestampForDayInThisMonth(dayInput.toInt())
+                    val timestamp = DateAndTimeUtils.flatTimestampForDayInThisMonth(dayInput.toInt())
                     val paymentUid = UUID.randomUUID().toString()
                     val payment = Payment(paymentUid, firebaseUser.uid, room.uid, amountInput, timestamp, descInput, status, paymentType)
 
@@ -232,7 +232,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
         userInfo.text = user.username
         amountInfo.text = payment.amount
-        dateInfo.text = DateAndTimeUtils().dateFromCustomTimestamp(payment.timestamp.toLong())
+        dateInfo.text = DateAndTimeUtils.dateFromCustomTimestamp(payment.timestamp.toLong())
         descriptionInfo.text = payment.description
         categoryInfo.text = payment.category
 

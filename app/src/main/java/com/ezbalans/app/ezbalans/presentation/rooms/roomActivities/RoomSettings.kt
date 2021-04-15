@@ -136,8 +136,8 @@ class RoomSettings : AppCompatActivity() {
 
         val lang = PowerPreference.getDefaultFile().getString(Constants.language)
         if (lang == Constants.language_hebrew){
-            binding.roomCurrency.text = TranslateToHebrew().roomCurrency(room.currency)
-            binding.roomType.text = TranslateToHebrew().roomType(room.type)
+            binding.roomCurrency.text = TranslateToHebrew.roomCurrency(room.currency)
+            binding.roomType.text = TranslateToHebrew.roomType(room.type)
         }
         else {
             binding.roomCurrency.text = room.currency
@@ -522,7 +522,7 @@ class RoomSettings : AppCompatActivity() {
 
         val updates = hashMapOf<String, Any>()
         updates[Constants.status] = Constants.room_inactive
-        updates[Constants.room_closing_date] = DateAndTimeUtils().dateFromCustomTimestamp(Date().time)
+        updates[Constants.room_closing_date] = DateAndTimeUtils.dateFromCustomTimestamp(Date().time)
 
         binding.closeRoom.setOnClickListener {
             databaseReference.child(Constants.rooms).child(room.uid).updateChildren(updates).addOnSuccessListener {

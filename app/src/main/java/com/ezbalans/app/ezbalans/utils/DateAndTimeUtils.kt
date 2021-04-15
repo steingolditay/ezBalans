@@ -3,7 +3,7 @@ package com.ezbalans.app.ezbalans.utils
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DateAndTimeUtils {
+object DateAndTimeUtils {
     private val calendar = Calendar.getInstance(TimeZone.getDefault())
 
     fun formattedCurrentDateString(): String{

@@ -1,6 +1,6 @@
 package com.ezbalans.app.ezbalans.utils
 
-class TranslateToHebrew {
+object TranslateToHebrew {
 
 
     fun paymentCategory(input: String): String{

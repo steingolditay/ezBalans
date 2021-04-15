@@ -140,9 +140,9 @@ class FragmentWallet : Fragment() {
 
     private fun graphFilterPeriod() {
         if (this::roomBudgets.isInitialized && this::myRooms.isInitialized && this::roomPayments.isInitialized && this::payments.isInitialized){
-            val currentTime = DateAndTimeUtils().currentTimestamp().toLong()
-            val currentMonth = DateAndTimeUtils().currentMonthNumber().toInt()
-            val currentYear = DateAndTimeUtils().currentYear().toInt()
+            val currentTime = DateAndTimeUtils.currentTimestamp().toLong()
+            val currentMonth = DateAndTimeUtils.currentMonthNumber().toInt()
+            val currentYear = DateAndTimeUtils.currentYear().toInt()
             var pastTime: Long = 0
 
             val calendar = Calendar.getInstance(TimeZone.getDefault())

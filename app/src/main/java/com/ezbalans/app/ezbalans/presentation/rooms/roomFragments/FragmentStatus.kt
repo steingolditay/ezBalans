@@ -65,7 +65,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.monthTitle.text = String.format("%s %s", DateAndTimeUtils().currentMonthName(), DateAndTimeUtils().currentYear())
+        binding.monthTitle.text = String.format("%s %s", DateAndTimeUtils.currentMonthName(), DateAndTimeUtils.currentYear())
 
         binding.fab.setOnClickListener{
                 addPaymentDialog()
@@ -105,7 +105,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun  addPaymentDialog(){
-        val maximumDays = DateAndTimeUtils().currentMonthMaximumDays()
+        val maximumDays = DateAndTimeUtils.currentMonthMaximumDays()
         var paymentType = ""
 
         val dialog = CustomDialog(Dialog(myContext), R.layout.dialog_add_payment).create()
@@ -121,7 +121,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         if (lang == Constants.language_hebrew){
             val items = arrayListOf<String>()
             for (item in roomCategories){
-                val translated = TranslateToHebrew().paymentCategory(item)
+                val translated = TranslateToHebrew.paymentCategory(item)
                 items.add(translated)
 
             }
@@ -159,7 +159,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                 }
 
                 else -> {
-                    val timestamp = DateAndTimeUtils().flatTimestampForDayInThisMonth(dayInput.toInt())
+                    val timestamp = DateAndTimeUtils.flatTimestampForDayInThisMonth(dayInput.toInt())
                     val paymentUid = UUID.randomUUID().toString()
                     val payment = Payment(paymentUid, firebaseUser.uid, room.uid, amountInput, timestamp, descInput, Constants.payment_valid, paymentType)
 
@@ -220,7 +220,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
         userInfo.text = user.username
         amountInfo.text = payment.amount + currencySymbol
-        dateInfo.text = DateAndTimeUtils().dateFromCustomTimestamp(payment.timestamp.toLong())
+        dateInfo.text = DateAndTimeUtils.dateFromCustomTimestamp(payment.timestamp.toLong())
         descriptionInfo.text = payment.description
         categoryInfo.text = payment.category
 

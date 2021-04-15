@@ -59,7 +59,7 @@ class Signup : AppCompatActivity() {
         val firstName = binding.firstName.text.toString().trim()
         val lastName = binding.lastName.text.toString().trim()
 
-        val passStrength = CheckPasswordStrength().check(this, password)
+        val passStrength = CheckPasswordStrength.check(this, password)
 
 
         if (email.isEmpty()) {
@@ -106,7 +106,6 @@ class Signup : AppCompatActivity() {
     }
 
     private fun createUser(email: String, username: String, loadingDialog: Dialog) {
-        val getIdentityKey = IdentityKeys()
         val firebaseUser = Firebase.auth.currentUser!!
         val profileUpdates = UserProfileChangeRequest.Builder()
         profileUpdates.displayName = username
@@ -119,7 +118,7 @@ class Signup : AppCompatActivity() {
                     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     val date = Date()
                     val signUpDate = formatter.format(date)
-                    val identityKey = getIdentityKey.create(existingKeyList)
+                    val identityKey = IdentityKeys.create(existingKeyList)
                     val firstName = StringUtils.capitalize(binding.firstName.text.toString().toLowerCase(Locale.getDefault()).trim())
                     val lastName = StringUtils.capitalize(binding.lastName.text.toString().toLowerCase(Locale.getDefault()).trim())
 

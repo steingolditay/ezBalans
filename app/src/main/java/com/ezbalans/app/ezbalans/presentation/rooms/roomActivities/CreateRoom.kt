@@ -35,8 +35,6 @@ class CreateRoom: AppCompatActivity(){
     private val firebaseUser = Firebase.auth.currentUser
     private val databaseReference = Firebase.database.reference
     private var addedUsers = arrayListOf<String>()
-    private val identityKeys = IdentityKeys()
-    private val getCurrentDate = DateAndTimeUtils()
     private lateinit var existingKeyList: List<String>
     private lateinit var userList: List<User>
     private var uiLoaded = false
@@ -208,10 +206,10 @@ class CreateRoom: AppCompatActivity(){
 
         val roomUid = UUID.randomUUID().toString()
         val shoppingList = UUID.randomUUID().toString()
-        val identityKey = identityKeys.create(existingKeyList)
+        val identityKey = IdentityKeys.create(existingKeyList)
         val roomName = name.text.toString().trim()
         val roomDescription = binding.description.text.toString().trim()
-        val creationDate = getCurrentDate.formattedCurrentDateString()
+        val creationDate = DateAndTimeUtils.formattedCurrentDateString()
         val roomBudget = binding.budget.text.toString().trim()
 
         val admins = HashMap<String, Boolean>()
