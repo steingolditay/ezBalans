@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,17 +8,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.databinding.ViewNotificationsBinding
-import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Notification
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.viewmodels.NotificationsActivityViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -161,7 +157,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showUserJoinedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val from = dialog.findViewById<TextView>(R.id.from)
@@ -193,7 +189,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showUserDeclinedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val from = dialog.findViewById<TextView>(R.id.from)
@@ -213,7 +209,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showUserQuitDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -227,7 +223,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showUserRemovedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -248,7 +244,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showRoomInfoChangedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -264,7 +260,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showPaymentInvalidDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_actionable)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -338,7 +334,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showPaymentValidatedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -358,7 +354,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showPaymentDeclinedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -377,7 +373,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showRoomClosedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -394,7 +390,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showAdminDemotedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -414,7 +410,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showAdminPromotedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -434,7 +430,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showMOTDChangedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_informative).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_informative)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
 
@@ -452,7 +448,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsAdapter.OnItemCl
     }
 
     private fun showUserRequestedDialog(notification: Notification) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_notification_actionable).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_notification_actionable)
         val title = dialog.findViewById<TextView>(R.id.title)
         val body = dialog.findViewById<TextView>(R.id.body)
         val positive = dialog.findViewById<Button>(R.id.positive)

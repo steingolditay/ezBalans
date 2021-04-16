@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -16,13 +15,13 @@ import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewRoomBinding
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomActivityViewModel
 import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentDetails
 import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentHistory
 import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentStatus
+import com.ezbalans.app.ezbalans.utils.CustomDialogObject
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -48,13 +47,30 @@ class RoomActivity: AppCompatActivity(){
     private var roomUID: String = ""
     private var userList = listOf<User>()
 
-    private val fragmentStatus = FragmentStatus()
-    private val fragmentDetails = FragmentDetails()
-    private val fragmentHistory = FragmentHistory()
+    private var fragmentStatus: FragmentStatus? = null
+    private var fragmentDetails: FragmentDetails? = null
+    private var fragmentHistory: FragmentHistory? = null
+
     private val fragmentBundle = Bundle()
 
     private var fragmentSelector = ""
     private val viewModel: RoomActivityViewModel by viewModels()
+
+    override fun onStart() {
+        super.onStart()
+        fragmentStatus = FragmentStatus()
+        fragmentDetails = FragmentDetails()
+        fragmentHistory = FragmentHistory()
+
+        init()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        fragmentStatus = null
+        fragmentDetails = null
+        fragmentHistory = null
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +79,9 @@ class RoomActivity: AppCompatActivity(){
         val view = binding.root
         setContentView(view)
 
+    }
+
+    private fun init(){
         val bundle = intent.extras
         if (bundle != null){
             if (bundle.containsKey(Constants.room_uid) && bundle.containsKey(Constants.fragmentSelector)){
@@ -70,9 +89,9 @@ class RoomActivity: AppCompatActivity(){
                 fragmentSelector = bundle.getString(Constants.fragmentSelector).toString()
                 fragmentBundle.putString(Constants.room_uid, roomUID)
 
-                fragmentStatus.arguments = fragmentBundle
-                fragmentDetails.arguments = fragmentBundle
-                fragmentHistory.arguments = fragmentBundle
+                fragmentStatus!!.arguments = fragmentBundle
+                fragmentDetails!!.arguments = fragmentBundle
+                fragmentHistory!!.arguments = fragmentBundle
             }
         }
 
@@ -82,18 +101,18 @@ class RoomActivity: AppCompatActivity(){
 
         when (fragmentSelector) {
             Constants.status_tag -> {
-                setFragment(fragmentStatus, Constants.status_tag)
+                setFragment(fragmentStatus!!, Constants.status_tag)
                 currentFragment = Constants.status_tag
                 binding.bottomBar.itemActiveIndex = 0
             }
             Constants.details_tag -> {
-                setFragment(fragmentDetails, Constants.details_tag)
+                setFragment(fragmentDetails!!, Constants.details_tag)
                 currentFragment = Constants.details_tag
                 binding.bottomBar.itemActiveIndex = 1
 
             }
             Constants.history_tag -> {
-                setFragment(fragmentHistory, Constants.history_tag)
+                setFragment(fragmentHistory!!, Constants.history_tag)
                 currentFragment = Constants.history_tag
                 binding.bottomBar.itemActiveIndex = 2
 
@@ -108,19 +127,18 @@ class RoomActivity: AppCompatActivity(){
         binding.bottomBar.onItemSelected = {
             when (it){
                 0 -> {
-                    setFragment(fragmentStatus, Constants.status_tag)
+                    setFragment(fragmentStatus!!, Constants.status_tag)
                 }
                 1 -> {
-                    setFragment(fragmentDetails, Constants.details_tag)
+                    setFragment(fragmentDetails!!, Constants.details_tag)
                 }
                 2 -> {
-                    setFragment(fragmentHistory, Constants.history_tag)
+                    setFragment(fragmentHistory!!, Constants.history_tag)
                 }
             }
         }
 
     }
-
 
     private fun initViewModel(){
         viewModel.roomUid = roomUID
@@ -187,9 +205,9 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun leaveRoom(){
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_leave_room).create()
-
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_leave_room)
         val leaveRoom  = dialog.findViewById<Button>(R.id.leave_room)
+
         leaveRoom.setOnClickListener {
             if (admin){
                 when {
@@ -232,7 +250,7 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun addResident(){
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_add_resident).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_add_resident)
         val identityText = dialog.findViewById<EditText>(R.id.identity)
         val addResident = dialog.findViewById<Button>(R.id.add_resident)
 
@@ -260,7 +278,7 @@ class RoomActivity: AppCompatActivity(){
     }
 
     private fun closeRoomDialog(){
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_close_room).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_close_room)
         val body = dialog.findViewById<TextView>(R.id.body)
         val closeRoom = dialog.findViewById<Button>(R.id.close_room)
 
@@ -338,6 +356,5 @@ class RoomActivity: AppCompatActivity(){
         })
         return uri
     }
-
 
 }

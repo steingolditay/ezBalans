@@ -20,7 +20,7 @@ import kotlinx.coroutines.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ViewSplashScreenBinding
+    private var binding: ViewSplashScreenBinding? = null
     private val viewModel: RoomActivityViewModel by viewModels()
 
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ViewSplashScreenBinding.inflate(layoutInflater)
-        val view = binding.root
+        val view = binding!!.root
         setContentView(view)
 
         PowerPreference.init(this)
@@ -66,5 +66,11 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+
     }
 }

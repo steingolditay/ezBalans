@@ -4,7 +4,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="buttonStyle">@style/MyButtonStyle</item>
-        <item name="android:windowAnimationStyle">@style/SlideAnimation.Activity</item>
+<!--        <item name="android:windowAnimationStyle">@style/SlideAnimation.Activity</item>-->
         <item name="android:fontFamily">@font/sansation</item>
         <item name="android:textViewStyle">@style/MyTextStyle</item>
 

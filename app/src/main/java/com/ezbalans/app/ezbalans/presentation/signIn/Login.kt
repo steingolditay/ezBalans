@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation.signIn
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
@@ -9,10 +8,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.presentation.HomeActivity
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.ViewLoginBinding
+import com.ezbalans.app.ezbalans.utils.CustomDialogObject
 import com.ezbalans.app.ezbalans.utils.LoadingDialog
 import com.ezbalans.app.ezbalans.viewmodels.signinActivities.LoginActivityViewModel
 import com.google.firebase.auth.ktx.auth
@@ -84,7 +83,7 @@ class  Login : AppCompatActivity(){
     }
 
     private fun forgotPassword(){
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_forgot_password).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_forgot_password)
         val emailView = dialog.findViewById<EditText>(R.id.email)
         val reset = dialog.findViewById<Button>(R.id.reset_password)
 

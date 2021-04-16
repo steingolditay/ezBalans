@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.presentation.rooms.roomFragments
 
-import android.app.Dialog
-import android.content.Context
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,13 +48,8 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     var room = Room()
     private var roomCategories = arrayListOf<String>()
     private var totalAmount = 0
-    private lateinit var myContext: Context
     lateinit var adapter: RoomPaymentsAdapter
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        myContext = context
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRoomStatusBinding.inflate(inflater, container, false)
@@ -108,7 +102,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val maximumDays = DateAndTimeUtils.currentMonthMaximumDays()
         var paymentType = ""
 
-        val dialog = CustomDialog(Dialog(myContext), R.layout.dialog_add_payment).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_add_payment)
         val paymentTypeSpinner = dialog.findViewById<PowerSpinnerView>(R.id.payment_type)
         val addPayment = dialog.findViewById<Button>(R.id.add_payment)
 
@@ -209,7 +203,7 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val user = roomUsersMap[payment.from]!!
         val currencySymbol = if (room.currency == Constants.nis) Constants.nis_symbol else Constants.usd_symbol
 
-        val dialog = CustomDialog(Dialog(myContext), R.layout.dialog_payment_info).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_payment_info)
         val userInfo = dialog.findViewById<TextView>(R.id.user_info)
         val amountInfo = dialog.findViewById<TextView>(R.id.amount_info)
         val dateInfo = dialog.findViewById<TextView>(R.id.date_info)

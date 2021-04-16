@@ -10,6 +10,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('C:\\Users\\Parkinson\\AndroidStudioProjects\\ezBalans\\ezbalans.jks')
+            storePassword 'ezbalans'
+            keyAlias 'ezbalans'
+            keyPassword 'ezbalans'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
 
@@ -39,6 +47,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    defaultConfig {
+        multiDexEnabled true
     }
 }
 
@@ -85,6 +97,7 @@ dependencies {
     implementation 'com.aliassadi:power-preference-lib:2.0.0' // easy shared prefs
     implementation "com.github.skydoves:powerspinner:1.1.5" // stylized spinner
     implementation 'com.github.simformsolutions:SSCustomEditTextOutLineBorder:1.0.9'
+
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"

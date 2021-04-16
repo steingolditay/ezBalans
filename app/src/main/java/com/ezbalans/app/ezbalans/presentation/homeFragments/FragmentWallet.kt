@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation.homeFragments
 
-import android.app.Dialog
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,12 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.presentation.rooms.roomFragments.FragmentDetails
 import com.ezbalans.app.ezbalans.databinding.FragmentWalletBinding
+import com.ezbalans.app.ezbalans.utils.CustomDialogObject
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.WalletFragmentViewModel
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -391,8 +390,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun editRoomBudgetDialog(roomUid: String) {
-        val dialog =
-            CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_room_budget)
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -445,8 +443,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showTotalBudgetDialog() {
-        val dialog =
-            CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_total_budget).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_total_budget)
         val budget = dialog.findViewById<TextView>(R.id.budget)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -470,7 +467,7 @@ class FragmentWallet : Fragment() {
     }
 
     private fun showRoomsDialog() {
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_rooms_list).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_rooms_list)
         val container = dialog.findViewById<LinearLayout>(R.id.container)
 
         for (r in myRooms) {

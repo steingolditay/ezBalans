@@ -1,7 +1,6 @@
 package com.ezbalans.app.ezbalans.presentation.rooms.roomActivities
 
 import android.Manifest
-import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -22,6 +21,7 @@ import com.ezbalans.app.ezbalans.databinding.ViewRoomInfoBinding
 import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
+import com.ezbalans.app.ezbalans.presentation.HomeActivity
 import com.ezbalans.app.ezbalans.viewmodels.roomActivities.RoomInfoActivityViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
@@ -253,7 +253,7 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun removeResidentDialog(user: User, view: View) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_remove_resident).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_remove_resident)
         val remove = dialog.findViewById<Button>(R.id.remove)
         remove.setOnClickListener {
             removeResident(user, view)
@@ -264,7 +264,7 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun removeAdminDialog(user: User, view: View) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_remove_admin).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_remove_admin)
         val removeAdmin = dialog.findViewById<Button>(R.id.remove_admin)
         val remove = dialog.findViewById<Button>(R.id.remove)
 
@@ -287,7 +287,7 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun promoteResidentDialog(user: User, view: View) {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_promote_resident).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_promote_resident)
         val promote = dialog.findViewById<Button>(R.id.promote)
 
         promote.setOnClickListener {
@@ -371,8 +371,7 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun openEditDialog() {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_edit_room_info).create()
-
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_edit_room_info)
         val name = dialog.findViewById<EditText>(R.id.name)
         val desc = dialog.findViewById<EditText>(R.id.desc)
         val budget = dialog.findViewById<EditText>(R.id.budget)
@@ -460,7 +459,7 @@ class RoomSettings : AppCompatActivity() {
                 typesList[2] -> {
                     categories = Constants.room_category_couple
                 }
-                typesList[4] -> {
+                typesList[3] -> {
                     categories = Constants.room_category_vacation
                 }
 
@@ -518,17 +517,25 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun closeRoomDialog() {
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_close_room).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_close_room)
 
         val updates = hashMapOf<String, Any>()
         updates[Constants.status] = Constants.room_inactive
         updates[Constants.room_closing_date] = DateAndTimeUtils.dateFromCustomTimestamp(Date().time)
 
-        binding.closeRoom.setOnClickListener {
+        dialog.findViewById<Button>(R.id.close_room).setOnClickListener {
+            dialog.dismiss()
+            val loadingDialog = LoadingDialog(this, "Closing room...").create()
+            loadingDialog.show()
+
             databaseReference.child(Constants.rooms).child(room.uid).updateChildren(updates).addOnSuccessListener {
                 CreateNotification().create(room, Constants.notify_room_closed, firebaseUser.uid, "", "")
+                loadingDialog.dismiss()
+
+                val intent = Intent(this, HomeActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
                 finish()
-                Toast.makeText(this, getString(R.string.room_closed_toast), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -536,7 +543,7 @@ class RoomSettings : AppCompatActivity() {
     }
 
     private fun openMOTDDialog(){
-        val dialog = CustomDialog(Dialog(this), R.layout.dialog_edit_motd).create()
+        val dialog = CustomDialogObject.create(this, R.layout.dialog_edit_motd)
         val motd = dialog.findViewById<EditText>(R.id.motd)
         val apply = dialog.findViewById<Button>(R.id.apply)
 

@@ -14,7 +14,6 @@ import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class RoomPaymentsAdapter (private val payments: List<Payment>,

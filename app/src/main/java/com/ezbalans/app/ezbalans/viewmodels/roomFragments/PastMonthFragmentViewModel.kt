@@ -17,7 +17,7 @@ import kotlin.collections.HashMap
 
 @HiltViewModel
 class PastMonthFragmentViewModel
-@Inject constructor(private val repository: DatabaseRepository): ViewModel() {
+@Inject constructor(repository: DatabaseRepository): ViewModel() {
 
     var roomUid = ""
     var timestamp = 0L
@@ -33,7 +33,6 @@ class PastMonthFragmentViewModel
     val roomPaymentsList: LiveData<List<Payment>> = Transformations.map(repository.provideAllPayments()) { data ->
         getRoomPayments(data)
     }
-
 
 
     private fun getMyRoom(data: List<Room>): Room {

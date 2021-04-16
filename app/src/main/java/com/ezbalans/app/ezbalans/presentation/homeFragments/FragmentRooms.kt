@@ -18,7 +18,6 @@ import com.ezbalans.app.ezbalans.adapters.MyRoomsAdapter
 import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.presentation.NotificationsActivity
 import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.CreateRoom
@@ -26,6 +25,7 @@ import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.RoomActivity
 import com.ezbalans.app.ezbalans.presentation.rooms.roomActivities.ShoppingList
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomsBinding
 import com.ezbalans.app.ezbalans.models.Payment
+import com.ezbalans.app.ezbalans.utils.CustomDialogObject
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.RoomsFragmentViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -138,8 +138,8 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun initViewModel(){
-        viewModel.getMyRooms().observe(viewLifecycleOwner, {
-            myRooms = it
+        viewModel.getMyRooms().observe(viewLifecycleOwner, { list ->
+            myRooms = list.filter { it.status == Constants.room_active  }
             initRecyclerView()
         })
 
@@ -184,7 +184,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun openNotVerifiedDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_send_email_verification)
         val sendEmail = dialog.findViewById<Button>(R.id.send_email)
 
         sendEmail.setOnClickListener {
@@ -203,7 +203,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     }
 
     private fun joinRoomDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_join_room).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_join_room)
         val identityKey = dialog.findViewById<TextView>(R.id.identity)
         val sendRequest = dialog.findViewById<Button>(R.id.send_request)
 
@@ -289,7 +289,7 @@ class FragmentRooms: Fragment(), MyRoomsAdapter.OnItemClickListener {
     override fun onEditClick(position: Int) {
         val room = myRooms[position]
         var currentBudget = 0
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_room_budget).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_room_budget)
         val budget = dialog.findViewById<EditText>(R.id.budget)
         val button = dialog.findViewById<Button>(R.id.apply)
 

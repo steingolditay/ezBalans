@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation.homeFragments
 
-import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -18,15 +17,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.ezbalans.app.ezbalans.utils.Constants
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.presentation.signIn.WelcomeActivity
 import com.ezbalans.app.ezbalans.adapters.NotificationsAdapter
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.databinding.ViewProfileBinding
-import com.ezbalans.app.ezbalans.utils.CheckPasswordStrength
-import com.ezbalans.app.ezbalans.utils.CustomDialog
-import com.ezbalans.app.ezbalans.utils.LoadingDialog
+import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.viewmodels.homeFragments.ProfileFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
@@ -142,7 +138,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openAuthenticationDialog(source: String){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_authentication).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_notification_informative)
         val passwordField = dialog.findViewById<EditText>(R.id.password)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -169,7 +165,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openChangeEmailDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_email).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_email)
         val emailField = dialog.findViewById<EditText>(R.id.email)
         val apply = dialog.findViewById<Button>(R.id.apply)
 
@@ -226,7 +222,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openChangePasswordDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_password).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_password)
         val passField = dialog.findViewById<EditText>(R.id.password)
         val passVerFiled = dialog.findViewById<EditText>(R.id.passwordVer)
         val apply = dialog.findViewById<Button>(R.id.apply)
@@ -273,7 +269,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openNotVerifiedDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_send_email_verification).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_send_email_verification)
         val sendEmail = dialog.findViewById<Button>(R.id.send_email)
 
         sendEmail.setOnClickListener {
@@ -369,8 +365,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openEditDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_edit_profile).create()
-
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_edit_profile)
         val firstName = dialog.findViewById<EditText>(R.id.first_name)
         val lastName = dialog.findViewById<EditText>(R.id.last_name)
         val username = dialog.findViewById<EditText>(R.id.username)
@@ -450,7 +445,7 @@ class FragmentProfile : Fragment() {
     }
 
     private fun openLogoutDialog(){
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_logout).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_logout)
         val logout = dialog.findViewById<Button>(R.id.logout)
 
         logout.setOnClickListener {

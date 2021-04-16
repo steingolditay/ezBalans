@@ -3,7 +3,6 @@ package com.ezbalans.app.ezbalans.viewmodels.homeFragments
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.repository.DatabaseRepository
 import com.google.firebase.auth.ktx.auth

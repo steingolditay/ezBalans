@@ -1,6 +1,5 @@
 package com.ezbalans.app.ezbalans.presentation.rooms.roomFragments
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,15 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ezbalans.app.ezbalans.adapters.RoomPaymentsAdapter
-import com.ezbalans.app.ezbalans.utils.Constants
-import com.ezbalans.app.ezbalans.utils.CreateNotification
-import com.ezbalans.app.ezbalans.utils.DateAndTimeUtils
-import com.ezbalans.app.ezbalans.utils.CustomDialog
 import com.ezbalans.app.ezbalans.models.Payment
 import com.ezbalans.app.ezbalans.models.Room
 import com.ezbalans.app.ezbalans.models.User
 import com.ezbalans.app.ezbalans.R
 import com.ezbalans.app.ezbalans.databinding.FragmentRoomHistoryMonthBinding
+import com.ezbalans.app.ezbalans.utils.*
 import com.ezbalans.app.ezbalans.viewmodels.roomFragments.PastMonthFragmentViewModel
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
@@ -160,7 +156,8 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val maximumDays = DateAndTimeUtils.currentMonthMaximumDays()
         var paymentType = ""
 
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_add_payment).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_add_payment)
+
         val paymentTypeSpinner = dialog.findViewById<PowerSpinnerView>(R.id.payment_type)
         val addPayment = dialog.findViewById<Button>(R.id.add_payment)
 
@@ -222,7 +219,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
         val payment = payments[position]
         val user = roomUsersList[payment.from]!!
 
-        val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_payment_info).create()
+        val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_payment_info)
         val userInfo = dialog.findViewById<TextView>(R.id.user_info)
         val amountInfo = dialog.findViewById<TextView>(R.id.amount_info)
         val dateInfo = dialog.findViewById<TextView>(R.id.date_info)
@@ -406,7 +403,7 @@ class FragmentPastMonth: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
 
 
         breakEven.setOnClickListener {
-            val dialog = CustomDialog(Dialog(requireContext()), R.layout.dialog_break_even).create()
+            val dialog = CustomDialogObject.create(requireContext(), R.layout.dialog_break_even)
             val approve = dialog.findViewById<Button>(R.id.approve)
 
             approve.setOnClickListener{

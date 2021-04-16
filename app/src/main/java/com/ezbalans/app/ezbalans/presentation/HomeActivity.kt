@@ -21,12 +21,27 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ViewMainframeBinding
 
-    private var fragmentProfile: FragmentProfile = FragmentProfile()
-    private var fragmentRooms: FragmentRooms = FragmentRooms()
-    private var fragmentWallet: FragmentWallet = FragmentWallet()
+    private var fragmentProfile: FragmentProfile? = null
+    private var fragmentRooms: FragmentRooms? = null
+    private var fragmentWallet: FragmentWallet? = null
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(LocaleManager.setLocale(newBase!!))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        fragmentProfile = FragmentProfile()
+        fragmentRooms = FragmentRooms()
+        fragmentWallet = FragmentWallet()
+        init()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        fragmentProfile = null
+        fragmentRooms = null
+        fragmentWallet = null
     }
 
 
@@ -36,11 +51,15 @@ class HomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+
+
+    }
+
+    private fun init(){
         // check if deep linked to join room
         // if logged in move to join room fragment\
         // if logged out move to login activity
         // else init home activity
-
         val uri = intent.data
         if (uri != null) {
             if (Firebase.auth.currentUser != null) {
@@ -51,19 +70,19 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         else {
-            setFragment(fragmentRooms, Constants.rooms_tag)
+            setFragment(fragmentRooms!!, Constants.rooms_tag)
         }
 
         binding.bottomBar.onItemSelected = {
             when (it) {
                 0 -> {
-                    setFragment(fragmentRooms, Constants.rooms_tag)
+                    setFragment(fragmentRooms!!, Constants.rooms_tag)
                 }
                 1 -> {
-                    setFragment(fragmentWallet, Constants.budgets_tag)
+                    setFragment(fragmentWallet!!, Constants.budgets_tag)
                 }
                 2 -> {
-                    setFragment(fragmentProfile, Constants.profile_tag)
+                    setFragment(fragmentProfile!!, Constants.profile_tag)
                 }
             }
         }
@@ -97,8 +116,8 @@ class HomeActivity : AppCompatActivity() {
 
 
     override fun onBackPressed() {
-        if (!fragmentRooms.isVisible) {
-            setFragment(fragmentRooms, Constants.rooms_tag)
+        if (!fragmentRooms!!.isVisible) {
+            setFragment(fragmentRooms!!, Constants.rooms_tag)
             binding.bottomBar.itemActiveIndex = 0
         } else {
             super.onBackPressed()

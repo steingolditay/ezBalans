@@ -34,10 +34,6 @@ class HistoryFragmentViewModel
     }
 
 
-    fun getMyPayments(): LiveData<HashMap<String, Payment>> {
-       return repository.provideMyPayments()
-    }
-
     private fun getMyRoom(data: List<Room>): Room {
         var myRoom = Room()
         for (room in data){
