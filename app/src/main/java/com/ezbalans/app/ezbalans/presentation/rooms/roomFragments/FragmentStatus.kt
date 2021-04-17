@@ -81,11 +81,15 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
                     true -> roomCategories.add(entry.key)
                 }
             }
+            initRecyclerView()
+
         })
 
         viewModel.roomResidentsList.observe(viewLifecycleOwner, { result ->
             roomUsers = result
             roomUsersMap = result.associateBy { it.uid }
+            initRecyclerView()
+
         })
 
         viewModel.roomPaymentsList.observe(viewLifecycleOwner, { result ->
@@ -183,18 +187,22 @@ class FragmentStatus: Fragment(), RoomPaymentsAdapter.OnItemClickListener {
     }
 
     private fun initRecyclerView(){
-        if (payments.isEmpty()) {
-            binding.list.visibility = View.GONE
-            binding.emptyItem.visibility = View.VISIBLE
-        }
-        else {
+        if (payments.isNotEmpty() && room.name != "" && roomUsers.isNotEmpty()) {
+
             binding.list.visibility = View.VISIBLE
             binding.emptyItem.visibility = View.GONE
             payments = payments.sortedBy { it.timestamp }
 
+            println("$payments / $roomUsers / ${room.currency}")
+
             adapter = RoomPaymentsAdapter(payments, roomUsers, room.currency, this)
             binding.list.adapter = adapter
             binding.list.layoutManager = LinearLayoutManager(context)
+
+        }
+        else {
+            binding.list.visibility = View.GONE
+            binding.emptyItem.visibility = View.VISIBLE
         }
     }
 

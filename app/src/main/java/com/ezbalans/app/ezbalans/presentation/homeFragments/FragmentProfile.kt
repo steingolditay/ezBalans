@@ -39,7 +39,6 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.collections.HashMap
 
-
 @AndroidEntryPoint
 class FragmentProfile : Fragment() {
     private var _binding: ViewProfileBinding? = null
@@ -344,9 +343,8 @@ class FragmentProfile : Fragment() {
                     val profileUpdates = UserProfileChangeRequest.Builder()
                     profileUpdates.photoUri = uri
                     firebaseUser.updateProfile(profileUpdates.build()).addOnSuccessListener {
-                        Picasso.get().load(firebaseUser.photoUrl).into(binding.image)
+                        Picasso.get().load(imageUri).into(binding.image)
                         dialog.dismiss()
-
 
                     }
                 }

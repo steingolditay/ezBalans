@@ -25,16 +25,22 @@ class HomeActivity : AppCompatActivity() {
     private var fragmentRooms: FragmentRooms? = null
     private var fragmentWallet: FragmentWallet? = null
 
+    private var created = false
+
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(LocaleManager.setLocale(newBase!!))
     }
+
+
 
     override fun onStart() {
         super.onStart()
         fragmentProfile = FragmentProfile()
         fragmentRooms = FragmentRooms()
         fragmentWallet = FragmentWallet()
+
         init()
+
     }
 
     override fun onStop() {
@@ -50,7 +56,6 @@ class HomeActivity : AppCompatActivity() {
         binding = ViewMainframeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
 
 
     }
@@ -69,7 +74,8 @@ class HomeActivity : AppCompatActivity() {
                 moveToLogin()
             }
         }
-        else {
+        else if (!created) {
+            created = true
             setFragment(fragmentRooms!!, Constants.rooms_tag)
         }
 
@@ -115,15 +121,15 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    override fun onBackPressed() {
-        if (!fragmentRooms!!.isVisible) {
-            setFragment(fragmentRooms!!, Constants.rooms_tag)
-            binding.bottomBar.itemActiveIndex = 0
-        } else {
-            super.onBackPressed()
-        }
-
-    }
+//    override fun onBackPressed() {
+//        if (!fragmentRooms!!.isVisible) {
+//            setFragment(fragmentRooms!!, Constants.rooms_tag)
+//            binding.bottomBar.itemActiveIndex = 0
+//        } else {
+//            super.onBackPressed()
+//        }
+//
+//    }
 
 
 }

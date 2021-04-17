@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object DateAndTimeUtils {
-    private val calendar = Calendar.getInstance(TimeZone.getDefault())
 
     fun formattedCurrentDateString(): String{
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -61,24 +60,27 @@ object DateAndTimeUtils {
     }
 
     fun dateAndTimeFromTimestamp(timestamp: Long): String{
-        calendar.clear()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.timeInMillis = timestamp
         val formatter = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.getDefault())
         return formatter.format(calendar.timeInMillis)
     }
 
     fun flatTimestampForDayInThisMonth(day: Int): String{
-        calendar.clear()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
+
         calendar.set(Calendar.DAY_OF_MONTH, day)
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH))
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
-        return (calendar.time.time).toString()
+
+        return (calendar.timeInMillis).toString()
+
     }
 
     fun currentMonthMaximumDays() : Int{
-        calendar.clear()
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
